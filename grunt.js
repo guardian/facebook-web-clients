@@ -6,6 +6,10 @@ module.exports = function (grunt) {
             version:'1.0',
             banner:"/* Facebook Web Clients <%= meta.version %> */"
         },
+        watch: {
+            files: ['src/*.js'],
+            tasks: ['test']
+        },
         concat:{
             dist:{
                 src:['<banner:meta.banner>', 'src/namespace.js', 'src/*.js'],

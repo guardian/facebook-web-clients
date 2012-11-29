@@ -1,9 +1,3 @@
-/* Facebook Web Clients 1.0 */
-
-/** @namespace */
-guardian = guardian || {};
-/** @namespace */
-guardian.facebook = {};
 (function (jQuery) {
 
     function Donut(container) {
@@ -58,12 +52,3 @@ guardian.facebook = {};
     guardian.facebook.Donut = Donut;
 
 })(window.jQuery);
-(function() {
-
-    function VoteComponent() {
-
-    }
-
-    guardian.facebook.VoteComponent = VoteComponent;
-
-})();

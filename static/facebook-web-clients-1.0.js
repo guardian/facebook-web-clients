@@ -94,8 +94,8 @@ guardian.facebook = {};
 
     Donut.LEFT_ANGLE = 270;
     Donut.RIGHT_ANGLE = 90;
-    Donut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 24};
-    Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 24};
+    Donut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
+    Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
     Donut.NOTCH = {stroke: "#fff", "stroke-width": 5};
 
     guardian.facebook.Donut = Donut;

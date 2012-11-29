@@ -2,6 +2,12 @@
 <html>
 <head>
     <title>Facebook Web Client Demos</title>
+    <link rel="stylesheet" type="text/css" href="http://pasteup.guim.co.uk/css/core.pasteup.min.css"/>
+
+    <link rel="stylesheet" type="text/css"
+          href="http://static.guim.co.uk/static/ded33a915cea141576a5735f1eab38dff304792f/zones/sport/styles/zone-accent.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="http://static.guim.co.uk/static/b9dbdbd52b575dcdff51895290c041c46660ce8f/common/styles/article-top.css"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
     <script src="http://pasteup.guim.co.uk/js/lib/underscore/1.3.3/underscore.js"></script>
     <script src="http://pasteup.guim.co.uk/js/lib/jquery.cookie/1.2/jquery.cookie.min.js"></script>
@@ -15,17 +21,62 @@
     <script src="../static/facebook-web-clients-1.0.js"></script>
     <link rel="stylesheet" href="../static/donut.css"/>
     <link rel="stylesheet" href="../static/votecomponent.css"/>
+    <style>
+        #article-header #main-article-info {
+            float: none;
+        }
+        #content {
+            width: 460px;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Football transfer rumours: Nicholas Anelka to West Ham?</h1>
+<div class="fluid-wrap">
 
-<p>
-    orem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sem arcu, venenatis id vestibulum quis, consequat
-    vitae est. Suspendisse aliquam dolor in ipsum ultricies suscipit. Maecenas ac nunc ligula.
-</p>
+    <div id="article-header">
 
-<div class="donutContainer"></div>
+        <div id="main-article-info">
+            <h1 itemprop="name headline  ">Football transfer rumours: Have your say on Facebook!</h1>
+
+            <p itemprop="description" id="stand-first" class="stand-first-alone">A new voting component to get your view</p>
+
+        </div>
+
+    </div>
+
+    <div id="content">
+        <ul class="article-attributes trackable-component b4" data-component="comp: r2: Byline">
+            <li class="byline">
+                <div class="contributor-full">
+                    Olly Oechsle
+                </div>
+            </li>
+
+            <li class="publication">
+                <a itemprop="publisher" href="http://www.guardian.co.uk/">guardian.co.uk</a>,
+                <time itemprop="datePublished" datetime="2012-11-28T09:23GMT" pubdate="">Thursday 29 November 2012
+                    14.23 GMT
+                </time>
+            </li>
+
+        </ul>
+
+        <div id="article-wrapper">
+            <div id="article-body-blocks">
+
+                <div class="voteComponent">
+                    <button>Likely</button>
+                    <div class="donutContainer"></div>
+                    <button>Unlikely</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 <script>
     new guardian.facebook.Donut(".donutContainer").render();

@@ -67,24 +67,27 @@ guardian.facebook = {};
        this.paper.path()
             .attr(Donut.POSITIVE)
             .attr({arc: [25]})
-            .attr({turn: [25, 90]});
+            .attr({turn: [25, Donut.LEFT_ANGLE]});
 
         this.paper.path()
             .attr(Donut.NEGATIVE)
             .attr({arc: [75]})
-            .attr({turn: [75, 270]});
+            .attr({turn: [75, Donut.RIGHT_ANGLE]});
 
         this.paper.path()
             .attr(Donut.NOTCH)
             .attr({notch: [0]})
-            .attr({turn: [75, 270]});
+            .attr({turn: [75, Donut.RIGHT_ANGLE]});
 
         this.paper.path()
             .attr(Donut.NOTCH)
             .attr({notch: [75]})
-            .attr({turn: [75, 270]});
+            .attr({turn: [75, Donut.RIGHT_ANGLE]});
 
     };
+
+    Donut.LEFT_ANGLE = 270;
+    Donut.RIGHT_ANGLE = 90;
 
     Donut.NEGATIVE = {stroke: "#3A7D00", "stroke-width": 24};
     Donut.POSITIVE = {stroke: "#0D3D00", "stroke-width": 24};

@@ -40,8 +40,9 @@ guardian.facebook = {};
             }
             return {path: path};
         };
-        this.paper.customAttributes.turn = function (percent) {
-            angle = 360 / 100 * percent;
+        this.paper.customAttributes.turn = function (percent, centerAngle) {
+            var alpha = 360 / 100 * percent,
+                angle = centerAngle - (alpha / 2);
             return ({"transform": ["R" + angle, centerX, centerX].join()});
         };
     };
@@ -50,14 +51,14 @@ guardian.facebook = {};
         this.paper.clear();
 
         this.paper.path()
-            .attr(Donut.POSITIVE)
-            .attr({arc: [25]})
-            .attr({turn: [0]});
-
-        this.paper.path()
             .attr(Donut.NEGATIVE)
             .attr({arc: [75]})
-            .attr({turn: [25]});
+            .attr({turn: [75, 270]});
+
+        this.paper.path()
+            .attr(Donut.POSITIVE)
+            .attr({arc: [25]})
+            .attr({turn: [25, 90]});
     };
 
     Donut.NEGATIVE = {stroke: "#3A7D00", "stroke-width": 24};

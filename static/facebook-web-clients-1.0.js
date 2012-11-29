@@ -61,7 +61,7 @@ guardian.facebook = {};
     };
 
     Donut.prototype.render = function () {
-        this.renderDonut(65);
+        this.renderDonut(90);
     };
 
     Donut.prototype.renderDonut = function (percent) {
@@ -75,17 +75,20 @@ guardian.facebook = {};
         var
             rightSegment = this.paper.path()
                 .attr(Donut.POSITIVE)
-                .attr({arc: [percent]}),
+                .attr({arc: [50]})
+                .animate({arc: [percent]}, 500, "ease-in-out"),
             notch1 = this.paper.path()
                 .attr(Donut.NOTCH)
                 .attr({notch: [0]}),
             notch2 = this.paper.path()
                 .attr(Donut.NOTCH)
-                .attr({notch: [percent]});
+                .attr({notch: [50]})
+                .animate({notch: [percent]}, 500, "ease-in-out");
 
         this.paper.set()
             .push(rightSegment, notch1, notch2)
-            .attr({turn: [percent, Donut.RIGHT_ANGLE]});
+            .attr({turn: [50, Donut.LEFT_ANGLE]})
+            .animate({turn: [percent, Donut.LEFT_ANGLE]}, 500, "ease-in-out");
 
     };
 

@@ -12,23 +12,37 @@
         var width = this.jContainer.width(),
             height = this.jContainer.height(),
             centerX = width / 2,
-            radius = (width - 24) / 2;
+            centerY = height / 2,
+            radius = (Math.min(width, height) - 24) / 2;
 
         this.paper = new window.Raphael(this.jContainer[0], width, height);
+        this.paper.customAttributes.notch = function (percent) {
+            var alpha = 360 / 100 * percent,
+                rads = alpha * Math.PI / 180,
+                dx = width * Math.cos(rads),
+                dy = width * Math.sin(rads),
+                path;
+            console.log("Notch alpha: " + alpha, dx, dy);
+            path = [
+                ["M", centerX, centerY],
+                ["l", -dx, dy]
+            ];
+            return {path: path};
+        };
         this.paper.customAttributes.arc = function (percent) {
-            var alpha = 360 /  100 * percent,
+            var alpha = 360 / 100 * percent,
                 a = (90 - alpha) * Math.PI / 180,
                 x = centerX + radius * Math.cos(a),
-                y = centerX - radius * Math.sin(a),
+                y = centerY - radius * Math.sin(a),
                 path;
             if (percent == 100) {
                 path = [
-                    ["M", centerX, centerX - radius],
+                    ["M", centerX, centerY - radius],
                     ["A", radius, radius, 0, 1, 1, centerX - 0.01, centerX - radius]
                 ];
             } else {
                 path = [
-                    ["M", centerX, centerX - radius],
+                    ["M", centerX, centerY - radius],
                     ["A", radius, radius, 0, +(alpha > 180), 1, x, y]
                 ];
             }
@@ -44,19 +58,31 @@
     Donut.prototype.render = function () {
         this.paper.clear();
 
+       this.paper.path()
+            .attr(Donut.POSITIVE)
+            .attr({arc: [25]})
+            .attr({turn: [25, 90]});
+
         this.paper.path()
             .attr(Donut.NEGATIVE)
             .attr({arc: [75]})
             .attr({turn: [75, 270]});
 
         this.paper.path()
-            .attr(Donut.POSITIVE)
-            .attr({arc: [25]})
-            .attr({turn: [25, 90]});
+            .attr(Donut.NOTCH)
+            .attr({notch: [0]})
+            .attr({turn: [75, 270]});
+
+        this.paper.path()
+            .attr(Donut.NOTCH)
+            .attr({notch: [75]})
+            .attr({turn: [75, 270]});
+
     };
 
     Donut.NEGATIVE = {stroke: "#3A7D00", "stroke-width": 24};
     Donut.POSITIVE = {stroke: "#0D3D00", "stroke-width": 24};
+    Donut.NOTCH = {stroke: "#fff", "stroke-width": 6};
 
     guardian.facebook.Donut = Donut;
 

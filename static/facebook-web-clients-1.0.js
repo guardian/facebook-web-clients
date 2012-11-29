@@ -30,7 +30,7 @@ guardian.facebook = {};
                 path;
             path = [
                 ["M", centerX, centerY],
-                ["l", -dx, -dy]
+                ["l", dx, -dy]
             ];
             return {path: path};
         };
@@ -61,40 +61,39 @@ guardian.facebook = {};
     };
 
     Donut.prototype.render = function () {
-        this.renderDonut(50, 50);
+        this.renderDonut(65);
     };
 
-    Donut.prototype.renderDonut = function (percent1, percent2) {
+    Donut.prototype.renderDonut = function (percent) {
 
         this.paper.clear();
 
         this.paper.path()
-            .attr(Donut.POSITIVE)
-            .attr({arc: [percent1]})
-            .attr({turn: [percent1, Donut.LEFT_ANGLE]});
+            .attr(Donut.NEGATIVE)
+            .attr({arc: [100]});
 
         var
             rightSegment = this.paper.path()
-                .attr(Donut.NEGATIVE)
-                .attr({arc: [percent2]}),
+                .attr(Donut.POSITIVE)
+                .attr({arc: [percent]}),
             notch1 = this.paper.path()
                 .attr(Donut.NOTCH)
                 .attr({notch: [0]}),
             notch2 = this.paper.path()
                 .attr(Donut.NOTCH)
-                .attr({notch: [percent2]});
+                .attr({notch: [percent]});
 
         this.paper.set()
             .push(rightSegment, notch1, notch2)
-            .attr({turn: [percent2, Donut.RIGHT_ANGLE]});
+            .attr({turn: [percent, Donut.RIGHT_ANGLE]});
 
     };
 
     Donut.LEFT_ANGLE = 270;
     Donut.RIGHT_ANGLE = 90;
-    Donut.NEGATIVE = {stroke: "#3A7D00", "stroke-width": 24};
-    Donut.POSITIVE = {stroke: "#0D3D00", "stroke-width": 24};
-    Donut.NOTCH = {stroke: "#fff", "stroke-width": 6};
+    Donut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 24};
+    Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 24};
+    Donut.NOTCH = {stroke: "#fff", "stroke-width": 5};
 
     guardian.facebook.Donut = Donut;
 

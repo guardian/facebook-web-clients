@@ -18,14 +18,13 @@
         this.paper = new window.Raphael(this.jContainer[0], width, height);
         this.paper.customAttributes.notch = function (percent) {
             var alpha = 360 / 100 * percent,
-                rads = alpha * Math.PI / 180,
+                rads = (90 - alpha) * Math.PI / 180,
                 dx = width * Math.cos(rads),
                 dy = width * Math.sin(rads),
                 path;
-            console.log("Notch alpha: " + alpha, dx, dy);
             path = [
                 ["M", centerX, centerY],
-                ["l", -dx, dy]
+                ["l", -dx, -dy]
             ];
             return {path: path};
         };
@@ -56,27 +55,32 @@
     };
 
     Donut.prototype.render = function () {
+        this.renderDonut(50, 50);
+    };
+
+    Donut.prototype.renderDonut = function (percent1, percent2) {
+
         this.paper.clear();
 
-       this.paper.path()
+        this.paper.path()
             .attr(Donut.POSITIVE)
-            .attr({arc: [25]})
-            .attr({turn: [25, Donut.LEFT_ANGLE]});
+            .attr({arc: [percent1]})
+            .attr({turn: [percent1, Donut.LEFT_ANGLE]});
 
-        this.paper.path()
-            .attr(Donut.NEGATIVE)
-            .attr({arc: [75]})
-            .attr({turn: [75, Donut.RIGHT_ANGLE]});
+        var
+            rightSegment = this.paper.path()
+                .attr(Donut.NEGATIVE)
+                .attr({arc: [percent2]}),
+            notch1 = this.paper.path()
+                .attr(Donut.NOTCH)
+                .attr({notch: [0]}),
+            notch2 = this.paper.path()
+                .attr(Donut.NOTCH)
+                .attr({notch: [percent2]});
 
-        this.paper.path()
-            .attr(Donut.NOTCH)
-            .attr({notch: [0]})
-            .attr({turn: [75, Donut.RIGHT_ANGLE]});
-
-        this.paper.path()
-            .attr(Donut.NOTCH)
-            .attr({notch: [75]})
-            .attr({turn: [75, Donut.RIGHT_ANGLE]});
+        this.paper.set()
+            .push(rightSegment, notch1, notch2)
+            .attr({turn: [percent2, Donut.RIGHT_ANGLE]});
 
     };
 

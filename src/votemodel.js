@@ -4,14 +4,14 @@
         this.options = {
             "agree": {
                 label: "Likely",
-                count: "1"
+                count: 1
             },
             "disagree": {
                 label: "Unlikely",
                 count: 3
             }
         };
-        this.vote = undefined;
+        this.choice = undefined;
     }
 
     VoteModel.prototype.options = null;
@@ -35,15 +35,15 @@
     };
 
     VoteModel.prototype.getSummaryText = function () {
-        if (this.vote) {
-            return "You think that this rumour is " + this.options[this.choice].label;
+        if (this.choice) {
+            return "You said that this rumour is " + this.options[this.choice].label;
         } else {
             return "Be the first of your friends to share your opinion";
         }
     };
 
     VoteModel.prototype.votedAlready = function () {
-        return false;//return !!this.choice;
+        return !!this.choice;
     };
 
     VoteModel.prototype.getAgreePercent = function () {

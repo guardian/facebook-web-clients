@@ -36,6 +36,11 @@
     cursor: pointer;
     border-color: #ccc;
 
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
 }
 
 .voteComponent .btn:hover {

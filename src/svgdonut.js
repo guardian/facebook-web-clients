@@ -1,14 +1,14 @@
 (function (jQuery) {
 
-    function Donut(container) {
+    function SVGDonut(container) {
         this.jContainer = jQuery(container);
         this.initialise();
     }
 
-    Donut.prototype.jContainer = null;
-    Donut.prototype.paper = null;
+    SVGDonut.prototype.jContainer = null;
+    SVGDonut.prototype.paper = null;
 
-    Donut.prototype.initialise = function () {
+    SVGDonut.prototype.initialise = function () {
         var width = this.jContainer.width(),
             height = this.jContainer.height(),
             centerX = width / 2,
@@ -54,27 +54,27 @@
         };
     };
 
-    Donut.prototype.render = function (percent) {
+    SVGDonut.prototype.render = function (percent) {
 
         if (!this.rightSegment) {
 
             this.paper.path()
-                .attr(Donut.NEGATIVE)
+                .attr(SVGDonut.NEGATIVE)
                 .attr({arc: [100]});
 
             var
                 rightSegment = this.paper.path()
-                    .attr(Donut.POSITIVE)
+                    .attr(SVGDonut.POSITIVE)
                     .attr({arc: [50]}),
                 notch1 = this.paper.path()
-                    .attr(Donut.NOTCH)
+                    .attr(SVGDonut.NOTCH)
                     .attr({notch: [0]}),
                 notch2 = this.paper.path()
-                    .attr(Donut.NOTCH)
+                    .attr(SVGDonut.NOTCH)
                     .attr({notch: [50]}),
                 group = this.paper.set()
                     .push(rightSegment, notch1, notch2)
-                    .attr({turn: [50, Donut.LEFT_ANGLE]});
+                    .attr({turn: [50, SVGDonut.LEFT_ANGLE]});
 
             this.rightSegment = rightSegment;
             this.notch2 = notch2;
@@ -84,16 +84,16 @@
 
         this.rightSegment.animate({arc: [percent]}, 500, "ease-in-out");
         this.notch2.animate({notch: [percent]}, 500, "ease-in-out");
-        this.group.animate({turn: [percent, Donut.LEFT_ANGLE]}, 500, "ease-in-out")
+        this.group.animate({turn: [percent, SVGDonut.LEFT_ANGLE]}, 500, "ease-in-out")
 
     };
 
-    Donut.LEFT_ANGLE = 270;
-    Donut.RIGHT_ANGLE = 90;
-    Donut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
-    Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    Donut.NOTCH = {stroke: "#fff", "stroke-width": 4};
+    SVGDonut.LEFT_ANGLE = 270;
+    SVGDonut.RIGHT_ANGLE = 90;
+    SVGDonut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
+    SVGDonut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
+    SVGDonut.NOTCH = {stroke: "#fff", "stroke-width": 4};
 
-    guardian.ui.Donut = Donut;
+    guardian.ui.SVGDonut = SVGDonut;
 
 })(window.jQuery);

@@ -1,5 +1,8 @@
 (function () {
 
+    function Donut() {}
+    Donut.prototype.render = function(){};
+
     module("Vote Component", {
         setup: function () {
             jQuery("body").append('' +
@@ -15,7 +18,7 @@
                 '</div>' +
                 '</div>');
             model = new guardian.facebook.VoteModel();
-            view = new guardian.facebook.VoteComponent(".voteComponent", model);
+            view = new guardian.facebook.VoteComponent(".voteComponent", model, Donut);
         },
         teardown: function () {
             jQuery(".voteComponent").remove();

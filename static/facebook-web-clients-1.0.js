@@ -253,18 +253,18 @@ ensurePackage("guardian.facebook");
 })();
 (function () {
 
-    function VoteComponent(selector, model) {
+    function VoteComponent(selector, model, donutClass) {
         this.jContainer = jQuery(selector);
         this.model = model;
-        this.initialise();
+        this.initialise(donutClass);
     }
 
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
     VoteComponent.prototype.model = null;
 
-    VoteComponent.prototype.initialise = function () {
-        this.donut = new guardian.ui.CanvasDonut(this.jContainer.find(".donutContainer"));
+    VoteComponent.prototype.initialise = function (donutClass) {
+        this.donut = new donutClass(this.jContainer.find(".donutContainer"));
         this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
     };
 

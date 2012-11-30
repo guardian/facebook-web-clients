@@ -1,4 +1,4 @@
-(function() {
+(function () {
 
     function VoteComponent(selector, model) {
         this.jContainer = jQuery(selector);
@@ -10,26 +10,29 @@
     VoteComponent.prototype.donut = null;
     VoteComponent.prototype.model = null;
 
-    VoteComponent.prototype.initialise = function() {
+    VoteComponent.prototype.initialise = function () {
         this.donut = new guardian.ui.Donut(this.jContainer.find(".donutContainer"));
         this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
-        this.jContainer.find("[data-action='agree'] .count").html(this.model.agree);
-        this.jContainer.find("[data-action='disagree'] .count").html(this.model.disagree);
     };
 
-    VoteComponent.prototype.render = function() {
+    VoteComponent.prototype.render = function () {
         this.donut.render(this.model.getAgreePercent());
+        this.jContainer.find("[data-action='agree'] .count").html(this.model.getAgree());
+        this.jContainer.find("[data-action='disagree'] .count").html(this.model.getDisagree());
+        if (this.model.votedAlready()) {
+            this.jContainer.find(".btn").removeClass("btn");
+        }
+        this.jContainer.find(".socialSummary .text").html(this.model.getSummaryText());
     };
 
-    VoteComponent.prototype.handleButtonClick = function(jEvent) {
+    VoteComponent.prototype.handleButtonClick = function (jEvent) {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
-
-        this.jContainer.find(".btn").removeClass("btn");
-
+        this.model.registerVote(action);
+        this.render();
     };
 
-    VoteComponent.prototype.destroy = function() {
+    VoteComponent.prototype.destroy = function () {
         this.jContainer.undelegate(".voteComponent");
     };
 

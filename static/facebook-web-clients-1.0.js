@@ -98,18 +98,55 @@ ensurePackage("guardian.facebook");
 (function () {
 
     function VoteModel() {
-        this.agree = 1;
-        this.disagree =3;
+        this.options = {
+            "agree": {
+                label: "Likely",
+                count: "1"
+            },
+            "disagree": {
+                label: "Unlikely",
+                count: 3
+            }
+        };
+        this.vote = undefined;
     }
 
+    VoteModel.prototype.options = null;
+    VoteModel.prototype.choice = null;
+
+    VoteModel.prototype.getAgree = function() {
+        return this.options.agree.count;
+    };
+
+    VoteModel.prototype.getDisagree = function() {
+        return this.options.disagree.count;
+    };
+
     VoteModel.prototype.getTotal = function () {
-        return this.agree + this.disagree;
+        return this.getAgree() + this.getDisagree();
+    };
+
+    VoteModel.prototype.registerVote = function (choice) {
+        this.options[choice].count++;
+        this.choice = choice;
+    };
+
+    VoteModel.prototype.getSummaryText = function () {
+        if (this.vote) {
+            return "You think that this rumour is " + this.options[this.choice].label;
+        } else {
+            return "Be the first of your friends to share your opinion";
+        }
+    };
+
+    VoteModel.prototype.votedAlready = function () {
+        return !!this.choice;
     };
 
     VoteModel.prototype.getAgreePercent = function () {
         var total = this.getTotal();
         if (total) {
-            return (this.agree / total) * 100;
+            return (this.options.agree.count / total) * 100;
         } else {
             return VoteModel.EVEN;
         }
@@ -120,7 +157,7 @@ ensurePackage("guardian.facebook");
     guardian.facebook.VoteModel = VoteModel;
 
 })();
-(function() {
+(function () {
 
     function VoteComponent(selector, model) {
         this.jContainer = jQuery(selector);
@@ -132,26 +169,29 @@ ensurePackage("guardian.facebook");
     VoteComponent.prototype.donut = null;
     VoteComponent.prototype.model = null;
 
-    VoteComponent.prototype.initialise = function() {
+    VoteComponent.prototype.initialise = function () {
         this.donut = new guardian.ui.Donut(this.jContainer.find(".donutContainer"));
         this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
-        this.jContainer.find("[data-action='agree'] .count").html(this.model.agree);
-        this.jContainer.find("[data-action='disagree'] .count").html(this.model.disagree);
     };
 
-    VoteComponent.prototype.render = function() {
+    VoteComponent.prototype.render = function () {
         this.donut.render(this.model.getAgreePercent());
+        this.jContainer.find("[data-action='agree'] .count").html(this.model.getAgree());
+        this.jContainer.find("[data-action='disagree'] .count").html(this.model.getDisagree());
+        if (this.model.votedAlready()) {
+            this.jContainer.find(".btn").removeClass("btn");
+        }
+        this.jContainer.find(".socialSummary .text").html(this.model.getSummaryText());
     };
 
-    VoteComponent.prototype.handleButtonClick = function(jEvent) {
+    VoteComponent.prototype.handleButtonClick = function (jEvent) {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
-
-        this.jContainer.find(".btn").removeClass("btn");
-
+        this.model.registerVote(action);
+        this.render();
     };
 
-    VoteComponent.prototype.destroy = function() {
+    VoteComponent.prototype.destroy = function () {
         this.jContainer.undelegate(".voteComponent");
     };
 

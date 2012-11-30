@@ -122,7 +122,7 @@ ensurePackage("guardian.facebook");
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
 
-        alert("Thank you for deciding to " + action);
+        jTarget.removeClass("btn");
 
     };
 

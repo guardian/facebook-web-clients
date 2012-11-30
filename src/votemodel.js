@@ -2,13 +2,14 @@
 
     function VoteModel() {
         this.options = {
+            "id": "rumour001",
             "agree": {
                 label: "Likely",
-                count: 1
+                count: 0
             },
             "disagree": {
                 label: "Unlikely",
-                count: 3
+                count: 0
             }
         };
         this.choice = undefined;
@@ -17,11 +18,15 @@
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
 
-    VoteModel.prototype.getAgree = function() {
+    VoteModel.prototype.setAllData = function (data) {
+        this.options = data;
+    };
+
+    VoteModel.prototype.getAgree = function () {
         return this.options.agree.count;
     };
 
-    VoteModel.prototype.getDisagree = function() {
+    VoteModel.prototype.getDisagree = function () {
         return this.options.disagree.count;
     };
 

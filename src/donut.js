@@ -56,10 +56,6 @@
 
     Donut.prototype.render = function (percent) {
 
-        if (percent === undefined) {
-            percent = 50;
-        }
-
         this.paper.clear();
 
         this.paper.path()
@@ -90,7 +86,7 @@
     Donut.RIGHT_ANGLE = 90;
     Donut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
     Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    Donut.NOTCH = {stroke: "#fff", "stroke-width": 5};
+    Donut.NOTCH = {stroke: "#fff", "stroke-width": 4};
 
     guardian.ui.Donut = Donut;
 

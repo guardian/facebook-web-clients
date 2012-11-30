@@ -18,7 +18,7 @@
     };
 
     VoteComponent.prototype.render = function() {
-        this.donut.render();
+        this.donut.render(this.model.getAgreePercent());
     };
 
     VoteComponent.prototype.handleButtonClick = function(jEvent) {

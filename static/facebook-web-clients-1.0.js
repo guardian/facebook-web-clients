@@ -60,10 +60,6 @@ ensurePackage("guardian.facebook");
 
     Donut.prototype.render = function (percent) {
 
-        if (percent === undefined) {
-            percent = 50;
-        }
-
         this.paper.clear();
 
         this.paper.path()
@@ -94,17 +90,32 @@ ensurePackage("guardian.facebook");
     Donut.RIGHT_ANGLE = 90;
     Donut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
     Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    Donut.NOTCH = {stroke: "#fff", "stroke-width": 5};
+    Donut.NOTCH = {stroke: "#fff", "stroke-width": 4};
 
     guardian.ui.Donut = Donut;
 
 })(window.jQuery);
-(function() {
+(function () {
 
     function VoteModel() {
-        this.agree = 0;
-        this.disagree = 0;
+        this.agree = 1;
+        this.disagree =3;
     }
+
+    VoteModel.prototype.getTotal = function () {
+        return this.agree + this.disagree;
+    };
+
+    VoteModel.prototype.getAgreePercent = function () {
+        var total = this.getTotal();
+        if (total) {
+            return (this.agree / total) * 100;
+        } else {
+            return VoteModel.EVEN;
+        }
+    };
+
+    VoteModel.EVEN = 50;
 
     guardian.facebook.VoteModel = VoteModel;
 
@@ -129,7 +140,7 @@ ensurePackage("guardian.facebook");
     };
 
     VoteComponent.prototype.render = function() {
-        this.donut.render();
+        this.donut.render(this.model.getAgreePercent());
     };
 
     VoteComponent.prototype.handleButtonClick = function(jEvent) {

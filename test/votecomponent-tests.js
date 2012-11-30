@@ -47,6 +47,34 @@
             .should(haveText("300"), inElement(".count"));
 
 
+    });
+
+    test("Hides buttons after vote", function () {
+
+        thenThe(jQuery(".btn")).should(haveSize(2));
+
+        when(theUserClicksOn("[data-action='agree']"));
+
+        thenThe(jQuery(".btn")).should(haveSize(0));
+
+    });
+
+    test("Updates count", function () {
+
+        when(theUserClicksOn("[data-action='agree']"));
+
+        thenThe(jQuery("[data-action='agree']"))
+            .should(haveText("1"), inElement(".count"));
+
+    });
+
+    test("Updates summary", function () {
+
+        when(theUserClicksOn("[data-action='disagree']"));
+
+        thenThe(jQuery(".socialSummary .text"))
+            .should(haveText("You said that this rumour is Unlikely"));
+
     })
 
 })();

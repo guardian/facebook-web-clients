@@ -191,11 +191,11 @@ ensurePackage("guardian.facebook");
             "id": "rumour001",
             "agree": {
                 label: "Likely",
-                count: 3
+                count: 0
             },
             "disagree": {
                 label: "Unlikely",
-                count: 1
+                count: 0
             }
         };
         this.choice = undefined;
@@ -234,7 +234,7 @@ ensurePackage("guardian.facebook");
     };
 
     VoteModel.prototype.votedAlready = function () {
-        return false;//return !!this.choice;
+        return !!this.choice;
     };
 
     VoteModel.prototype.getAgreePercent = function () {

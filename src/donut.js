@@ -56,29 +56,35 @@
 
     Donut.prototype.render = function (percent) {
 
-        this.paper.clear();
+        if (!this.rightSegment) {
 
-        this.paper.path()
-            .attr(Donut.NEGATIVE)
-            .attr({arc: [100]});
+            this.paper.path()
+                .attr(Donut.NEGATIVE)
+                .attr({arc: [100]});
 
-        var
-            rightSegment = this.paper.path()
-                .attr(Donut.POSITIVE)
-                .attr({arc: [50]})
-                .animate({arc: [percent]}, 500, "ease-in-out"),
-            notch1 = this.paper.path()
-                .attr(Donut.NOTCH)
-                .attr({notch: [0]}),
-            notch2 = this.paper.path()
-                .attr(Donut.NOTCH)
-                .attr({notch: [50]})
-                .animate({notch: [percent]}, 500, "ease-in-out");
+            var
+                rightSegment = this.paper.path()
+                    .attr(Donut.POSITIVE)
+                    .attr({arc: [50]}),
+                notch1 = this.paper.path()
+                    .attr(Donut.NOTCH)
+                    .attr({notch: [0]}),
+                notch2 = this.paper.path()
+                    .attr(Donut.NOTCH)
+                    .attr({notch: [50]}),
+                group = this.paper.set()
+                    .push(rightSegment, notch1, notch2)
+                    .attr({turn: [50, Donut.LEFT_ANGLE]});
 
-        this.paper.set()
-            .push(rightSegment, notch1, notch2)
-            .attr({turn: [50, Donut.LEFT_ANGLE]})
-            .animate({turn: [percent, Donut.LEFT_ANGLE]}, 500, "ease-in-out");
+            this.rightSegment = rightSegment;
+            this.notch2 = notch2;
+            this.group = group;
+
+        }
+
+        this.rightSegment.animate({arc: [percent]}, 500, "ease-in-out");
+        this.notch2.animate({notch: [percent]}, 500, "ease-in-out");
+        this.group.animate({turn: [percent, Donut.LEFT_ANGLE]}, 500, "ease-in-out")
 
     };
 

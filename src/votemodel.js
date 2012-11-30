@@ -43,7 +43,7 @@
     };
 
     VoteModel.prototype.votedAlready = function () {
-        return !!this.choice;
+        return false;//return !!this.choice;
     };
 
     VoteModel.prototype.getAgreePercent = function () {

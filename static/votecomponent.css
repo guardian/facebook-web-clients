@@ -1,5 +1,7 @@
-.voteComponent {
+.voteComponent .voteArea {
     position: relative;
+    height: 120px;
+    margin-bottom: 20px;
 }
 
 .voteComponent .donutContainer {
@@ -17,13 +19,13 @@
     width: 90px;
 
     background: #fcfcfc; /* Old browsers */
-    background: -moz-linear-gradient(top,  #fcfcfc 0%, #e4e4e4 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcfcfc), color-stop(100%,#e4e4e4)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #fcfcfc 0%,#e4e4e4 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #fcfcfc 0%,#e4e4e4 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #fcfcfc 0%,#e4e4e4 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #fcfcfc 0%,#e4e4e4 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#e4e4e4',GradientType=0 ); /* IE6-9 */
+    background: -moz-linear-gradient(top, #fcfcfc 0%, #e4e4e4 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fcfcfc), color-stop(100%, #e4e4e4)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #fcfcfc 0%, #e4e4e4 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #fcfcfc 0%, #e4e4e4 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #fcfcfc 0%, #e4e4e4 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #fcfcfc 0%, #e4e4e4 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#fcfcfc', endColorstr = '#e4e4e4', GradientType = 0); /* IE6-9 */
 
     border-radius: 3px;
     padding: 3px 10px;
@@ -60,4 +62,17 @@
 .voteComponent .btn.disagree .count {
     left: 5px;
     background: #0D3D00;
+}
+
+.voteComponent .socialSummary {
+    font-size: 11px;
+    font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+    color: #333;
+    line-height: 1.28;
+    text-align: left;
+    direction: ltr;
+}
+
+.voteComponent .socialSummary img {
+    float: right;
 }

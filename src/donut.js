@@ -92,6 +92,6 @@
     Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
     Donut.NOTCH = {stroke: "#fff", "stroke-width": 5};
 
-    guardian.facebook.Donut = Donut;
+    guardian.ui.Donut = Donut;
 
 })(window.jQuery);

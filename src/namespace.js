@@ -1,4 +1,2 @@
-/** @namespace */
-guardian = guardian || {};
-/** @namespace */
-guardian.facebook = {};
+ensurePackage("guardian.ui");
+ensurePackage("guardian.facebook");

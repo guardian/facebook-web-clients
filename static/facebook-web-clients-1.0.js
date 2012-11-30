@@ -1,9 +1,7 @@
 /* Facebook Web Clients 1.0 */
 
-/** @namespace */
-guardian = guardian || {};
-/** @namespace */
-guardian.facebook = {};
+ensurePackage("guardian.ui");
+ensurePackage("guardian.facebook");
 (function (jQuery) {
 
     function Donut(container) {
@@ -98,14 +96,39 @@ guardian.facebook = {};
     Donut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
     Donut.NOTCH = {stroke: "#fff", "stroke-width": 5};
 
-    guardian.facebook.Donut = Donut;
+    guardian.ui.Donut = Donut;
 
 })(window.jQuery);
 (function() {
 
-    function VoteComponent() {
-
+    function VoteComponent(selector) {
+        this.jContainer = jQuery(selector);
+        this.initialise();
     }
+
+    VoteComponent.prototype.jContainer = null;
+    VoteComponent.prototype.donut = null;
+
+    VoteComponent.prototype.initialise = function() {
+        this.donut = new guardian.ui.Donut(this.jContainer.find(".donutContainer"));
+        this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
+    };
+
+    VoteComponent.prototype.render = function() {
+        this.donut.render();
+    };
+
+    VoteComponent.prototype.handleButtonClick = function(jEvent) {
+        var jTarget = jQuery(jEvent.currentTarget),
+            action = jTarget.data("action");
+
+        alert("Thank you for deciding to " + action);
+
+    };
+
+    VoteComponent.prototype.destroy = function() {
+        this.jContainer.undelegate(".voteComponent");
+    };
 
     guardian.facebook.VoteComponent = VoteComponent;
 

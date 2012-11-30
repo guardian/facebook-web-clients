@@ -54,11 +54,11 @@
         };
     };
 
-    Donut.prototype.render = function () {
-        this.renderDonut(90);
-    };
+    Donut.prototype.render = function (percent) {
 
-    Donut.prototype.renderDonut = function (percent) {
+        if (percent === undefined) {
+            percent = 50;
+        }
 
         this.paper.clear();
 

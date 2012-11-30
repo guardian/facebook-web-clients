@@ -58,11 +58,11 @@ ensurePackage("guardian.facebook");
         };
     };
 
-    Donut.prototype.render = function () {
-        this.renderDonut(90);
-    };
+    Donut.prototype.render = function (percent) {
 
-    Donut.prototype.renderDonut = function (percent) {
+        if (percent === undefined) {
+            percent = 50;
+        }
 
         this.paper.clear();
 
@@ -101,17 +101,31 @@ ensurePackage("guardian.facebook");
 })(window.jQuery);
 (function() {
 
-    function VoteComponent(selector) {
+    function VoteModel() {
+        this.agree = 0;
+        this.disagree = 0;
+    }
+
+    guardian.facebook.VoteModel = VoteModel;
+
+})();
+(function() {
+
+    function VoteComponent(selector, model) {
         this.jContainer = jQuery(selector);
+        this.model = model;
         this.initialise();
     }
 
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
+    VoteComponent.prototype.model = null;
 
     VoteComponent.prototype.initialise = function() {
         this.donut = new guardian.ui.Donut(this.jContainer.find(".donutContainer"));
         this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
+        this.jContainer.find("[data-action='agree'] .count").html(this.model.agree);
+        this.jContainer.find("[data-action='disagree'] .count").html(this.model.disagree);
     };
 
     VoteComponent.prototype.render = function() {
@@ -122,7 +136,7 @@ ensurePackage("guardian.facebook");
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
 
-        jTarget.removeClass("btn");
+        this.jContainer.find(".btn").removeClass("btn");
 
     };
 

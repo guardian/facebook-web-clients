@@ -17,8 +17,13 @@
 
     VoteComponent.prototype.render = function () {
         this.donut.render(this.model.getAgreePercent());
+
         this.jContainer.find("[data-action='agree'] .count").html(this.model.getAgree());
+        this.jContainer.find("[data-action='agree'] .label").html(this.model.options.agree.label);
+
         this.jContainer.find("[data-action='disagree'] .count").html(this.model.getDisagree());
+        this.jContainer.find("[data-action='disagree'] .label").html(this.model.options.disagree.label);
+
         if (this.model.votedAlready()) {
             this.jContainer.find(".btn").removeClass("btn");
         }

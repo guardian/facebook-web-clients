@@ -58,6 +58,25 @@
         equal(model.getTotal(), 400);
         equal(model.getAgreePercent(), 25);
 
+    });
+
+    test("FiftyFifty", function () {
+
+        given(model.setAllData({
+            "id": "rumour001",
+            "agree": {
+                label: "Likely",
+                count: 0
+            },
+            "disagree": {
+                label: "Unlikely",
+                count: 0
+            }
+        }));
+
+        equal(model.getTotal(), 0);
+        equal(model.getAgreePercent(), 50);
+
     })
 
 })();

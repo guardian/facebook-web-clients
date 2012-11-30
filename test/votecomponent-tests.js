@@ -5,9 +5,9 @@
             jQuery("body").append('' +
                 '<div class="voteComponent">' +
                 '<div class="voteArea">' +
-                '<span class="choice btn agree" data-action="agree">Likely<span class="count"></span></span>' +
+                '<span class="choice btn agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +
                 '<div class="donutContainer"></div>' +
-                '<span class="choice btn disagree" data-action="disagree"><span class="count"></span>Unlikely</span>' +
+                '<span class="choice btn disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>' +
                 '</div>' +
                 '<div class="socialSummary">' +
                 '<span class="text">Be the first of your friends to share your opinion.</span>' +
@@ -41,11 +41,12 @@
         when(view.render());
 
         thenThe(jQuery("[data-action='agree']"))
-            .should(haveText("100"), inElement(".count"));
+            .should(haveText("100"), inElement(".count"))
+            .should(haveText("Likely"), inElement(".label"));
 
         thenThe(jQuery("[data-action='disagree']"))
-            .should(haveText("300"), inElement(".count"));
-
+            .should(haveText("300"), inElement(".count"))
+            .should(haveText("Unlikely"), inElement(".label"));
 
     });
 

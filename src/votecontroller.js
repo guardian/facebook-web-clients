@@ -22,7 +22,9 @@
     };
 
     VoteController.prototype.submitVote = function (choice) {
-        this.model.registerVote(choice);
+        this.authorizer.authorize().then(function() {
+            this.model.registerVote(choice);
+        }.bind(this));
     };
 
     VoteController.prototype.destroy = function () {

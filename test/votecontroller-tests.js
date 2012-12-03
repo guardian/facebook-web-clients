@@ -9,14 +9,14 @@
                 }
             });
             model = sinon.stub(new guardian.facebook.VoteModel());
-            authorizer = sinon.stub(new guardian.facebook.Authorizer());
+            authorizer = sinon.stub(Object.create(guardian.facebook.Authorizer.prototype));
             authorizer.authorize.returns({
                 then: function (fn) {
-                    fn(json);
+                    fn();
                 }
             });
-            view = Object.create(Subscribable.prototype);
-            controller = new guardian.facebook.VoteController(model, view)
+            view = new Subscribable();
+            controller = new guardian.facebook.VoteController(model, view, authorizer)
         },
         teardown: function() {
             jQuery.ajax.restore()
@@ -50,8 +50,9 @@
         thenThe(model.setAllData).shouldHaveBeen(calledOnce);
     });
 
-    test("Auths the app", function () {
-        when(view.fire("voted"));
+    test("Auths the user", function () {
+        when(controller.initialise("/some_url"));
+        when(view.fire("voted", 123));
         thenThe(authorizer.authorize).shouldHaveBeen(calledOnce);
     })
 

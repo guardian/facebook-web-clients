@@ -10,8 +10,6 @@
 
     Authorizer.prototype.scriptLoaded = function () {
 
-        document.getElementById("loginButton").onclick = this.authUser.bind(this);
-
         FB.init({
             appId: '289251094430759',
             channelUrl: '//olly.guardian.co.uk:8080/channel.html', // TODO: Change this
@@ -35,19 +33,19 @@
 
         if (response && response.status == 'connected') {
 
-            deferred.resolve();
+            this.authDeferred.resolve();
 
         } else {
 
-            // Display the login button
-            document.getElementById('loginButton').style.display = 'block';
+            this.authUser();
+
         }
     };
 
-    Authorizer.prototype.authorize = function (d) {
-        var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-        if (!d.getElementById(id)) {
-            js = d.createElement('script');
+    Authorizer.prototype.authorize = function () {
+        var js, id = 'facebook-jssdk', ref = document.getElementsByTagName('script')[0];
+        if (!document.getElementById(id)) {
+            js = document.createElement('script');
             js.id = id;
             js.async = true;
             js.src = "//connect.facebook.net/en_US/all.js";

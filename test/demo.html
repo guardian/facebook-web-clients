@@ -13,6 +13,7 @@
     <script src="http://pasteup.guim.co.uk/js/lib/jquery.cookie/1.2/jquery.cookie.min.js"></script>
     <script src="http://pasteup.guim.co.uk/js/lib/mustache/0.7.0/mustache.js"></script>
     <script src="http:////cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="sinon.js"></script>
     <script>
         var jQ = jQuery.noConflict();
         var commonStaticRoot = "";
@@ -89,8 +90,6 @@
     var
             model = new guardian.facebook.VoteModel(),
             view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut);
-
-    view.render();
 
 </script>
 

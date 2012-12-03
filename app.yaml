@@ -9,5 +9,8 @@ handlers:
   static_dir: static
 - url: /test
   static_dir: test
+- url: /channel.html
+  static_files: test/channel.html
+  upload: test/channel.html
 - url: /.*
   script: main.app

@@ -12,7 +12,6 @@
     <script src="http://pasteup.guim.co.uk/js/lib/underscore/1.3.3/underscore.js"></script>
     <script src="http://pasteup.guim.co.uk/js/lib/jquery.cookie/1.2/jquery.cookie.min.js"></script>
     <script src="http://pasteup.guim.co.uk/js/lib/mustache/0.7.0/mustache.js"></script>
-    <script src="http:////cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <script src="sinon.js"></script>
     <script>
         var jQ = jQuery.noConflict();
@@ -32,6 +31,11 @@
     </style>
 </head>
 <body>
+<div id="fb-root"></div>
+<div id="loginButton">LOGIN</div>
+<script>
+    guardian.facebook.loader(document);
+</script>
 
 <div class="fluid-wrap">
 
@@ -68,9 +72,12 @@
             <div id="article-body-blocks">
                 <div class="voteComponent">
                     <div class="voteArea">
-                        <span class="choice btn agree" data-action="agree"><span class="label"></span><span class="count"></span></span>
+                        <span class="choice btn agree" data-action="agree"><span class="label"></span><span
+                                class="count"></span></span>
+
                         <div class="donutContainer"></div>
-                        <span class="choice btn disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>
+                        <span class="choice btn disagree" data-action="disagree"><span class="count"></span><span
+                                class="label"></span></span>
                     </div>
                     <div class="socialSummary">
                         <span class="text">Be the first of your friends to share your opinion.</span>
@@ -84,17 +91,6 @@
     </div>
 
 </div>
-
-<script>
-
-    var
-            model = new guardian.facebook.VoteModel(),
-            view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut),
-            controller = new guardian.facebook.VoteController(model);
-
-    controller.initialise("test.json");
-
-</script>
 
 </body>
 </html>

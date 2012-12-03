@@ -8,12 +8,14 @@
                 {
                     "question": 7694,
                     "id": 14281,
-                    "count": 1421
+                    "count": 1421,
+                    "label": "Likely"
                 },
                 {
                     "question": 7694,
                     "id": 14282,
-                    "count": 206
+                    "count": 206,
+                    "label": "Unlikely"
                 }
             ]
         }

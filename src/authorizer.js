@@ -11,7 +11,7 @@
 
     Authorizer.prototype.scriptLoaded = function () {
 
-        document.getElementById("loginButton").onclick = authUser;
+        document.getElementById("loginButton").onclick = this.authUser.bind(this);
 
         FB.init({
             appId: '289251094430759',
@@ -22,34 +22,35 @@
         });
 
         // Check if the current user is logged in and has authorized the app
-        FB.getLoginStatus(checkLoginStatus);
+        FB.getLoginStatus(this.checkLoginStatus.bind(this));
 
-        // Login in the current user via Facebook and ask for email permission
-        function authUser() {
-            FB.login(checkLoginStatus, {scope: 'email'});
+    };
+
+    Authorizer.prototype.authUser = function () {
+        FB.login(this.checkLoginStatus.bind(this), {scope: 'email'});
+    };
+
+    Authorizer.prototype.checkLoginStatus = function (response) {
+
+        console.log(response.status);
+
+        if (response && response.status == 'connected') {
+
+            // Hide the login button
+            document.getElementById('loginButton').style.display = 'none';
+
+            var
+                model = new guardian.facebook.VoteModel(),
+                view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut),
+                controller = new guardian.facebook.VoteController(model);
+
+            controller.initialise("test.json");
+
+        } else {
+
+            // Display the login button
+            document.getElementById('loginButton').style.display = 'block';
         }
-
-        // Check the result of the user status and display login button if necessary
-        function checkLoginStatus(response) {
-            if (response && response.status == 'connected') {
-
-                // Hide the login button
-                document.getElementById('loginButton').style.display = 'none';
-
-                var
-                    model = new guardian.facebook.VoteModel(),
-                    view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut),
-                    controller = new guardian.facebook.VoteController(model);
-
-                controller.initialise("test.json");
-
-            } else {
-
-                // Display the login button
-                document.getElementById('loginButton').style.display = 'block';
-            }
-        }
-
     };
 
     Authorizer.prototype.initialise = function (d) {

@@ -20,21 +20,25 @@
             xfbml: true  // parse XFBML
         });
 
-        // Check if the current user is logged in and has authorized the app
-        FB.getLoginStatus(this.checkLoginStatus.bind(this));
+        this.getLoginStatus();
 
     };
 
     Authorizer.prototype.authUser = function () {
-        FB.login(this.checkLoginStatus.bind(this), {scope: 'email'});
+        FB.login(this.handleGotLoginStatus.bind(this), {scope: 'email'});
     };
 
-    Authorizer.prototype.checkLoginStatus = function (response) {
+    Authorizer.prototype.getLoginStatus = function () {
+        // Check if the current user is logged in and has authorized the app
+        FB.getLoginStatus(this.handleGotLoginStatus.bind(this));
+        return this.getPromise();
+    };
 
-        console.log(response.status);
+    Authorizer.prototype.handleGotLoginStatus = function (response) {
 
         if (response && response.status == 'connected') {
 
+            this.fire("authOK");
             this.authDeferred.resolve();
 
         } else {
@@ -42,6 +46,7 @@
             this.fire("authRequired");
 
         }
+
     };
 
     Authorizer.prototype.authorize = function () {

@@ -22,7 +22,7 @@
     };
 
     VoteController.prototype.submitVote = function (choice) {
-        this.authorizer.authorize().then(function() {
+        this.authorizer.getLoginStatus().then(function() {
             this.model.registerVote(choice);
         }.bind(this));
     };

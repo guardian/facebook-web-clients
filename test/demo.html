@@ -78,7 +78,10 @@
                     </div>
                     <div class="socialSummary">
                         <span class="text">Be the first of your friends to share your opinion.</span>
-                        <img src="../static/facebookIcon_16x16.gif"/>
+
+                        <div class="facebookAuthStatus">
+                            <div class="userDetails"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -93,7 +96,7 @@
     var
             authorizer = new guardian.facebook.Authorizer(document),
             model = new guardian.facebook.VoteModel(),
-            loginButtonView = new guardian.facebook.LoginButtonView(".voteComponent", authorizer),
+            loginButtonView = new guardian.facebook.LoginButtonView(".facebookAuthStatus", authorizer),
             view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut, authorizer),
             controller = new guardian.facebook.VoteController(model, view, authorizer);
 

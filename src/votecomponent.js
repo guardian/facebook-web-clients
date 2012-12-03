@@ -11,6 +11,7 @@
     VoteComponent.prototype.model = null;
 
     VoteComponent.prototype.initialise = function (donutClass) {
+        this.model.on("dataChanged", this.render, this);
         this.donut = new donutClass(this.jContainer.find(".donutContainer"));
         this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
     };
@@ -18,11 +19,15 @@
     VoteComponent.prototype.render = function () {
         this.donut.render(this.model.getAgreePercent());
 
-        this.jContainer.find("[data-action='agree'] .count").html(this.model.getAgree());
-        this.jContainer.find("[data-action='agree'] .label").html(this.model.options.agree.label);
+        var answers = this.model.answers;
+        this.jContainer.find(".btn").each(function(index, element) {
 
-        this.jContainer.find("[data-action='disagree'] .count").html(this.model.getDisagree());
-        this.jContainer.find("[data-action='disagree'] .label").html(this.model.options.disagree.label);
+            var answer = answers[index];
+            jQuery(element).attr("data-action", answer.id);
+            jQuery(element).find(".count").html(answer.count);
+            jQuery(element).find(".label").html(answer.label);
+
+        });
 
         if (this.model.votedAlready()) {
             this.jContainer.find(".btn").removeClass("btn");
@@ -38,6 +43,7 @@
     };
 
     VoteComponent.prototype.destroy = function () {
+        this.model.un(null, this);
         this.jContainer.undelegate(".voteComponent");
     };
 

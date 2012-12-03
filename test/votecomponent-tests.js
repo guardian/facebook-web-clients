@@ -1,7 +1,10 @@
 (function () {
 
-    function Donut() {}
-    Donut.prototype.render = function(){};
+    function Donut() {
+    }
+
+    Donut.prototype.render = function () {
+    };
 
     module("Vote Component", {
         setup: function () {
@@ -29,35 +32,27 @@
 
     test("Render", function () {
 
-        given(model.setAllData({
-            "id": "rumour001",
-            "agree": {
-                label: "Likely",
-                count: 100
-            },
-            "disagree": {
-                label: "Unlikely",
-                count: 300
-            }
-        }));
+        givenSomeData();
 
         when(view.render());
 
-        thenThe(jQuery("[data-action='agree']"))
-            .should(haveText("100"), inElement(".count"))
+        thenThe(jQuery("[data-action='answer1']"))
+            .should(haveText("0"), inElement(".count"))
             .should(haveText("Likely"), inElement(".label"));
 
-        thenThe(jQuery("[data-action='disagree']"))
-            .should(haveText("300"), inElement(".count"))
+        thenThe(jQuery("[data-action='answer2']"))
+            .should(haveText("0"), inElement(".count"))
             .should(haveText("Unlikely"), inElement(".label"));
 
     });
 
     test("Hides buttons after vote", function () {
 
+        givenSomeData();
+
         thenThe(jQuery(".btn")).should(haveSize(2));
 
-        when(theUserClicksOn("[data-action='agree']"));
+        when(theUserClicksOn("[data-action='answer1']"));
 
         thenThe(jQuery(".btn")).should(haveSize(0));
 
@@ -65,20 +60,44 @@
 
     test("Updates count", function () {
 
-        when(theUserClicksOn("[data-action='agree']"));
+        givenSomeData();
 
-        thenThe(jQuery("[data-action='agree']"))
+        when(theUserClicksOn("[data-action='answer1']"));
+
+        thenThe(jQuery("[data-action='answer1']"))
             .should(haveText("1"), inElement(".count"));
 
     });
 
     test("Updates summary", function () {
 
-        when(theUserClicksOn("[data-action='disagree']"));
+        givenSomeData();
+
+        when(theUserClicksOn("[data-action='answer2']"));
 
         thenThe(jQuery(".socialSummary .text"))
             .should(haveText("You said that this rumour is Unlikely"));
 
-    })
+    });
+
+    function givenSomeData() {
+        given(model.setAllData({
+            "id": "question1",
+            "answers": [
+                {
+                    "question": 7694,
+                    "label": "Likely",
+                    "id": "answer1",
+                    "count": 0
+                },
+                {
+                    "question": 7694,
+                    "label": "Unlikely",
+                    "id": "answer2",
+                    "count": 0
+                }
+            ]
+        }));
+    }
 
 })();

@@ -1,47 +1,50 @@
 (function () {
 
     function VoteModel() {
-        this.options = {
-            "id": "rumour001",
-            "agree": {
-                label: "Likely",
-                count: 0
-            },
-            "disagree": {
-                label: "Unlikely",
-                count: 0
-            }
-        };
         this.choice = undefined;
     }
 
+    VoteModel.prototype = Object.create(Subscribable.prototype);
+
+    VoteModel.prototype.questionId = null;
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
 
     VoteModel.prototype.setAllData = function (data) {
-        this.options = data;
+        this.questionId = data.id;
+        this.answers = data.answers;
+        this.fire("dataChanged");
     };
 
     VoteModel.prototype.getAgree = function () {
-        return this.options.agree.count;
+        return this.answers[0].count;
     };
 
     VoteModel.prototype.getDisagree = function () {
-        return this.options.disagree.count;
+        return this.answers[1].count;
     };
 
     VoteModel.prototype.getTotal = function () {
         return this.getAgree() + this.getDisagree();
     };
 
-    VoteModel.prototype.registerVote = function (choice) {
-        this.options[choice].count++;
-        this.choice = choice;
+    VoteModel.prototype.getAnswerById = function (answerId) {
+        return this.answers.filter(function (answer) {
+            return answer.id == answerId;
+        })[0];
+    };
+
+    VoteModel.prototype.registerVote = function (answerId) {
+        var answer = this.getAnswerById(answerId);
+        if (answer) {
+            answer.count++;
+            this.choice = answerId;
+        }
     };
 
     VoteModel.prototype.getSummaryText = function () {
         if (this.choice) {
-            return "You said that this rumour is " + this.options[this.choice].label;
+            return "You said that this rumour is " + this.getAnswerById(this.choice).label;
         } else {
             return "Be the first of your friends to share your opinion";
         }
@@ -54,10 +57,14 @@
     VoteModel.prototype.getAgreePercent = function () {
         var total = this.getTotal();
         if (total) {
-            return (this.options.agree.count / total) * 100;
+            return (this.getAgree() / total) * 100;
         } else {
             return VoteModel.EVEN;
         }
+    };
+
+    VoteModel.prototype.destroy = function() {
+        this.un();
     };
 
     VoteModel.EVEN = 50;

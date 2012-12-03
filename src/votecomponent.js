@@ -23,7 +23,7 @@
         this.donut.render(this.model.getAgreePercent());
 
         var answers = this.model.answers;
-        this.jContainer.find(".choice").each(function(index, element) {
+        this.jContainer.find(".choice").each(function (index, element) {
 
             var answer = answers[index];
             jQuery(element).attr("data-action", answer.id);

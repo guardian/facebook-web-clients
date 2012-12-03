@@ -4,6 +4,8 @@
         this.authDeferred = jQuery.Deferred();
     }
 
+    Authorizer.prototype = Object.create(Subscribable.prototype);
+
     Authorizer.prototype.getPromise = function () {
         return this.authDeferred.promise();
     };
@@ -37,7 +39,7 @@
 
         } else {
 
-            this.authUser();
+            this.fire("authRequired");
 
         }
     };

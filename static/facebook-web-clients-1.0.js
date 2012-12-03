@@ -220,6 +220,27 @@ ensurePackage("guardian.facebook");
     guardian.facebook.VoteController = VoteController;
 
 })();
+(function() {
+
+    function LoginButtonView(selector, authorizer) {
+        this.jContainer = jQuery(selector);
+        this.authorizer = authorizer;
+        this.authorizer.on("authRequired", this.showLoginButton, this);
+        this.jContainer.delegate("button", "click.voteComponent", this.handleLoginClick.bind(this));
+    }
+
+    LoginButtonView.prototype.showLoginButton = function () {
+        this.jContainer.append("<button>Log in to Facebook</button>")
+    };
+
+    LoginButtonView.prototype.handleLoginClick = function () {
+        this.jContainer.find("button").remove();
+        this.authorizer.authUser();
+    };
+
+    guardian.facebook.LoginButtonView = LoginButtonView;
+
+})();
 /**
  * @class
  */
@@ -632,7 +653,7 @@ if(typeof module !== 'undefined') {
         this.donut.render(this.model.getAgreePercent());
 
         var answers = this.model.answers;
-        this.jContainer.find(".choice").each(function(index, element) {
+        this.jContainer.find(".choice").each(function (index, element) {
 
             var answer = answers[index];
             jQuery(element).attr("data-action", answer.id);
@@ -668,6 +689,8 @@ if(typeof module !== 'undefined') {
         this.authDeferred = jQuery.Deferred();
     }
 
+    Authorizer.prototype = Object.create(Subscribable.prototype);
+
     Authorizer.prototype.getPromise = function () {
         return this.authDeferred.promise();
     };
@@ -701,9 +724,10 @@ if(typeof module !== 'undefined') {
 
         } else {
 
-            this.authUser();
+            this.fire("authRequired");
 
         }
+
     };
 
     Authorizer.prototype.authorize = function () {

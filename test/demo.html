@@ -93,7 +93,8 @@
     var
             authorizer = new guardian.facebook.Authorizer(document),
             model = new guardian.facebook.VoteModel(),
-            view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut),
+            loginButtonView = new guardian.facebook.LoginButtonView(".voteComponent", authorizer),
+            view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut, authorizer),
             controller = new guardian.facebook.VoteController(model, view, authorizer);
 
     controller.initialise("test.json");

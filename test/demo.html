@@ -32,10 +32,6 @@
 </head>
 <body>
 <div id="fb-root"></div>
-<div id="loginButton">LOGIN</div>
-<script>
-    new guardian.facebook.Authorizer(document);
-</script>
 
 <div class="fluid-wrap">
 
@@ -91,6 +87,16 @@
     </div>
 
 </div>
+
+<script>
+    var
+            authorizer = new guardian.facebook.Authorizer(document),
+            model = new guardian.facebook.VoteModel(),
+            view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut),
+            controller = new guardian.facebook.VoteController(model, view, authorizer);
+
+    controller.initialise("test.json");
+</script>
 
 </body>
 </html>

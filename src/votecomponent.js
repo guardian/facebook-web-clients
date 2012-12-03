@@ -6,6 +6,8 @@
         this.initialise(donutClass);
     }
 
+    VoteComponent.prototype = Object.create(Subscribable.prototype);
+
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
     VoteComponent.prototype.model = null;
@@ -17,10 +19,11 @@
     };
 
     VoteComponent.prototype.render = function () {
+
         this.donut.render(this.model.getAgreePercent());
 
         var answers = this.model.answers;
-        this.jContainer.find(".btn").each(function(index, element) {
+        this.jContainer.find(".choice").each(function(index, element) {
 
             var answer = answers[index];
             jQuery(element).attr("data-action", answer.id);
@@ -38,8 +41,8 @@
     VoteComponent.prototype.handleButtonClick = function (jEvent) {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
-        this.model.registerVote(action);
-        this.render();
+        this.jContainer.find(".btn").removeClass("btn");
+        this.fire("voted", action);
     };
 
     VoteComponent.prototype.destroy = function () {

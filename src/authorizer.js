@@ -1,8 +1,7 @@
 (function () {
 
-    function Authorizer(document) {
+    function Authorizer() {
         this.authDeferred = jQuery.Deferred();
-        this.initialise(document);
     }
 
     Authorizer.prototype.getPromise = function () {
@@ -36,15 +35,7 @@
 
         if (response && response.status == 'connected') {
 
-            // Hide the login button
-            document.getElementById('loginButton').style.display = 'none';
-
-            var
-                model = new guardian.facebook.VoteModel(),
-                view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut),
-                controller = new guardian.facebook.VoteController(model);
-
-            controller.initialise("test.json");
+            deferred.resolve();
 
         } else {
 
@@ -53,17 +44,17 @@
         }
     };
 
-    Authorizer.prototype.initialise = function (d) {
+    Authorizer.prototype.authorize = function (d) {
         var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-        if (d.getElementById(id)) {
-            return;
+        if (!d.getElementById(id)) {
+            js = d.createElement('script');
+            js.id = id;
+            js.async = true;
+            js.src = "//connect.facebook.net/en_US/all.js";
+            js.onload = this.scriptLoaded.bind(this);
+            ref.parentNode.insertBefore(js, ref);
         }
-        js = d.createElement('script');
-        js.id = id;
-        js.async = true;
-        js.src = "//connect.facebook.net/en_US/all.js";
-        js.onload = this.scriptLoaded.bind(this);
-        ref.parentNode.insertBefore(js, ref);
+        return this.getPromise();
     };
 
     guardian.facebook.Authorizer = Authorizer;

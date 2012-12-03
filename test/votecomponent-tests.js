@@ -22,8 +22,13 @@
                 '</div>');
             model = new guardian.facebook.VoteModel();
             view = new guardian.facebook.VoteComponent(".voteComponent", model, Donut);
+            view.on("voted", function (vote) {
+                model.registerVote(vote);
+            });
         },
         teardown: function () {
+            model.destroy();
+            view.destroy();
             jQuery(".voteComponent").remove();
         }
     });
@@ -69,7 +74,7 @@
 
     });
 
-    test("Updates summary", function () {
+    test("Updates social summary", function () {
 
         givenSomeData();
 

@@ -186,99 +186,38 @@ ensurePackage("guardian.facebook");
 })(window.jQuery);
 (function () {
 
-    function VoteController(model) {
+    function VoteController(model, view, authorizer) {
         this.model = model;
+        this.view = view;
+        this.authorizer = authorizer;
     }
 
     VoteController.prototype.model = null;
+    VoteController.prototype.view = null;
+    VoteController.prototype.authorizer = null;
 
-    VoteController.prototype.initialise = function(url) {
+    VoteController.prototype.initialise = function (url) {
+        this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
             url: url
         }).then(this.handleLoadedData.bind(this));
     };
 
-    VoteController.prototype.handleLoadedData = function(json) {
-        console.log("Got data: " + json);
+    VoteController.prototype.handleLoadedData = function (json) {
         this.model.setAllData(json.questions[0]);
+    };
+
+    VoteController.prototype.submitVote = function (choice) {
+        this.model.registerVote(choice);
+    };
+
+    VoteController.prototype.destroy = function () {
+        this.model.un(null, this);
     };
 
     guardian.facebook.VoteController = VoteController;
 
 })();
-(function () {
-
-    function Authorizer(document) {
-        this.authDeferred = jQuery.Deferred();
-        this.initialise(document);
-    }
-
-    Authorizer.prototype.getPromise = function () {
-        return this.authDeferred.promise();
-    };
-
-    Authorizer.prototype.scriptLoaded = function () {
-
-        document.getElementById("loginButton").onclick = this.authUser.bind(this);
-
-        FB.init({
-            appId: '289251094430759',
-            channelUrl: '//olly.guardian.co.uk:8080/channel.html', // TODO: Change this
-            status: true, // check login status
-            cookie: true, // enable cookies to allow the server to access the session
-            xfbml: true  // parse XFBML
-        });
-
-        // Check if the current user is logged in and has authorized the app
-        FB.getLoginStatus(this.checkLoginStatus.bind(this));
-
-    };
-
-    Authorizer.prototype.authUser = function () {
-        FB.login(this.checkLoginStatus.bind(this), {scope: 'email'});
-    };
-
-    Authorizer.prototype.checkLoginStatus = function (response) {
-
-        console.log(response.status);
-
-        if (response && response.status == 'connected') {
-
-            // Hide the login button
-            document.getElementById('loginButton').style.display = 'none';
-
-            var
-                model = new guardian.facebook.VoteModel(),
-                view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut),
-                controller = new guardian.facebook.VoteController(model);
-
-            controller.initialise("test.json");
-
-        } else {
-
-            // Display the login button
-            document.getElementById('loginButton').style.display = 'block';
-        }
-    };
-
-    Authorizer.prototype.initialise = function (d) {
-        var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-        if (d.getElementById(id)) {
-            return;
-        }
-        js = d.createElement('script');
-        js.id = id;
-        js.async = true;
-        js.src = "//connect.facebook.net/en_US/all.js";
-        js.onload = this.scriptLoaded.bind(this);
-        ref.parentNode.insertBefore(js, ref);
-    };
-
-    guardian.facebook.Authorizer = Authorizer;
-
-})();
-
-
 /**
  * @class
  */
@@ -632,6 +571,7 @@ if(typeof module !== 'undefined') {
         if (answer) {
             answer.count++;
             this.choice = answerId;
+            this.fire("dataChanged");
         }
     };
 
@@ -673,6 +613,8 @@ if(typeof module !== 'undefined') {
         this.initialise(donutClass);
     }
 
+    VoteComponent.prototype = Object.create(Subscribable.prototype);
+
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
     VoteComponent.prototype.model = null;
@@ -684,10 +626,11 @@ if(typeof module !== 'undefined') {
     };
 
     VoteComponent.prototype.render = function () {
+
         this.donut.render(this.model.getAgreePercent());
 
         var answers = this.model.answers;
-        this.jContainer.find(".btn").each(function(index, element) {
+        this.jContainer.find(".choice").each(function(index, element) {
 
             var answer = answers[index];
             jQuery(element).attr("data-action", answer.id);
@@ -705,8 +648,8 @@ if(typeof module !== 'undefined') {
     VoteComponent.prototype.handleButtonClick = function (jEvent) {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
-        this.model.registerVote(action);
-        this.render();
+        this.jContainer.find(".btn").removeClass("btn");
+        this.fire("voted", action);
     };
 
     VoteComponent.prototype.destroy = function () {
@@ -717,3 +660,66 @@ if(typeof module !== 'undefined') {
     guardian.facebook.VoteComponent = VoteComponent;
 
 })();
+(function () {
+
+    function Authorizer() {
+        this.authDeferred = jQuery.Deferred();
+    }
+
+    Authorizer.prototype.getPromise = function () {
+        return this.authDeferred.promise();
+    };
+
+    Authorizer.prototype.scriptLoaded = function () {
+
+        document.getElementById("loginButton").onclick = this.authUser.bind(this);
+
+        FB.init({
+            appId: '289251094430759',
+            channelUrl: '//olly.guardian.co.uk:8080/channel.html', // TODO: Change this
+            status: true, // check login status
+            cookie: true, // enable cookies to allow the server to access the session
+            xfbml: true  // parse XFBML
+        });
+
+        // Check if the current user is logged in and has authorized the app
+        FB.getLoginStatus(this.checkLoginStatus.bind(this));
+
+    };
+
+    Authorizer.prototype.authUser = function () {
+        FB.login(this.checkLoginStatus.bind(this), {scope: 'email'});
+    };
+
+    Authorizer.prototype.checkLoginStatus = function (response) {
+
+        console.log(response.status);
+
+        if (response && response.status == 'connected') {
+
+            deferred.resolve();
+
+        } else {
+
+            // Display the login button
+            document.getElementById('loginButton').style.display = 'block';
+        }
+    };
+
+    Authorizer.prototype.authorize = function (d) {
+        var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+        if (!d.getElementById(id)) {
+            js = d.createElement('script');
+            js.id = id;
+            js.async = true;
+            js.src = "//connect.facebook.net/en_US/all.js";
+            js.onload = this.scriptLoaded.bind(this);
+            ref.parentNode.insertBefore(js, ref);
+        }
+        return this.getPromise();
+    };
+
+    guardian.facebook.Authorizer = Authorizer;
+
+})();
+

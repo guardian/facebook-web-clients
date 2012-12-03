@@ -39,6 +39,7 @@
         if (answer) {
             answer.count++;
             this.choice = answerId;
+            this.fire("dataChanged");
         }
     };
 

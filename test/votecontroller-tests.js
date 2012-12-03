@@ -9,14 +9,21 @@
                 }
             });
             model = sinon.stub(new guardian.facebook.VoteModel());
-            controller = new guardian.facebook.VoteController(model)
+            authorizer = sinon.stub(new guardian.facebook.Authorizer());
+            authorizer.authorize.returns({
+                then: function (fn) {
+                    fn(json);
+                }
+            });
+            view = Object.create(Subscribable.prototype);
+            controller = new guardian.facebook.VoteController(model, view)
         },
         teardown: function() {
             jQuery.ajax.restore()
         }
     });
 
-    var model, controller, json = {
+    var model, controller, authorizer, json = {
         "pollId": "400303938",
         "questions": [
             {
@@ -38,9 +45,14 @@
         ]
     };
 
-    test("Present", function () {
+    test("Updates the model with JSON", function () {
         when(controller.initialise("/some_url"));
         thenThe(model.setAllData).shouldHaveBeen(calledOnce);
+    });
+
+    test("Auths the app", function () {
+        when(view.fire("voted"));
+        thenThe(authorizer.authorize).shouldHaveBeen(calledOnce);
     })
 
 })();

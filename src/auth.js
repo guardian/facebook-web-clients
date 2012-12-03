@@ -1,7 +1,15 @@
 (function () {
 
-    // Additional JS functions here
-    window.fbAsyncInit = function () {
+    function Authorizer(document) {
+        this.authDeferred = jQuery.Deferred();
+        this.initialise(document);
+    }
+
+    Authorizer.prototype.getPromise = function () {
+        return this.authDeferred.promise();
+    };
+
+    Authorizer.prototype.scriptLoaded = function () {
 
         document.getElementById("loginButton").onclick = authUser;
 
@@ -44,7 +52,7 @@
 
     };
 
-    guardian.facebook.loader = function (d) {
+    Authorizer.prototype.initialise = function (d) {
         var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
         if (d.getElementById(id)) {
             return;
@@ -53,8 +61,11 @@
         js.id = id;
         js.async = true;
         js.src = "//connect.facebook.net/en_US/all.js";
+        js.onload = this.scriptLoaded.bind(this);
         ref.parentNode.insertBefore(js, ref);
     };
+
+    guardian.facebook.Authorizer = Authorizer;
 
 })();
 

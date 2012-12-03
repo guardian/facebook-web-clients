@@ -36,15 +36,15 @@
 
     Authorizer.prototype.handleGotLoginStatus = function (response) {
 
-        if (response && response.status == 'connected') {
-
-            this.fire("authOK");
-            this.authDeferred.resolve();
-
-        } else {
-
-            this.fire("authRequired");
-
+        switch (response.status) {
+            case 'connected':
+                this.authDeferred.resolve();
+                break;
+            case 'not_authorized':
+                this.fire("notAuthorized");
+                break;
+            default:
+                this.fire("notLoggedIn");
         }
 
     };

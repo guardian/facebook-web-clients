@@ -34,10 +34,12 @@
         })[0];
     };
 
-    VoteModel.prototype.registerVote = function (answerId) {
+    VoteModel.prototype.registerVote = function (answerId, changeCounts) {
         var answer = this.getAnswerById(answerId);
         if (answer) {
-            answer.count++;
+            if (changeCounts === undefined || changeCounts === true) {
+                answer.count++;
+            }
             this.choice = answerId;
             this.fire("dataChanged");
         }

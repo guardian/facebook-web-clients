@@ -18,6 +18,10 @@
         this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
     };
 
+    VoteComponent.prototype.setVotingInProgress = function() {
+        this.jContainer.find(".socialSummary .text").html("Sending your vote to Facebook...");
+    };
+
     VoteComponent.prototype.render = function () {
 
         this.donut.render(this.model.getAgreePercent());

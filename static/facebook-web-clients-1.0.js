@@ -214,30 +214,38 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
 
+            //this.view.setVotingInProgress();
+
             FB.api(
                 '/me/' + VoteController.APP_NAMESPACE + ':' + choice,
                 'post', {
                     article: this.getArticleId()
                 },
-                this.handlePostResponse.bind(this)
+                this.handlePostResponse.bind(this, choice)
             );
-
-            this.model.registerVote(choice);
 
         }.bind(this));
     };
 
-    VoteController.prototype.handlePostResponse = function(response) {
+    VoteController.prototype.handlePostResponse = function(choice, response) {
         if (response.error) {
-            console.error(response.error.message);
+            if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED)) {
+                this.model.registerVote(choice, false);
+            } else {
+                console.error("Sorry - could not register your vote: " + response.error);
+            }
         } else {
             console.log("Posted response to Facebook OK");
+            this.model.registerVote(choice, true);
         }
-        console.log(arguments);
     };
 
     VoteController.prototype.destroy = function () {
         this.model.un(null, this);
+    };
+
+    VoteController.ERROR_CODES = {
+        "ALREADY_VOTED": "#3501"
     };
 
     VoteController.APP_NAMESPACE = "theguardian-spike";
@@ -639,10 +647,12 @@ if(typeof module !== 'undefined') {
         })[0];
     };
 
-    VoteModel.prototype.registerVote = function (answerId) {
+    VoteModel.prototype.registerVote = function (answerId, changeCounts) {
         var answer = this.getAnswerById(answerId);
         if (answer) {
-            answer.count++;
+            if (changeCounts === undefined || changeCounts === true) {
+                answer.count++;
+            }
             this.choice = answerId;
             this.fire("dataChanged");
         }
@@ -696,6 +706,10 @@ if(typeof module !== 'undefined') {
         this.model.on("dataChanged", this.render, this);
         this.donut = new donutClass(this.jContainer.find(".donutContainer"));
         this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
+    };
+
+    VoteComponent.prototype.setVotingInProgress = function() {
+        this.jContainer.find(".socialSummary .text").html("Sending your vote to Facebook...");
     };
 
     VoteComponent.prototype.render = function () {

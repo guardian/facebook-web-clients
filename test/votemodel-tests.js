@@ -26,6 +26,22 @@
 
     });
 
+    test("Register Vote but dont count it", function () {
+
+        givenSomeData();
+
+        equal(model.getTotal(), 0);
+
+        when(model.registerVote("answer1", false));
+
+        equal(model.getAgree(), 0);
+        equal(model.getDisagree(), 0);
+        equal(model.getTotal(), 0);
+        equal(model.getAgreePercent(), 50);
+        equal(model.choice, "answer1");
+
+    });
+
     test("Voted Already", function () {
 
         givenSomeData();

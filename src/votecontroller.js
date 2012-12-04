@@ -33,25 +33,31 @@
                 'post', {
                     article: this.getArticleId()
                 },
-                this.handlePostResponse.bind(this)
+                this.handlePostResponse.bind(this, choice)
             );
-
-            this.model.registerVote(choice);
 
         }.bind(this));
     };
 
-    VoteController.prototype.handlePostResponse = function(response) {
+    VoteController.prototype.handlePostResponse = function(choice, response) {
         if (response.error) {
-            console.error(response.error.message);
+            if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED)) {
+                this.model.registerVote(choice, false);
+            } else {
+                console.error("Sorry - could not register your vote: " + response.error);
+            }
         } else {
             console.log("Posted response to Facebook OK");
+            this.model.registerVote(choice, true);
         }
-        console.log(arguments);
     };
 
     VoteController.prototype.destroy = function () {
         this.model.un(null, this);
+    };
+
+    VoteController.ERROR_CODES = {
+        "ALREADY_VOTED": "#3501"
     };
 
     VoteController.APP_NAMESPACE = "theguardian-spike";

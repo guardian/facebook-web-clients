@@ -227,7 +227,7 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.handlePostResponse = function(choice, response) {
         if (response.error) {
-            if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED)) {
+            if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED) > -1) {
                 console.log("Already voted for " + choice);
                 this.model.registerVote(choice, false);
             } else {

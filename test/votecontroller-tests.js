@@ -79,6 +79,13 @@
         thenThe(model.registerVote).shouldHaveBeen(calledOnce).and(calledWith("Disagree", false))
     });
 
+    test("Handles error", function () {
+        given(serverHasError());
+        when(controller.initialise("/some_url"));
+        when(view.fire("voted", "Disagree"));
+        thenThe(model.registerVote).shouldNotHaveBeen(calledOnce);
+    });
+
     /* end of tests */
 
     function userAlreadyVoted() {
@@ -86,6 +93,15 @@
             callback({
                 error: {
                     message: "Error1: (#3501) User is already associated ... "
+                }
+            })
+        }
+    }
+    function serverHasError() {
+        FB.api = function(path, type, data, callback) {
+            callback({
+                error: {
+                    message: "An unexpected error has occurred. Please retry your request later."
                 }
             })
         }

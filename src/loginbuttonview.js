@@ -1,4 +1,4 @@
-(function() {
+(function () {
 
     function LoginButtonView(selector, authorizer) {
         this.jContainer = jQuery(selector);
@@ -6,11 +6,16 @@
         this.authorizer.authorize().then(this.showLoggedIn.bind(this));
         this.authorizer.on("notLoggedIn", this.showLoginButton, this);
         this.authorizer.on("notAuthorized", this.showAuthorizeButton, this);
+        this.authorizer.on("gotUserDetails", this.showLoggedIn, this);
         this.jContainer.delegate(".login", "click.voteComponent", this.handleLoginClick.bind(this));
     }
 
-    LoginButtonView.prototype.showLoggedIn = function () {
-        this.jContainer.find(".userDetails").html("<span class='login'>Logged in OK</span>");
+    LoginButtonView.prototype.showLoggedIn = function (userDetails) {
+        if (!userDetails) {
+            this.jContainer.find(".userDetails").html("<span class='login'>Logged in</span>");
+        } else {
+            this.jContainer.find(".userDetails").html("<span class='login'>Logged in as " + userDetails.name + "</span>");
+        }
     };
 
     LoginButtonView.prototype.showLoginButton = function () {

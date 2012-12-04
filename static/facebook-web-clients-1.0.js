@@ -245,7 +245,7 @@ ensurePackage("guardian.facebook");
     guardian.facebook.VoteController = VoteController;
 
 })();
-(function() {
+(function () {
 
     function LoginButtonView(selector, authorizer) {
         this.jContainer = jQuery(selector);
@@ -253,11 +253,16 @@ ensurePackage("guardian.facebook");
         this.authorizer.authorize().then(this.showLoggedIn.bind(this));
         this.authorizer.on("notLoggedIn", this.showLoginButton, this);
         this.authorizer.on("notAuthorized", this.showAuthorizeButton, this);
+        this.authorizer.on("gotUserDetails", this.showLoggedIn, this);
         this.jContainer.delegate(".login", "click.voteComponent", this.handleLoginClick.bind(this));
     }
 
-    LoginButtonView.prototype.showLoggedIn = function () {
-        this.jContainer.find(".userDetails").html("<span class='login'>Logged in OK</span>");
+    LoginButtonView.prototype.showLoggedIn = function (userDetails) {
+        if (!userDetails) {
+            this.jContainer.find(".userDetails").html("<span class='login'>Logged in</span>");
+        } else {
+            this.jContainer.find(".userDetails").html("<span class='login'>Logged in as " + userDetails.name + "</span>");
+        }
     };
 
     LoginButtonView.prototype.showLoginButton = function () {
@@ -778,15 +783,23 @@ if(typeof module !== 'undefined') {
 
         switch (response.status) {
             case 'connected':
+                this.getUserData();
                 this.authDeferred.resolve();
                 break;
             case 'not_authorized':
+                this.getUserData();
                 this.fire("notAuthorized");
                 break;
             default:
                 this.fire("notLoggedIn");
         }
 
+    };
+
+    Authorizer.prototype.getUserData = function () {
+        FB.api("/me", function (data) {
+            this.fire("gotUserDetails", data);
+        }.bind(this));
     };
 
     Authorizer.prototype.authorize = function () {

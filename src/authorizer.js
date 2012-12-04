@@ -49,15 +49,23 @@
 
         switch (response.status) {
             case 'connected':
+                this.getUserData();
                 this.authDeferred.resolve();
                 break;
             case 'not_authorized':
+                this.getUserData();
                 this.fire("notAuthorized");
                 break;
             default:
                 this.fire("notLoggedIn");
         }
 
+    };
+
+    Authorizer.prototype.getUserData = function () {
+        FB.api("/me", function (data) {
+            this.fire("gotUserDetails", data);
+        }.bind(this));
     };
 
     Authorizer.prototype.authorize = function () {

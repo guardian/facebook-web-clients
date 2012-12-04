@@ -8,13 +8,13 @@
                 {
                     "question": 7694,
                     "id": "Agree",
-                    "count": 1421,
+                    "count": 100,
                     "label": "Likely"
                 },
                 {
                     "question": 7694,
                     "id": "Disagree",
-                    "count": 206,
+                    "count": 100,
                     "label": "Unlikely"
                 }
             ]

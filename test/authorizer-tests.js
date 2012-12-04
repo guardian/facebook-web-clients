@@ -6,7 +6,7 @@
     Donut.prototype.render = function () {
     };
 
-    module("Vote Component", {
+    module("Authorizer", {
         setup: function () {
             authorizer = new guardian.facebook.Authorizer();
         },
@@ -17,7 +17,7 @@
 
     var authorizer;
 
-    test("App ID", function () {
+    test("Gets Facebook App Id from the page", function () {
 
         given(jQuery("head").append('<meta property="fb:app_id" content="289251094430759">'));
 

@@ -29,12 +29,12 @@
     };
 
     Authorizer.prototype.authUser = function () {
-        FB.login(this.handleGotLoginStatus.bind(this), {scope: 'email'});
+        FB.login(this.handleGotLoginStatus.bind(this), {scope: 'email,publish_actions'});
     };
 
     Authorizer.prototype.getLoginStatus = function () {
         // Check if the current user is logged in and has authorized the app
-        FB.getLoginStatus(this.handleGotLoginStatus.bind(this));
+        FB.getLoginStatus(this.handleGotLoginStatus.bind(this),{scope: 'email,publish_actions'});
         return this.getPromise();
     };
 

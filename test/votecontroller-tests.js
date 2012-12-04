@@ -8,6 +8,9 @@
                     fn(json);
                 }
             });
+            window.FB = {
+                api: sinon.stub()
+            };
             model = sinon.stub(new guardian.facebook.VoteModel());
             authorizer = sinon.stub(Object.create(guardian.facebook.Authorizer.prototype));
             authorizer.authorize.returns({
@@ -37,12 +40,12 @@
                 "answers": [
                     {
                         "question": 7694,
-                        "id": 14281,
+                        "id": "Agree",
                         "count": 1421
                     },
                     {
                         "question": 7694,
-                        "id": 14282,
+                        "id": "Disagree",
                         "count": 206
                     }
                 ]
@@ -55,10 +58,13 @@
         thenThe(model.setAllData).shouldHaveBeen(calledOnce);
     });
 
-    test("Auths the user", function () {
+    test("Posts the custom action to facebook", function () {
         when(controller.initialise("/some_url"));
-        when(view.fire("voted", 123));
+        when(view.fire("voted", "Disagree"));
         thenThe(authorizer.getLoginStatus).shouldHaveBeen(calledOnce);
+        thenThe(FB.api)
+            .shouldHaveBeen(calledOnce)
+            .and(calledWith("/me/theguardian-spike:Disagree", "post"))
     })
 
 })();

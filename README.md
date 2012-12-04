@@ -13,3 +13,7 @@ Add the following to your /etc/hosts:
 ```
 
 Then visit http://fwc.guardian.co.uk:8080/test/demo.html
+
+Here's a test user account:
+vkokdic_wongson_1354618831@tfbnw.net
+PW: 123456

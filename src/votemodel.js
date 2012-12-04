@@ -47,7 +47,7 @@
         if (this.choice) {
             return "You said that this rumour is " + this.getAnswerById(this.choice).label;
         } else {
-            return "Be the first of your friends to share your opinion";
+            return "Your vote will be counted and shared on Facebook";
         }
     };
 

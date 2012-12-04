@@ -15,6 +15,11 @@
                     fn();
                 }
             });
+            authorizer.getLoginStatus.returns({
+                then: function (fn) {
+                    fn();
+                }
+            });
             view = new Subscribable();
             controller = new guardian.facebook.VoteController(model, view, authorizer)
         },
@@ -53,7 +58,7 @@
     test("Auths the user", function () {
         when(controller.initialise("/some_url"));
         when(view.fire("voted", 123));
-        thenThe(authorizer.authorize).shouldHaveBeen(calledOnce);
+        thenThe(authorizer.getLoginStatus).shouldHaveBeen(calledOnce);
     })
 
 })();

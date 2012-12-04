@@ -10,7 +10,7 @@
     }
 
     LoginButtonView.prototype.showLoggedIn = function () {
-        this.jContainer.find(".userDetails").html("Logged in OK");
+        this.jContainer.find(".userDetails").html("<span class='login'>Logged in OK</span>");
     };
 
     LoginButtonView.prototype.showLoginButton = function () {
@@ -30,7 +30,7 @@
     };
 
     LoginButtonView.prototype.handleLoginClick = function () {
-        this.jContainer.find("userDetails").empty();
+        this.jContainer.find(".userDetails").empty();
         this.authorizer.authUser();
         return false;
     };

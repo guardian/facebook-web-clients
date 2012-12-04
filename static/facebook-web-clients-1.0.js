@@ -800,7 +800,7 @@ if(typeof module !== 'undefined') {
     Authorizer.prototype.getUserData = function () {
         FB.api("/me", function (data) {
             if (!data.error) {
-                this.fire("gotUseretails", data);
+                this.fire("gotUserDetails", data);
             }
         }.bind(this));
     };

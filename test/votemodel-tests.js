@@ -54,8 +54,6 @@
 
         givenSomeData();
 
-        equal(model.getSummaryText(), "Be the first of your friends to share your opinion");
-
         when(model.registerVote("answer2"));
 
         equal(model.getSummaryText(), "You said that this rumour is Unlikely");

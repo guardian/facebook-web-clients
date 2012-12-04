@@ -10,11 +10,15 @@
         return this.authDeferred.promise();
     };
 
+    Authorizer.prototype.getAppId = function() {
+        return jQuery("meta[property='fb:app_id']").attr("content");
+    };
+
     Authorizer.prototype.scriptLoaded = function () {
 
         FB.init({
-            appId: '289251094430759',
-            channelUrl: '//olly.guardian.co.uk:8080/channel.html', // TODO: Change this
+            appId: this.getAppId(),
+            channelUrl: '//' + document.location.host + ':' + document.location.port + '/channel.html',
             status: true, // check login status
             cookie: true, // enable cookies to allow the server to access the session
             xfbml: true  // parse XFBML

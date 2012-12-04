@@ -1,11 +1,5 @@
 (function () {
 
-    function Donut() {
-    }
-
-    Donut.prototype.render = function () {
-    };
-
     module("Authorizer", {
         setup: function () {
             authorizer = new guardian.facebook.Authorizer();

@@ -19,7 +19,7 @@
     };
 
     LoginButtonView.prototype.showLoginButton = function () {
-        if (this.jContainer.find(".login").length) {
+        if (this.jContainer.find("a.login").length) {
             this.handleLoginClick();
             return;
         }

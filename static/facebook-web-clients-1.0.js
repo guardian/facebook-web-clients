@@ -214,8 +214,6 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
 
-            //this.view.setVotingInProgress();
-
             FB.api(
                 '/me/' + VoteController.APP_NAMESPACE + ':' + choice,
                 'post', {
@@ -230,6 +228,7 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.handlePostResponse = function(choice, response) {
         if (response.error) {
             if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED)) {
+                console.log("Already voted for " + choice);
                 this.model.registerVote(choice, false);
             } else {
                 console.error("Sorry - could not register your vote: " + response.error);

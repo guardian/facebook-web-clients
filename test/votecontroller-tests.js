@@ -69,7 +69,26 @@
         thenThe(authorizer.authUser).shouldHaveBeen(calledOnce);
         thenThe(FB.api)
             .shouldHaveBeen(calledOnce)
-            .and(calledWith("/me/theguardian-spike:Disagree", "post"))
-    })
+            .and(calledWith("/me/theguardian-spike:Disagree", "post"));
+    });
+
+    test("Handles already voted", function () {
+        given(userAlreadyVoted());
+        when(controller.initialise("/some_url"));
+        when(view.fire("voted", "Disagree"));
+        thenThe(model.registerVote).shouldHaveBeen(calledOnce).and(calledWith("Disagree", false))
+    });
+
+    /* end of tests */
+
+    function userAlreadyVoted() {
+        FB.api = function(path, type, data, callback) {
+            callback({
+                error: {
+                    message: "Error1: (#3501) User is already associated ... "
+                }
+            })
+        }
+    }
 
 })();

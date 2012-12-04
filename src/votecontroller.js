@@ -42,6 +42,7 @@
     VoteController.prototype.handlePostResponse = function(choice, response) {
         if (response.error) {
             if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED)) {
+                console.log("Already voted for " + choice);
                 this.model.registerVote(choice, false);
             } else {
                 console.error("Sorry - could not register your vote: " + response.error);

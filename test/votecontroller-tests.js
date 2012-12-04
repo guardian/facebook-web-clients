@@ -23,6 +23,11 @@
                     fn();
                 }
             });
+            authorizer.authUser.returns({
+                then: function (fn) {
+                    fn();
+                }
+            });
             view = new Subscribable();
             controller = new guardian.facebook.VoteController(model, view, authorizer)
         },
@@ -61,7 +66,7 @@
     test("Posts the custom action to facebook", function () {
         when(controller.initialise("/some_url"));
         when(view.fire("voted", "Disagree"));
-        thenThe(authorizer.getLoginStatus).shouldHaveBeen(calledOnce);
+        thenThe(authorizer.authUser).shouldHaveBeen(calledOnce);
         thenThe(FB.api)
             .shouldHaveBeen(calledOnce)
             .and(calledWith("/me/theguardian-spike:Disagree", "post"))

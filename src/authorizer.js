@@ -1,5 +1,7 @@
 (function () {
 
+    var permissions = {scope: 'email,publish_actions,publish_stream'};
+
     function Authorizer() {
         this.authDeferred = jQuery.Deferred();
     }
@@ -10,7 +12,7 @@
         return this.authDeferred.promise();
     };
 
-    Authorizer.prototype.getAppId = function() {
+    Authorizer.prototype.getAppId = function () {
         return jQuery("meta[property='fb:app_id']").attr("content");
     };
 
@@ -29,16 +31,21 @@
     };
 
     Authorizer.prototype.authUser = function () {
-        FB.login(this.handleGotLoginStatus.bind(this), {scope: 'email,publish_actions'});
+        FB.login(this.handleGotLoginStatus.bind(this), permissions);
+        return this.getPromise();
     };
 
     Authorizer.prototype.getLoginStatus = function () {
         // Check if the current user is logged in and has authorized the app
-        FB.getLoginStatus(this.handleGotLoginStatus.bind(this),{scope: 'email,publish_actions'});
+        FB.getLoginStatus(this.handleGotLoginStatus.bind(this), permissions);
         return this.getPromise();
     };
 
     Authorizer.prototype.handleGotLoginStatus = function (response) {
+
+        console.log(response.status);
+
+        console.log(response);
 
         switch (response.status) {
             case 'connected':

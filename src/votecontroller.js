@@ -26,7 +26,7 @@
     };
 
     VoteController.prototype.submitVote = function (choice) {
-        this.authorizer.getLoginStatus().then(function () {
+        this.authorizer.authUser().then(function () {
 
             FB.api(
                 '/me/' + VoteController.APP_NAMESPACE + ':' + choice,

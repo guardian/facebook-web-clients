@@ -64,7 +64,9 @@
 
     Authorizer.prototype.getUserData = function () {
         FB.api("/me", function (data) {
-            this.fire("gotUserDetails", data);
+            if (!data.error) {
+                this.fire("gotUseretails", data);
+            }
         }.bind(this));
     };
 

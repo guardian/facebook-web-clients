@@ -41,6 +41,13 @@
         thenThe(jQuery(".userDetails .login")).should(haveText("Logged in as Olly"));
     });
 
+    test("Show User Details only if defined", function () {
+        given(loggedIn());
+        given(newView());
+        when(authorizer.fire("gotUserDetails", {}));
+        thenThe(jQuery(".userDetails .login")).should(haveText("Logged in"));
+    });
+
     /* End of tests */
 
     function loggedIn() {

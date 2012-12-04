@@ -11,10 +11,10 @@
     }
 
     LoginButtonView.prototype.showLoggedIn = function (userDetails) {
-        if (!userDetails) {
-            this.jContainer.find(".userDetails").html("<span class='login'>Logged in</span>");
-        } else {
+        if (userDetails && userDetails.name) {
             this.jContainer.find(".userDetails").html("<span class='login'>Logged in as " + userDetails.name + "</span>");
+        } else {
+            this.jContainer.find(".userDetails").html("<span class='login'>Logged in</span>");
         }
     };
 
@@ -27,6 +27,7 @@
     };
 
     LoginButtonView.prototype.showAuthorizeButton = function () {
+        console.log("Showing authorize button");
         if (this.jContainer.find(".login").length) {
             this.handleLoginClick();
             return;

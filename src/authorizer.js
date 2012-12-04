@@ -49,6 +49,7 @@
 
         switch (response.status) {
             case 'connected':
+                this.fire("connected");
                 this.getUserData();
                 this.authDeferred.resolve();
                 break;

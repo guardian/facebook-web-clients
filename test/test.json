@@ -7,13 +7,13 @@
             "answers": [
                 {
                     "question": 7694,
-                    "id": "Agree",
+                    "id": "agree",
                     "count": 100,
                     "label": "Likely"
                 },
                 {
                     "question": 7694,
-                    "id": "Disagree",
+                    "id": "disagree",
                     "count": 100,
                     "label": "Unlikely"
                 }

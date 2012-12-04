@@ -197,6 +197,8 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.authorizer = null;
 
     VoteController.prototype.initialise = function (url) {
+        console.log("Initialising controller");
+        this.authorizer.on("connected", this.checkExistingVote, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
             url: url
@@ -209,6 +211,19 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.getArticleId = function () {
         return jQuery("meta[property='og:url']").attr("content");
+    };
+
+    VoteController.prototype.checkExistingVote = function () {
+        FB.api(
+            '/me/' + VoteController.APP_NAMESPACE + ':' + 'Agree',
+            function (response) {
+                var data = response.data;
+                if (data && data.length) {
+                    var existingResponse = data[0].type.substring(VoteController.APP_NAMESPACE.length+1);
+                    this.model.registerVote(existingResponse, false);
+                }
+            }.bind(this)
+        );
     };
 
     VoteController.prototype.submitVote = function (choice) {
@@ -225,7 +240,7 @@ ensurePackage("guardian.facebook");
         }.bind(this));
     };
 
-    VoteController.prototype.handlePostResponse = function(choice, response) {
+    VoteController.prototype.handlePostResponse = function (choice, response) {
         if (response.error) {
             if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED) > -1) {
                 console.log("Already voted for " + choice);
@@ -797,6 +812,7 @@ if(typeof module !== 'undefined') {
 
         switch (response.status) {
             case 'connected':
+                this.fire("connected");
                 this.getUserData();
                 this.authDeferred.resolve();
                 break;

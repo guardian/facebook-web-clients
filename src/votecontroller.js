@@ -12,6 +12,7 @@
 
     VoteController.prototype.initialise = function () {
         this.authorizer.on("connected", this.checkExistingVote, this);
+        this.authorizer.on("notAuthorized", this.handleNotAuthorized, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
             url: "/vote",
@@ -31,7 +32,7 @@
 
     VoteController.prototype.checkExistingVote = function () {
 
-        console.log("Checking for existing votes  on user " + this.authorizer.userId);
+        console.log("Controller: Checking for existing votes  on user " + this.authorizer.userId);
 
         jQuery.ajax({
             url: "/user",
@@ -44,13 +45,18 @@
 
     };
 
-    VoteController.prototype.handleUserExistingVote = function(user) {
+    VoteController.prototype.handleNotAuthorized = function () {
+        console.log("Controller: User is not authorized to use app, but showing buttons");
+        this.model.setAllowedToVote(true);
+    };
+
+    VoteController.prototype.handleUserExistingVote = function (user) {
 
         if (user.choice) {
-            console.log("User has already voted for " + user.choice);
+            console.log("Controller: User has already voted for " + user.choice);
             this.model.registerVote(user.choice, false);
         } else {
-            console.log("User has not voted yet");
+            console.log("Controller: User has not voted yet");
             this.model.setAllowedToVote(true);
         }
     };
@@ -75,13 +81,13 @@
     VoteController.prototype.handlePostResponse = function (choice, response) {
         if (response.error) {
             if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED) > -1) {
-                console.log("Already voted for " + choice);
+                console.log("Controller: User has already voted for " + choice);
                 this.model.registerVote(choice, false);
             } else {
-                console.error("Sorry - could not register your vote: " + response.error);
+                console.error("Controller: Sorry - could not register your vote: " + response.error);
             }
         } else {
-            console.log("Posted response to Facebook OK. Voted for " + choice);
+            console.log("Controller: Posted response to Facebook OK. Voted for " + choice);
             this.model.registerVote(choice, true);
         }
     };

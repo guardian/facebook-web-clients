@@ -202,6 +202,7 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.initialise = function () {
         this.authorizer.on("connected", this.checkExistingVote, this);
+        this.authorizer.on("notAuthorized", this.handleNotAuthorized, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
             url: "/vote",
@@ -221,7 +222,7 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.checkExistingVote = function () {
 
-        console.log("Checking for existing votes  on user " + this.authorizer.userId);
+        console.log("Controller: Checking for existing votes  on user " + this.authorizer.userId);
 
         jQuery.ajax({
             url: "/user",
@@ -234,13 +235,18 @@ ensurePackage("guardian.facebook");
 
     };
 
-    VoteController.prototype.handleUserExistingVote = function(user) {
+    VoteController.prototype.handleNotAuthorized = function () {
+        console.log("Controller: User is not authorized to use app, but showing buttons");
+        this.model.setAllowedToVote(true);
+    };
+
+    VoteController.prototype.handleUserExistingVote = function (user) {
 
         if (user.choice) {
-            console.log("User has already voted for " + user.choice);
+            console.log("Controller: User has already voted for " + user.choice);
             this.model.registerVote(user.choice, false);
         } else {
-            console.log("User has not voted yet");
+            console.log("Controller: User has not voted yet");
             this.model.setAllowedToVote(true);
         }
     };
@@ -265,13 +271,13 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.handlePostResponse = function (choice, response) {
         if (response.error) {
             if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED) > -1) {
-                console.log("Already voted for " + choice);
+                console.log("Controller: User has already voted for " + choice);
                 this.model.registerVote(choice, false);
             } else {
-                console.error("Sorry - could not register your vote: " + response.error);
+                console.error("Controller: Sorry - could not register your vote: " + response.error);
             }
         } else {
-            console.log("Posted response to Facebook OK. Voted for " + choice);
+            console.log("Controller: Posted response to Facebook OK. Voted for " + choice);
             this.model.registerVote(choice, true);
         }
     };
@@ -691,11 +697,14 @@ if(typeof module !== 'undefined') {
     };
 
     VoteModel.prototype.registerVote = function (answerId, changeCounts) {
-        console.log("Registering vote: " + answerId);
+
         var answer = this.getAnswerById(answerId);
         if (answer) {
             if (changeCounts === undefined || changeCounts === true) {
+                console.log("Model: Registering new vote: " + answerId);
                 answer.count++;
+            } else {
+                console.log("Model: Noticing existing vote: " + answerId);
             }
             this.choice = answerId;
             this.fire("dataChanged");
@@ -839,11 +848,13 @@ if(typeof module !== 'undefined') {
 
     Authorizer.prototype.handleGotLoginStatus = function (response) {
 
+        console.log("Authorizer: Got Login Status: " + response.status);
+
         switch (response.status) {
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
-                console.log("Access token: " + this.accessToken);
+                console.log("Authorizer: Access token: " + this.accessToken);
                 this.fire("connected");
                 this.getUserData();
                 this.authDeferred.resolve();
@@ -859,6 +870,7 @@ if(typeof module !== 'undefined') {
     };
 
     Authorizer.prototype.getUserData = function () {
+        console.log("Authorizer: Getting user data");
         FB.api("/me", function (data) {
             if (!data.error) {
                 this.fire("gotUserDetails", data);

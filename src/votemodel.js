@@ -42,11 +42,14 @@
     };
 
     VoteModel.prototype.registerVote = function (answerId, changeCounts) {
-        console.log("Registering vote: " + answerId);
+
         var answer = this.getAnswerById(answerId);
         if (answer) {
             if (changeCounts === undefined || changeCounts === true) {
+                console.log("Model: Registering new vote: " + answerId);
                 answer.count++;
+            } else {
+                console.log("Model: Noticing existing vote: " + answerId);
             }
             this.choice = answerId;
             this.fire("dataChanged");

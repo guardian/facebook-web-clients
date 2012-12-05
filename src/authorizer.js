@@ -46,11 +46,13 @@
 
     Authorizer.prototype.handleGotLoginStatus = function (response) {
 
+        console.log("Authorizer: Got Login Status: " + response.status);
+
         switch (response.status) {
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
-                console.log("Access token: " + this.accessToken);
+                console.log("Authorizer: Access token: " + this.accessToken);
                 this.fire("connected");
                 this.getUserData();
                 this.authDeferred.resolve();
@@ -66,6 +68,7 @@
     };
 
     Authorizer.prototype.getUserData = function () {
+        console.log("Authorizer: Getting user data");
         FB.api("/me", function (data) {
             if (!data.error) {
                 this.fire("gotUserDetails", data);

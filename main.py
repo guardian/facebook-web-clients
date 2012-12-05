@@ -44,7 +44,7 @@ class FacebookPoll(db.Model):
         }
 
 def get_user_vote(article_id, user_id):
-    q = db.GqlQuery("SELECT * FROM UserVote WHERE userId=:1", user_id)
+    q = db.GqlQuery("SELECT * FROM UserVote WHERE userId=:1 AND pollId=:2", user_id, article_id)
     if q.count() is 0:
         user = UserVote(
             userId=user_id,

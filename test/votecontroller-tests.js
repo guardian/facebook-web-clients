@@ -31,7 +31,7 @@
             view = new Subscribable();
             controller = new guardian.facebook.VoteController(model, view, authorizer)
         },
-        teardown: function() {
+        teardown: function () {
             jQuery.ajax.restore()
         }
     });
@@ -89,22 +89,27 @@
     /* end of tests */
 
     function userAlreadyVoted() {
-        FB.api = function(path, type, data, callback) {
-            callback({
-                error: {
-                    message: "Error1: (#3501) User is already associated ... "
-                }
-            })
-        }
+        jQuery.ajax.returns({
+            then: function (callback) {
+                callback({
+                    error: {
+                        message: "Error1: (#3501) User is already associated ... "
+                    }
+                })
+            }
+        });
     }
+
     function serverHasError() {
-        FB.api = function(path, type, data, callback) {
-            callback({
-                error: {
-                    message: "An unexpected error has occurred. Please retry your request later."
-                }
-            })
-        }
+        jQuery.ajax.returns({
+            then: function (callback) {
+                callback({
+                    error: {
+                        message: "An unexpected error has occurred. Please retry your request later."
+                    }
+                })
+            }
+        });
     }
 
 })();

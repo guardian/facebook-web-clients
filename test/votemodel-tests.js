@@ -72,7 +72,7 @@
 
         when(model.registerVote("answer2"));
 
-        equal(model.getSummaryText(), "You said that this rumour is Unlikely");
+        equal(model.getSummaryText(), "Your response was: Unlikely");
 
     });
 

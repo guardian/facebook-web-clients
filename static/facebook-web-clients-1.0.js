@@ -140,22 +140,26 @@ ensurePackage("guardian.facebook");
             R = (Math.min(width, height) - 24) / 2,
             dr = (Math.PI * 2) * ((100 - dp) / 100),
             hdr = (dr / 2),
-            dx = (R *2) * Math.cos(hdr),
-            dy = (R *2) * Math.sin(hdr);
+            dx = (R * 2) * Math.cos(hdr),
+            dy = (R * 2) * Math.sin(hdr);
 
-        ctx.clearRect(0,0, width, height);
+        ctx.clearRect(0, 0, width, height);
 
         // draw the disagree arc as a full circle
-        this.setStroke(CanvasDonut.NEGATIVE);
+        this.setStroke(dp == 100 ? CanvasDonut.POSITIVE : CanvasDonut.NEGATIVE);
         ctx.beginPath();
         ctx.arc(cx, cy, R, 0, Math.PI * 2, true);
         ctx.stroke();
 
-        // draw the agree arc on top
-        this.setStroke(CanvasDonut.POSITIVE);
-        ctx.beginPath();
-        ctx.arc(cx, cy, R, -hdr, +hdr, true);
-        ctx.stroke();
+        if (dp > 0) {
+
+            // draw the agree arc on top
+            this.setStroke(CanvasDonut.POSITIVE);
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, -hdr, +hdr, true);
+            ctx.stroke();
+
+        }
 
         // draw the notches on top
         this.setStroke(CanvasDonut.NOTCH);
@@ -172,14 +176,14 @@ ensurePackage("guardian.facebook");
 
     };
 
-    CanvasDonut.prototype.setStroke = function(settings) {
+    CanvasDonut.prototype.setStroke = function (settings) {
         this.ctx.lineWidth = settings["stroke-width"];
         this.ctx.strokeStyle = settings["stroke"];
     };
 
     CanvasDonut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
     CanvasDonut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 4};
+    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 2};
 
     guardian.ui.CanvasDonut = CanvasDonut;
 
@@ -197,11 +201,13 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.authorizer = null;
 
     VoteController.prototype.initialise = function (url) {
-        console.log("Initialising controller");
         this.authorizer.on("connected", this.checkExistingVote, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
-            url: url
+            url: url,
+            data: {
+                article: this.getArticleId()
+            }
         }).then(this.handleLoadedData.bind(this));
     };
 
@@ -214,14 +220,25 @@ ensurePackage("guardian.facebook");
     };
 
     VoteController.prototype.checkExistingVote = function () {
+        var articleId = this.getArticleId();
         FB.api(
-            '/me/' + VoteController.APP_NAMESPACE + ':' + 'Agree',
+            '/me/' + VoteController.APP_NAMESPACE + ':' + 'agree',
             function (response) {
-                var data = response.data;
-                if (data && data.length) {
-                    var existingResponse = data[0].type.substring(VoteController.APP_NAMESPACE.length+1);
-                    this.model.registerVote(existingResponse, false);
-                }
+                response.data.forEach(function (d) {
+                    if (d.data.article.url == articleId) {
+                        this.model.registerVote("agree", false);
+                    }
+                }.bind(this))
+            }.bind(this)
+        );
+        FB.api(
+            '/me/' + VoteController.APP_NAMESPACE + ':' + 'disagree',
+            function (response) {
+                response.data.forEach(function (d) {
+                    if (d.data.article.url == articleId) {
+                        this.model.registerVote("disagree", false);
+                    }
+                }.bind(this))
             }.bind(this)
         );
     };
@@ -229,13 +246,15 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
 
-            FB.api(
-                '/me/' + VoteController.APP_NAMESPACE + ':' + choice,
-                'post', {
-                    article: this.getArticleId()
-                },
-                this.handlePostResponse.bind(this, choice)
-            );
+            jQuery.ajax({
+                url: "/",
+                type: "POST",
+                data: {
+                    article: this.getArticleId(),
+                    access_token: this.authorizer.accessToken,
+                    action: choice
+                }
+            }).then(this.handlePostResponse.bind(this));
 
         }.bind(this));
     };
@@ -674,7 +693,7 @@ if(typeof module !== 'undefined') {
 
     VoteModel.prototype.getSummaryText = function () {
         if (this.choice) {
-            return "You said that this rumour is " + this.getAnswerById(this.choice).label;
+            return "Your response was: " + this.getAnswerById(this.choice).label;
         } else {
             return "Your vote will be counted and shared on Facebook";
         }
@@ -806,12 +825,10 @@ if(typeof module !== 'undefined') {
 
     Authorizer.prototype.handleGotLoginStatus = function (response) {
 
-        console.log(response.status);
-
-        console.log(response);
-
         switch (response.status) {
             case 'connected':
+                this.accessToken = response.authResponse.accessToken;
+                console.log("Access token: " + this.accessToken);
                 this.fire("connected");
                 this.getUserData();
                 this.authDeferred.resolve();

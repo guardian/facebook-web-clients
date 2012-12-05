@@ -11,11 +11,13 @@
     VoteController.prototype.authorizer = null;
 
     VoteController.prototype.initialise = function (url) {
-        console.log("Initialising controller");
         this.authorizer.on("connected", this.checkExistingVote, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
-            url: url
+            url: url,
+            data: {
+                article: this.getArticleId()
+            }
         }).then(this.handleLoadedData.bind(this));
     };
 
@@ -28,14 +30,25 @@
     };
 
     VoteController.prototype.checkExistingVote = function () {
+        var articleId = this.getArticleId();
         FB.api(
-            '/me/' + VoteController.APP_NAMESPACE + ':' + 'Agree',
+            '/me/' + VoteController.APP_NAMESPACE + ':' + 'agree',
             function (response) {
-                var data = response.data;
-                if (data && data.length) {
-                    var existingResponse = data[0].type.substring(VoteController.APP_NAMESPACE.length+1);
-                    this.model.registerVote(existingResponse, false);
-                }
+                response.data.forEach(function (d) {
+                    if (d.data.article.url == articleId) {
+                        this.model.registerVote("agree", false);
+                    }
+                }.bind(this))
+            }.bind(this)
+        );
+        FB.api(
+            '/me/' + VoteController.APP_NAMESPACE + ':' + 'disagree',
+            function (response) {
+                response.data.forEach(function (d) {
+                    if (d.data.article.url == articleId) {
+                        this.model.registerVote("disagree", false);
+                    }
+                }.bind(this))
             }.bind(this)
         );
     };
@@ -43,13 +56,15 @@
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
 
-            FB.api(
-                '/me/' + VoteController.APP_NAMESPACE + ':' + choice,
-                'post', {
-                    article: this.getArticleId()
-                },
-                this.handlePostResponse.bind(this, choice)
-            );
+            jQuery.ajax({
+                url: "/",
+                type: "POST",
+                data: {
+                    article: this.getArticleId(),
+                    access_token: this.authorizer.accessToken,
+                    action: choice
+                }
+            }).then(this.handlePostResponse.bind(this));
 
         }.bind(this));
     };

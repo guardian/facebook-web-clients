@@ -81,7 +81,7 @@
         when(theUserClicksOn("[data-action='answer2']"));
 
         thenThe(jQuery(".socialSummary .text"))
-            .should(haveText("You said that this rumour is Unlikely"));
+            .should(haveText("Your response was: Unlikely"));
 
     });
 

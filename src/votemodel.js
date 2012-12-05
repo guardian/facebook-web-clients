@@ -47,7 +47,7 @@
 
     VoteModel.prototype.getSummaryText = function () {
         if (this.choice) {
-            return "You said that this rumour is " + this.getAnswerById(this.choice).label;
+            return "Your response was: " + this.getAnswerById(this.choice).label;
         } else {
             return "Your vote will be counted and shared on Facebook";
         }

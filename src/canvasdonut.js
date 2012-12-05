@@ -37,22 +37,26 @@
             R = (Math.min(width, height) - 24) / 2,
             dr = (Math.PI * 2) * ((100 - dp) / 100),
             hdr = (dr / 2),
-            dx = (R *2) * Math.cos(hdr),
-            dy = (R *2) * Math.sin(hdr);
+            dx = (R * 2) * Math.cos(hdr),
+            dy = (R * 2) * Math.sin(hdr);
 
-        ctx.clearRect(0,0, width, height);
+        ctx.clearRect(0, 0, width, height);
 
         // draw the disagree arc as a full circle
-        this.setStroke(CanvasDonut.NEGATIVE);
+        this.setStroke(dp == 100 ? CanvasDonut.POSITIVE : CanvasDonut.NEGATIVE);
         ctx.beginPath();
         ctx.arc(cx, cy, R, 0, Math.PI * 2, true);
         ctx.stroke();
 
-        // draw the agree arc on top
-        this.setStroke(CanvasDonut.POSITIVE);
-        ctx.beginPath();
-        ctx.arc(cx, cy, R, -hdr, +hdr, true);
-        ctx.stroke();
+        if (dp > 0) {
+
+            // draw the agree arc on top
+            this.setStroke(CanvasDonut.POSITIVE);
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, -hdr, +hdr, true);
+            ctx.stroke();
+
+        }
 
         // draw the notches on top
         this.setStroke(CanvasDonut.NOTCH);
@@ -69,14 +73,14 @@
 
     };
 
-    CanvasDonut.prototype.setStroke = function(settings) {
+    CanvasDonut.prototype.setStroke = function (settings) {
         this.ctx.lineWidth = settings["stroke-width"];
         this.ctx.strokeStyle = settings["stroke"];
     };
 
     CanvasDonut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
     CanvasDonut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 4};
+    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 2};
 
     guardian.ui.CanvasDonut = CanvasDonut;
 

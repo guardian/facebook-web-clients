@@ -43,12 +43,10 @@
 
     Authorizer.prototype.handleGotLoginStatus = function (response) {
 
-        console.log(response.status);
-
-        console.log(response);
-
         switch (response.status) {
             case 'connected':
+                this.accessToken = response.authResponse.accessToken;
+                console.log("Access token: " + this.accessToken);
                 this.fire("connected");
                 this.getUserData();
                 this.authDeferred.resolve();

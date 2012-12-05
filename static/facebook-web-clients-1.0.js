@@ -200,7 +200,7 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.view = null;
     VoteController.prototype.authorizer = null;
 
-    VoteController.prototype.initialise = function (url) {
+    VoteController.prototype.initialise = function () {
         this.authorizer.on("connected", this.checkExistingVote, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
@@ -257,7 +257,7 @@ ensurePackage("guardian.facebook");
                     user: this.authorizer.userId,
                     action: choice
                 }
-            }).then(this.handlePostResponse.bind(this));
+            }).then(this.handlePostResponse.bind(this, choice));
 
         }.bind(this));
     };
@@ -271,7 +271,7 @@ ensurePackage("guardian.facebook");
                 console.error("Sorry - could not register your vote: " + response.error);
             }
         } else {
-            console.log("Posted response to Facebook OK");
+            console.log("Posted response to Facebook OK. Voted for " + choice);
             this.model.registerVote(choice, true);
         }
     };

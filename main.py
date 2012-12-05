@@ -3,6 +3,17 @@ from google.appengine.api import urlfetch
 from google.appengine.ext import db
 import json, webapp2, logging, urllib
 
+class UserVote(db.Model):
+    userId = db.StringProperty(required=True)
+    pollId = db.StringProperty(required=True)
+    choice = db.StringProperty(required=False)
+    def toMap(self):
+        return {
+            "userId": self.userId,
+            "pollId": self.pollId,
+            "choice": self.choice
+        }
+
 class FacebookPoll(db.Model):
     pollId = db.StringProperty(required=True)
     yesCount = db.IntegerProperty(required=True)
@@ -31,6 +42,23 @@ class FacebookPoll(db.Model):
                 }
             ]
         }
+
+def get_user_vote(article_id, user_id):
+    q = db.GqlQuery("SELECT * FROM UserVote WHERE userId=:1", user_id)
+    if q.count() is 0:
+        user = UserVote(
+            userId=user_id,
+            pollId=article_id
+        )
+    else:
+        user = q.get()
+    return user
+
+def register_user_vote(article_id, user_id, choice):
+    user = get_user_vote(article_id, choice)
+    user.choice = choice
+    user.put()
+    return user
 
 def get_poll(articleId):
     q = db.GqlQuery("SELECT * FROM FacebookPoll WHERE pollId=:1", articleId)
@@ -68,27 +96,36 @@ def write_response(request, response, content_api_data):
         response.out.write(content_api_data)
 
 
-class MainHandler(webapp.RequestHandler):
+class UserHandler(webapp.RequestHandler):
+
+    def get(self):
+        article_id = self.request.get("article")
+        user_id = self.request.get("user")
+        obj = get_user_vote(article_id, user_id)
+        write_response(self.request, self.response, json.dumps(obj.toMap()))
+
+class VoteHandler(webapp.RequestHandler):
     def get(self):
 
-        articleId = self.request.get("article")
+        article_id = self.request.get("article")
+        user_id = self.request.get("user")
+        obj = get_poll(article_id)
+        write_response(self.request, self.response, json.dumps(obj.toMap()))
 
-        poll = get_poll(articleId)
-
-        write_response(self.request, self.response, json.dumps(poll.toMap()))
 
     def post(self):
 
-        articleId = self.request.get("article")
+        article_id = self.request.get("article")
         choice = self.request.get("action")
-        fbAccessToken = self.request.get("access_token")
+        facebook_token = self.request.get("access_token")
+        user_id = self.request.get("user")
 
         logging.info("Voting for: " + choice)
 
         form_fields = {
             "method": "post",
-            "article": articleId,
-            "access_token": fbAccessToken
+            "article": article_id,
+            "access_token": facebook_token
         }
 
         url = "https://graph.facebook.com/me/theguardian-spike:%s" % choice
@@ -96,9 +133,9 @@ class MainHandler(webapp.RequestHandler):
         form_data = urllib.urlencode(form_fields)
         result = urlfetch.fetch(url=url, payload=form_data, method=urlfetch.POST)
 
-        register_vote(articleId, choice)
+        register_vote(article_id, choice)
+        register_user_vote(article_id, user_id, choice)
 
         write_response(self.request, self.response, result.content)
 
-app = webapp.WSGIApplication([('/', MainHandler)], debug=True)
-
+app = webapp.WSGIApplication([('/vote', VoteHandler), ('/user', UserHandler)], debug=True)

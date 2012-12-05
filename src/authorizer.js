@@ -8,6 +8,9 @@
 
     Authorizer.prototype = Object.create(Subscribable.prototype);
 
+    Authorizer.accessToken = null;
+    Authorizer.userId = null;
+
     Authorizer.prototype.getPromise = function () {
         return this.authDeferred.promise();
     };
@@ -46,6 +49,7 @@
         switch (response.status) {
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
+                this.userId = response.authResponse.userID;
                 console.log("Access token: " + this.accessToken);
                 this.fire("connected");
                 this.getUserData();

@@ -204,7 +204,7 @@ ensurePackage("guardian.facebook");
         this.authorizer.on("connected", this.checkExistingVote, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
-            url: url,
+            url: "/vote",
             data: {
                 article: this.getArticleId()
             }
@@ -220,39 +220,41 @@ ensurePackage("guardian.facebook");
     };
 
     VoteController.prototype.checkExistingVote = function () {
-        var articleId = this.getArticleId();
-        FB.api(
-            '/me/' + VoteController.APP_NAMESPACE + ':' + 'agree',
-            function (response) {
-                response.data.forEach(function (d) {
-                    if (d.data.article.url == articleId) {
-                        this.model.registerVote("agree", false);
-                    }
-                }.bind(this))
-            }.bind(this)
-        );
-        FB.api(
-            '/me/' + VoteController.APP_NAMESPACE + ':' + 'disagree',
-            function (response) {
-                response.data.forEach(function (d) {
-                    if (d.data.article.url == articleId) {
-                        this.model.registerVote("disagree", false);
-                    }
-                }.bind(this))
-            }.bind(this)
-        );
-        this.model.setAllowedToVote(true);
+
+        console.log("Checking for existing votes  on user " + this.authorizer.userId);
+
+        jQuery.ajax({
+            url: "/user",
+            type: "GET",
+            data: {
+                article: this.getArticleId(),
+                user: this.authorizer.userId
+            }
+        }).then(this.handleUserExistingVote.bind(this));
+
+    };
+
+    VoteController.prototype.handleUserExistingVote = function(user) {
+
+        if (user.choice) {
+            console.log("User has already voted for " + user.choice);
+            this.model.registerVote(user.choice, false);
+        } else {
+            console.log("User has not voted yet");
+            this.model.setAllowedToVote(true);
+        }
     };
 
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
 
             jQuery.ajax({
-                url: "/",
+                url: "/vote",
                 type: "POST",
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,
+                    user: this.authorizer.userId,
                     action: choice
                 }
             }).then(this.handlePostResponse.bind(this));
@@ -758,8 +760,6 @@ if(typeof module !== 'undefined') {
 
     VoteComponent.prototype.render = function () {
 
-        console.log("Rendering vote component: " + this.model.canVote());
-
         this.donut.render(this.model.getAgreePercent());
 
         var answers = this.model.answers;
@@ -801,6 +801,9 @@ if(typeof module !== 'undefined') {
 
     Authorizer.prototype = Object.create(Subscribable.prototype);
 
+    Authorizer.accessToken = null;
+    Authorizer.userId = null;
+
     Authorizer.prototype.getPromise = function () {
         return this.authDeferred.promise();
     };
@@ -839,6 +842,7 @@ if(typeof module !== 'undefined') {
         switch (response.status) {
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
+                this.userId = response.authResponse.userID;
                 console.log("Access token: " + this.accessToken);
                 this.fire("connected");
                 this.getUserData();

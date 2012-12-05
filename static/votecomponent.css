@@ -19,6 +19,10 @@
     width: 90px;
     padding: 3px 10px;
     border: 1px solid transparent;
+
+    -webkit-transition: 1s all ease;
+    -moz-transition: 1s all ease;
+    transition: 1s all ease;
 }
 
 .voteComponent .btn {

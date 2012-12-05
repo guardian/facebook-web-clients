@@ -36,9 +36,7 @@
 
         });
 
-        if (this.model.votedAlready()) {
-            this.jContainer.find(".btn").removeClass("btn");
-        }
+        this.jContainer.find(".choice").toggleClass("btn", this.model.canVote());
         this.jContainer.find(".socialSummary .text").html(this.model.getSummaryText());
     };
 

@@ -51,6 +51,7 @@
                 }.bind(this))
             }.bind(this)
         );
+        this.model.setAllowedToVote(true);
     };
 
     VoteController.prototype.submitVote = function (choice) {

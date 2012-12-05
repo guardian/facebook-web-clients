@@ -2,6 +2,7 @@
 
     function VoteModel() {
         this.choice = undefined;
+        this.allowedToVote = false;
     }
 
     VoteModel.prototype = Object.create(Subscribable.prototype);
@@ -9,10 +10,16 @@
     VoteModel.prototype.questionId = null;
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
+    VoteModel.prototype.allowedToVote = null;
 
     VoteModel.prototype.setAllData = function (data) {
         this.questionId = data.id;
         this.answers = data.answers;
+        this.fire("dataChanged");
+    };
+
+    VoteModel.prototype.setAllowedToVote = function(allowedToVote) {
+        this.allowedToVote =  allowedToVote;
         this.fire("dataChanged");
     };
 
@@ -35,6 +42,7 @@
     };
 
     VoteModel.prototype.registerVote = function (answerId, changeCounts) {
+        console.log("Registering vote: " + answerId);
         var answer = this.getAnswerById(answerId);
         if (answer) {
             if (changeCounts === undefined || changeCounts === true) {
@@ -42,6 +50,8 @@
             }
             this.choice = answerId;
             this.fire("dataChanged");
+        } else {
+            console.log("Unrecognised vote: " + answerId)
         }
     };
 
@@ -53,8 +63,8 @@
         }
     };
 
-    VoteModel.prototype.votedAlready = function () {
-        return !!this.choice;
+    VoteModel.prototype.canVote = function () {
+        return !this.choice && this.allowedToVote;
     };
 
     VoteModel.prototype.getAgreePercent = function () {

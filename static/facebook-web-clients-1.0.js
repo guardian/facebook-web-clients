@@ -241,6 +241,7 @@ ensurePackage("guardian.facebook");
                 }.bind(this))
             }.bind(this)
         );
+        this.model.setAllowedToVote(true);
     };
 
     VoteController.prototype.submitVote = function (choice) {
@@ -648,6 +649,7 @@ if(typeof module !== 'undefined') {
 
     function VoteModel() {
         this.choice = undefined;
+        this.allowedToVote = false;
     }
 
     VoteModel.prototype = Object.create(Subscribable.prototype);
@@ -655,10 +657,16 @@ if(typeof module !== 'undefined') {
     VoteModel.prototype.questionId = null;
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
+    VoteModel.prototype.allowedToVote = null;
 
     VoteModel.prototype.setAllData = function (data) {
         this.questionId = data.id;
         this.answers = data.answers;
+        this.fire("dataChanged");
+    };
+
+    VoteModel.prototype.setAllowedToVote = function(allowedToVote) {
+        this.allowedToVote =  allowedToVote;
         this.fire("dataChanged");
     };
 
@@ -681,6 +689,7 @@ if(typeof module !== 'undefined') {
     };
 
     VoteModel.prototype.registerVote = function (answerId, changeCounts) {
+        console.log("Registering vote: " + answerId);
         var answer = this.getAnswerById(answerId);
         if (answer) {
             if (changeCounts === undefined || changeCounts === true) {
@@ -688,6 +697,8 @@ if(typeof module !== 'undefined') {
             }
             this.choice = answerId;
             this.fire("dataChanged");
+        } else {
+            console.log("Unrecognised vote: " + answerId)
         }
     };
 
@@ -699,8 +710,8 @@ if(typeof module !== 'undefined') {
         }
     };
 
-    VoteModel.prototype.votedAlready = function () {
-        return !!this.choice;
+    VoteModel.prototype.canVote = function () {
+        return !this.choice && this.allowedToVote;
     };
 
     VoteModel.prototype.getAgreePercent = function () {
@@ -747,6 +758,8 @@ if(typeof module !== 'undefined') {
 
     VoteComponent.prototype.render = function () {
 
+        console.log("Rendering vote component: " + this.model.canVote());
+
         this.donut.render(this.model.getAgreePercent());
 
         var answers = this.model.answers;
@@ -759,9 +772,7 @@ if(typeof module !== 'undefined') {
 
         });
 
-        if (this.model.votedAlready()) {
-            this.jContainer.find(".btn").removeClass("btn");
-        }
+        this.jContainer.find(".choice").toggleClass("btn", this.model.canVote());
         this.jContainer.find(".socialSummary .text").html(this.model.getSummaryText());
     };
 

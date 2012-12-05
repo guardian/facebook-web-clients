@@ -34,7 +34,9 @@
     };
 
     Authorizer.prototype.authUser = function () {
-        FB.login(this.handleGotLoginStatus.bind(this), permissions);
+        if (!this.accessToken) {
+            FB.login(this.handleGotLoginStatus.bind(this), permissions);
+        }
         return this.getPromise();
     };
 

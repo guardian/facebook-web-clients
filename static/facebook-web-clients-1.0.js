@@ -270,7 +270,7 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.handlePostResponse = function (choice, response) {
         if (response.error) {
-            console.error("Controller: Sorry - could not register your vote: " + response.error);
+            console.error("Controller: Sorry - could not register your vote: " + response.error.message);
         } else {
             console.log("Controller: Posted response to Facebook OK. Voted for " + choice);
             this.model.registerVote(choice, true);
@@ -827,7 +827,9 @@ if(typeof module !== 'undefined') {
     };
 
     Authorizer.prototype.authUser = function () {
-        FB.login(this.handleGotLoginStatus.bind(this), permissions);
+        if (!this.accessToken) {
+            FB.login(this.handleGotLoginStatus.bind(this), permissions);
+        }
         return this.getPromise();
     };
 

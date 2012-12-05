@@ -55,10 +55,6 @@
 
         givenSomeData();
 
-        thenThe(jQuery(".btn")).should(haveSize(0));
-
-        when(model.setAllowedToVote(true));
-
         thenThe(jQuery(".btn")).should(haveSize(2));
 
         when(theUserClicksOn("[data-action='answer1']"));
@@ -71,8 +67,6 @@
 
         givenSomeData();
 
-        when(model.setAllowedToVote(true));
-
         when(theUserClicksOn("[data-action='answer1']"));
 
         thenThe(jQuery("[data-action='answer1']"))
@@ -83,8 +77,6 @@
     test("Updates social summary", function () {
 
         givenSomeData();
-
-        when(model.setAllowedToVote(true));
 
         when(theUserClicksOn("[data-action='answer2']"));
 

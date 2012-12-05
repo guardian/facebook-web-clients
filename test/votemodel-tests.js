@@ -46,10 +46,6 @@
 
         givenSomeData();
 
-        ok(!model.canVote());
-
-        when(model.setAllowedToVote(true));
-
         ok(model.canVote());
 
         when(model.registerVote("answer1"));

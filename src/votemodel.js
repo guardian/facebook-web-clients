@@ -2,7 +2,7 @@
 
     function VoteModel() {
         this.choice = undefined;
-        this.allowedToVote = false;
+        this.allowedToVote = true;
     }
 
     VoteModel.prototype = Object.create(Subscribable.prototype);

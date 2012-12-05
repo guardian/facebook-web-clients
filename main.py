@@ -3,6 +3,9 @@ from google.appengine.api import urlfetch
 from google.appengine.ext import db
 import json, webapp2, logging, urllib
 
+#app_id = "theguardian-spike"
+app_id = "theguardian"
+
 class UserVote(db.Model):
     userId = db.StringProperty(required=True)
     pollId = db.StringProperty(required=True)
@@ -56,9 +59,16 @@ def get_user_vote(article_id, user_id):
 
 def register_user_vote(article_id, user_id, choice):
     user = get_user_vote(article_id, user_id)
-    user.choice = choice
-    user.put()
-    return user
+
+    if user.choice:
+        logging.info("User has already voted")
+        return False
+    else:
+        logging.info("User has not voted yet. Voting for: " + choice)
+        user.choice = choice
+        user.put()
+        return True
+
 
 def get_poll(articleId):
     q = db.GqlQuery("SELECT * FROM FacebookPoll WHERE pollId=:1", articleId)
@@ -95,6 +105,19 @@ def write_response(request, response, content_api_data):
         response.headers['Content-Type'] = 'application/json'
         response.out.write(content_api_data)
 
+def post_to_facebook(article_id, facebook_token, choice):
+    logging.info("Voting for: " + choice)
+
+    form_fields = {
+        "method": "post",
+        "article": article_id,
+        "access_token": facebook_token
+    }
+
+    url = "https://graph.facebook.com/me/%s:%s" % (app_id, choice)
+
+    form_data = urllib.urlencode(form_fields)
+    return urlfetch.fetch(url=url, payload=form_data, method=urlfetch.POST)
 
 class UserHandler(webapp.RequestHandler):
 
@@ -120,22 +143,13 @@ class VoteHandler(webapp.RequestHandler):
         facebook_token = self.request.get("access_token")
         user_id = self.request.get("user")
 
-        logging.info("Voting for: " + choice)
+        if register_user_vote(article_id, user_id, choice):
+            register_vote(article_id, choice)
+            result = post_to_facebook(article_id, facebook_token, choice)
+            write_response(self.request, self.response, result.content)
+        else:
+            self.response.write("Already Voted")
+            self.response.set_status(400)
 
-        form_fields = {
-            "method": "post",
-            "article": article_id,
-            "access_token": facebook_token
-        }
-
-        url = "https://graph.facebook.com/me/theguardian-spike:%s" % choice
-
-        form_data = urllib.urlencode(form_fields)
-        result = urlfetch.fetch(url=url, payload=form_data, method=urlfetch.POST)
-
-        register_vote(article_id, choice)
-        register_user_vote(article_id, user_id, choice)
-
-        write_response(self.request, self.response, result.content)
 
 app = webapp.WSGIApplication([('/vote', VoteHandler), ('/user', UserHandler)], debug=True)

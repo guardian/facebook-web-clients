@@ -77,7 +77,7 @@
         when(controller.initialise("/some_url"));
         given(userAlreadyVoted());
         when(view.fire("voted", "Disagree"));
-        thenThe(model.registerVote).shouldHaveBeen(calledOnce).and(calledWith("Disagree", false))
+        thenThe(model.registerVote).shouldNotHaveBeen(calledOnce);
     });
 
     test("Handles error", function () {
@@ -92,11 +92,10 @@
     function userAlreadyVoted() {
         jQuery.ajax.returns({
             then: function (callback) {
-                callback({
-                    error: {
-                        message: "Error1: (#3501) User is already associated ... "
-                    }
-                })
+                // dont call the success
+            },
+            fail: function(callback) {
+                callback();
             }
         });
     }

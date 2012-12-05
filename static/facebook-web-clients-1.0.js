@@ -270,12 +270,7 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.handlePostResponse = function (choice, response) {
         if (response.error) {
-            if (response.error.message.indexOf(VoteController.ERROR_CODES.ALREADY_VOTED) > -1) {
-                console.log("Controller: User has already voted for " + choice);
-                this.model.registerVote(choice, false);
-            } else {
-                console.error("Controller: Sorry - could not register your vote: " + response.error);
-            }
+            console.error("Controller: Sorry - could not register your vote: " + response.error);
         } else {
             console.log("Controller: Posted response to Facebook OK. Voted for " + choice);
             this.model.registerVote(choice, true);
@@ -284,10 +279,6 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.destroy = function () {
         this.model.un(null, this);
-    };
-
-    VoteController.ERROR_CODES = {
-        "ALREADY_VOTED": "#3501"
     };
 
     VoteController.APP_NAMESPACE = "theguardian-spike";

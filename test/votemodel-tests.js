@@ -42,15 +42,19 @@
 
     });
 
-    test("Voted Already", function () {
+    test("Can Vote", function () {
 
         givenSomeData();
 
-        ok(!model.votedAlready());
+        ok(!model.canVote());
+
+        when(model.setAllowedToVote(true));
+
+        ok(model.canVote());
 
         when(model.registerVote("answer1"));
 
-        ok(model.votedAlready());
+        ok(!model.canVote());
 
     });
 
@@ -58,11 +62,13 @@
 
         givenSomeData();
 
-        ok(!model.votedAlready());
+        when(model.setAllowedToVote(true));
+
+        ok(model.canVote());
 
         when(model.registerVote("doesnt_exist"));
 
-        ok(!model.votedAlready());
+        ok(model.canVote());
 
     });
 

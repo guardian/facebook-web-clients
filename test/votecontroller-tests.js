@@ -65,23 +65,24 @@
 
     test("Posts the custom action to facebook", function () {
         when(controller.initialise("/some_url"));
+        thenThe(jQuery.ajax)
+            .shouldHaveBeen(calledOnce)
         when(view.fire("voted", "Disagree"));
         thenThe(authorizer.authUser).shouldHaveBeen(calledOnce);
-        thenThe(FB.api)
-            .shouldHaveBeen(calledOnce)
-            .and(calledWith("/me/theguardian-spike:Disagree", "post"));
+        thenThe(jQuery.ajax)
+            .shouldHaveBeen(calledAgain);
     });
 
     test("Handles already voted", function () {
-        given(userAlreadyVoted());
         when(controller.initialise("/some_url"));
+        given(userAlreadyVoted());
         when(view.fire("voted", "Disagree"));
         thenThe(model.registerVote).shouldHaveBeen(calledOnce).and(calledWith("Disagree", false))
     });
 
     test("Handles error", function () {
-        given(serverHasError());
         when(controller.initialise("/some_url"));
+        given(serverHasError());
         when(view.fire("voted", "Disagree"));
         thenThe(model.registerVote).shouldNotHaveBeen(calledOnce);
     });

@@ -55,7 +55,7 @@ def get_user_vote(article_id, user_id):
     return user
 
 def register_user_vote(article_id, user_id, choice):
-    user = get_user_vote(article_id, choice)
+    user = get_user_vote(article_id, user_id)
     user.choice = choice
     user.put()
     return user

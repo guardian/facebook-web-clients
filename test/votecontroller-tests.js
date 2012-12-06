@@ -12,6 +12,8 @@
                 api: sinon.stub()
             };
             model = sinon.stub(new guardian.facebook.VoteModel());
+            deferred = jQuery.Deferred();
+            model.whenDataIsSet.returns(deferred.promise());
             authorizer = sinon.stub(Object.create(guardian.facebook.Authorizer.prototype));
             authorizer.authorize.returns({
                 then: function (fn) {
@@ -36,7 +38,7 @@
         }
     });
 
-    var model, controller, authorizer, json = {
+    var model, controller, authorizer, deferred, json = {
         "pollId": "400303938",
         "questions": [
             {

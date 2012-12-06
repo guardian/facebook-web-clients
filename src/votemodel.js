@@ -3,6 +3,7 @@
     function VoteModel() {
         this.choice = undefined;
         this.allowedToVote = true;
+        this.dataDeferred = jQuery.Deferred();
     }
 
     VoteModel.prototype = Object.create(Subscribable.prototype);
@@ -16,19 +17,24 @@
         this.questionId = data.id;
         this.answers = data.answers;
         this.fire("dataChanged");
+        this.dataDeferred.resolve();
     };
 
-    VoteModel.prototype.setAllowedToVote = function(allowedToVote) {
-        this.allowedToVote =  allowedToVote;
+    VoteModel.prototype.whenDataIsSet = function () {
+        return this.dataDeferred.promise();
+    };
+
+    VoteModel.prototype.setAllowedToVote = function (allowedToVote) {
+        this.allowedToVote = allowedToVote;
         this.fire("dataChanged");
     };
 
     VoteModel.prototype.getAgree = function () {
-        return this.answers[0].count;
+        return this.answers && this.answers[0].count;
     };
 
     VoteModel.prototype.getDisagree = function () {
-        return this.answers[1].count;
+        return this.answers && this.answers[1].count;
     };
 
     VoteModel.prototype.getTotal = function () {
@@ -43,19 +49,22 @@
 
     VoteModel.prototype.registerVote = function (answerId, changeCounts) {
 
-        var answer = this.getAnswerById(answerId);
-        if (answer) {
-            if (changeCounts === undefined || changeCounts === true) {
-                console.log("Model: Registering new vote: " + answerId);
-                answer.count++;
+        this.whenDataIsSet().then(function () {
+            var answer = this.getAnswerById(answerId);
+            if (answer) {
+                if (changeCounts === undefined || changeCounts === true) {
+                    console.log("Model: Registering new vote: " + answerId);
+                    answer.count++;
+                } else {
+                    console.log("Model: Noticing existing vote: " + answerId);
+                }
+                this.choice = answerId;
+                this.fire("dataChanged");
             } else {
-                console.log("Model: Noticing existing vote: " + answerId);
+                console.log("Unrecognised vote: " + answerId)
             }
-            this.choice = answerId;
-            this.fire("dataChanged");
-        } else {
-            console.log("Unrecognised vote: " + answerId)
-        }
+        }.bind(this));
+
     };
 
     VoteModel.prototype.getSummaryText = function () {
@@ -79,7 +88,7 @@
         }
     };
 
-    VoteModel.prototype.destroy = function() {
+    VoteModel.prototype.destroy = function () {
         this.un();
     };
 

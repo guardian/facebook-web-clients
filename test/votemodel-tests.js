@@ -54,6 +54,18 @@
 
     });
 
+    test("Can Register Vote Before Data Arrives", function () {
+
+        model.registerVote("answer1", true);
+
+        equal(model.getAgree(), undefined);
+
+        givenSomeData();
+
+        equal(model.getAgree(), 1);
+
+    });
+
     test("Vote for non existent answer", function () {
 
         givenSomeData();

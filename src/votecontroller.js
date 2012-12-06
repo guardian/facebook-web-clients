@@ -63,7 +63,6 @@
 
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
-
             jQuery.ajax({
                 url: "/vote",
                 type: "POST",

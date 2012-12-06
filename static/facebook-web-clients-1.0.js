@@ -4,105 +4,6 @@ ensurePackage("guardian.ui");
 ensurePackage("guardian.facebook");
 (function (jQuery) {
 
-    function SVGDonut(container) {
-        this.jContainer = jQuery(container);
-        this.initialise();
-    }
-
-    SVGDonut.prototype.jContainer = null;
-    SVGDonut.prototype.paper = null;
-
-    SVGDonut.prototype.initialise = function () {
-        var width = this.jContainer.width(),
-            height = this.jContainer.height(),
-            centerX = width / 2,
-            centerY = height / 2,
-            radius = (Math.min(width, height) - 24) / 2;
-
-        this.paper = new window.Raphael(this.jContainer[0], width, height);
-        this.paper.customAttributes.notch = function (percent) {
-            var alpha = 360 / 100 * percent,
-                rads = (90 - alpha) * Math.PI / 180,
-                dx = width * Math.cos(rads),
-                dy = width * Math.sin(rads),
-                path;
-            path = [
-                ["M", centerX, centerY],
-                ["l", dx, -dy]
-            ];
-            return {path: path};
-        };
-        this.paper.customAttributes.arc = function (percent) {
-            var alpha = 360 / 100 * percent,
-                a = (90 - alpha) * Math.PI / 180,
-                x = centerX + radius * Math.cos(a),
-                y = centerY - radius * Math.sin(a),
-                path;
-            if (percent == 100) {
-                path = [
-                    ["M", centerX, centerY - radius],
-                    ["A", radius, radius, 0, 1, 1, centerX - 0.01, centerX - radius]
-                ];
-            } else {
-                path = [
-                    ["M", centerX, centerY - radius],
-                    ["A", radius, radius, 0, +(alpha > 180), 1, x, y]
-                ];
-            }
-            return {path: path};
-        };
-        this.paper.customAttributes.turn = function (percent, centerAngle) {
-            var alpha = 360 / 100 * percent,
-                angle = centerAngle - (alpha / 2);
-            return ({"transform": ["R" + angle, centerX, centerX].join()});
-        };
-    };
-
-    SVGDonut.prototype.render = function (percent) {
-
-        if (!this.rightSegment) {
-
-            this.paper.path()
-                .attr(SVGDonut.NEGATIVE)
-                .attr({arc: [100]});
-
-            var
-                rightSegment = this.paper.path()
-                    .attr(SVGDonut.POSITIVE)
-                    .attr({arc: [50]}),
-                notch1 = this.paper.path()
-                    .attr(SVGDonut.NOTCH)
-                    .attr({notch: [0]}),
-                notch2 = this.paper.path()
-                    .attr(SVGDonut.NOTCH)
-                    .attr({notch: [50]}),
-                group = this.paper.set()
-                    .push(rightSegment, notch1, notch2)
-                    .attr({turn: [50, SVGDonut.LEFT_ANGLE]});
-
-            this.rightSegment = rightSegment;
-            this.notch2 = notch2;
-            this.group = group;
-
-        }
-
-        this.rightSegment.animate({arc: [percent]}, 500, "ease-in-out");
-        this.notch2.animate({notch: [percent]}, 500, "ease-in-out");
-        this.group.animate({turn: [percent, SVGDonut.LEFT_ANGLE]}, 500, "ease-in-out")
-
-    };
-
-    SVGDonut.LEFT_ANGLE = 270;
-    SVGDonut.RIGHT_ANGLE = 90;
-    SVGDonut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
-    SVGDonut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    SVGDonut.NOTCH = {stroke: "#fff", "stroke-width": 4};
-
-    guardian.ui.SVGDonut = SVGDonut;
-
-})(window.jQuery);
-(function (jQuery) {
-
     function CanvasDonut(container) {
         this.jContainer = jQuery(container);
         this.initialise();
@@ -253,7 +154,6 @@ ensurePackage("guardian.facebook");
 
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
-
             jQuery.ajax({
                 url: "/vote",
                 type: "POST",
@@ -649,6 +549,7 @@ if(typeof module !== 'undefined') {
     function VoteModel() {
         this.choice = undefined;
         this.allowedToVote = true;
+        this.dataDeferred = jQuery.Deferred();
     }
 
     VoteModel.prototype = Object.create(Subscribable.prototype);
@@ -662,19 +563,24 @@ if(typeof module !== 'undefined') {
         this.questionId = data.id;
         this.answers = data.answers;
         this.fire("dataChanged");
+        this.dataDeferred.resolve();
     };
 
-    VoteModel.prototype.setAllowedToVote = function(allowedToVote) {
-        this.allowedToVote =  allowedToVote;
+    VoteModel.prototype.whenDataIsSet = function () {
+        return this.dataDeferred.promise();
+    };
+
+    VoteModel.prototype.setAllowedToVote = function (allowedToVote) {
+        this.allowedToVote = allowedToVote;
         this.fire("dataChanged");
     };
 
     VoteModel.prototype.getAgree = function () {
-        return this.answers[0].count;
+        return this.answers && this.answers[0].count;
     };
 
     VoteModel.prototype.getDisagree = function () {
-        return this.answers[1].count;
+        return this.answers && this.answers[1].count;
     };
 
     VoteModel.prototype.getTotal = function () {
@@ -689,19 +595,22 @@ if(typeof module !== 'undefined') {
 
     VoteModel.prototype.registerVote = function (answerId, changeCounts) {
 
-        var answer = this.getAnswerById(answerId);
-        if (answer) {
-            if (changeCounts === undefined || changeCounts === true) {
-                console.log("Model: Registering new vote: " + answerId);
-                answer.count++;
+        this.whenDataIsSet().then(function () {
+            var answer = this.getAnswerById(answerId);
+            if (answer) {
+                if (changeCounts === undefined || changeCounts === true) {
+                    console.log("Model: Registering new vote: " + answerId);
+                    answer.count++;
+                } else {
+                    console.log("Model: Noticing existing vote: " + answerId);
+                }
+                this.choice = answerId;
+                this.fire("dataChanged");
             } else {
-                console.log("Model: Noticing existing vote: " + answerId);
+                console.log("Unrecognised vote: " + answerId)
             }
-            this.choice = answerId;
-            this.fire("dataChanged");
-        } else {
-            console.log("Unrecognised vote: " + answerId)
-        }
+        }.bind(this));
+
     };
 
     VoteModel.prototype.getSummaryText = function () {
@@ -725,7 +634,7 @@ if(typeof module !== 'undefined') {
         }
     };
 
-    VoteModel.prototype.destroy = function() {
+    VoteModel.prototype.destroy = function () {
         this.un();
     };
 

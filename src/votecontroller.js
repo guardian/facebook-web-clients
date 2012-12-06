@@ -16,6 +16,7 @@
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
             url: "/vote",
+            dataType:'jsonp',
             data: {
                 article: this.getArticleId()
             }
@@ -37,6 +38,7 @@
         jQuery.ajax({
             url: "/user",
             type: "GET",
+            dataType:'jsonp',
             data: {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
@@ -66,6 +68,7 @@
             jQuery.ajax({
                 url: "/vote",
                 type: "POST",
+                dataType:'jsonp',
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,

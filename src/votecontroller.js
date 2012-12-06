@@ -16,7 +16,7 @@
         this.authorizer.on("notAuthorized", this.handleNotAuthorized, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
-            url: this.baseURI + "/vote",
+            url: this.baseURI + "/poll",
             dataType:'jsonp',
             data: {
                 article: this.getArticleId()
@@ -68,7 +68,6 @@
         this.authorizer.authUser().then(function () {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
-                type: "POST",
                 dataType:'jsonp',
                 data: {
                     article: this.getArticleId(),

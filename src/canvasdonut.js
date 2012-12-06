@@ -80,7 +80,7 @@
 
     CanvasDonut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
     CanvasDonut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 2};
+    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 1};
 
     guardian.ui.CanvasDonut = CanvasDonut;
 

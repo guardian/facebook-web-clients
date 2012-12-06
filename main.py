@@ -30,13 +30,11 @@ class FacebookPoll(db.Model):
                     "count": self.yesCount + self.noCount,
                     "answers": [
                         {
-                            "question": 7694,
                             "id": "agree",
                             "count": self.yesCount,
                             "label": "Agree"
                         },
                         {
-                            "question": 7694,
                             "id": "disagree",
                             "count": self.noCount,
                             "label": "Disagree"
@@ -127,7 +125,7 @@ class UserHandler(webapp.RequestHandler):
         obj = get_user_vote(article_id, user_id)
         write_response(self.request, self.response, json.dumps(obj.toMap()))
 
-class VoteHandler(webapp.RequestHandler):
+class GetVoteHandler(webapp.RequestHandler):
     def get(self):
 
         article_id = self.request.get("article")
@@ -136,12 +134,15 @@ class VoteHandler(webapp.RequestHandler):
         write_response(self.request, self.response, json.dumps(obj.toMap()))
 
 
-    def post(self):
+class PostVoteHandler(webapp.RequestHandler):
+    def get(self):
 
         article_id = self.request.get("article")
         choice = self.request.get("action")
         facebook_token = self.request.get("access_token")
         user_id = self.request.get("user")
+
+        logging.info("Got vote from " + user_id + " for article " + article_id)
 
         if register_user_vote(article_id, user_id, choice):
             register_vote(article_id, choice)
@@ -152,4 +153,4 @@ class VoteHandler(webapp.RequestHandler):
             self.response.set_status(400)
 
 
-app = webapp.WSGIApplication([('/vote', VoteHandler), ('/user', UserHandler)], debug=True)
+app = webapp.WSGIApplication([('/poll', GetVoteHandler), ('/vote', PostVoteHandler), ('/user', UserHandler)], debug=True)

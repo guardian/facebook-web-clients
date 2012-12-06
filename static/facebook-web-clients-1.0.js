@@ -84,7 +84,7 @@ ensurePackage("guardian.facebook");
 
     CanvasDonut.POSITIVE = {stroke: "#3A7D00", "stroke-width": 18};
     CanvasDonut.NEGATIVE = {stroke: "#0D3D00", "stroke-width": 18};
-    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 2};
+    CanvasDonut.NOTCH = {stroke: "#fff", "stroke-width": 1};
 
     guardian.ui.CanvasDonut = CanvasDonut;
 
@@ -107,7 +107,7 @@ ensurePackage("guardian.facebook");
         this.authorizer.on("notAuthorized", this.handleNotAuthorized, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
-            url: this.baseURI + "/vote",
+            url: this.baseURI + "/poll",
             dataType:'jsonp',
             data: {
                 article: this.getArticleId()
@@ -159,7 +159,6 @@ ensurePackage("guardian.facebook");
         this.authorizer.authUser().then(function () {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
-                type: "POST",
                 dataType:'jsonp',
                 data: {
                     article: this.getArticleId(),

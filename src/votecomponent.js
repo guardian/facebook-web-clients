@@ -14,12 +14,12 @@
 
     VoteComponent.prototype.initialise = function (donutClass) {
         this.model.on("dataChanged", this.render, this);
-        this.donut = new donutClass(this.jContainer.find(".donutContainer"));
-        this.jContainer.delegate(".btn", "click.voteComponent", this.handleButtonClick.bind(this));
+        this.donut = new donutClass(this.jContainer.find(".donut-container"));
+        this.jContainer.delegate(".btn", "click.vote-component", this.handleButtonClick.bind(this));
     };
 
     VoteComponent.prototype.setVotingInProgress = function() {
-        this.jContainer.find(".socialSummary .text").html("Sending your vote to Facebook...");
+        this.jContainer.find(".social-summary .text").html("Sending your vote to Facebook...");
     };
 
     VoteComponent.prototype.render = function () {
@@ -37,7 +37,7 @@
         });
 
         this.jContainer.find(".choice").toggleClass("btn", this.model.canVote());
-        this.jContainer.find(".socialSummary .text").html(this.model.getSummaryText());
+        this.jContainer.find(".social-summary .text").html(this.model.getSummaryText());
     };
 
     VoteComponent.prototype.handleButtonClick = function (jEvent) {
@@ -49,7 +49,7 @@
 
     VoteComponent.prototype.destroy = function () {
         this.model.un(null, this);
-        this.jContainer.undelegate(".voteComponent");
+        this.jContainer.undelegate(".vote-component");
     };
 
     guardian.facebook.VoteComponent = VoteComponent;

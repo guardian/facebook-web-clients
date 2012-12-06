@@ -2,12 +2,12 @@
 
     module("Login Button", {
         setup: function () {
-            jQuery("body").append('<div class="facebookAuthStatus"><div class="userDetails"></div></div>');
+            jQuery("body").append('<div class="facebook-auth-status"><div class="user-details"></div></div>');
             authorizer = sinon.stub(Object.create(guardian.facebook.Authorizer.prototype));
             Subscribable.prepareInstance(authorizer);
         },
         teardown: function () {
-            jQuery(".facebookAuthStatus").remove();
+            jQuery(".facebook-auth-status").remove();
         }
     });
 
@@ -16,14 +16,14 @@
     test("Logged In", function () {
         given(loggedIn());
         given(newView());
-        thenThe(jQuery(".userDetails .login")).should(haveText("Logged in"));
+        thenThe(jQuery(".user-details .login")).should(haveText("Logged in"));
     });
 
     test("Not Logged In", function () {
         given(loggedIn());
         given(newView());
         when(authorizer.fire("notLoggedIn"));
-        thenThe(jQuery(".userDetails .login")).should(haveText("Log in to Facebook"));
+        thenThe(jQuery(".user-details .login")).should(haveText("Log in to Facebook"));
     });
 
     test("Auth User on Second Login Attempt", function () {
@@ -38,14 +38,14 @@
         given(loggedIn());
         given(newView());
         when(authorizer.fire("gotUserDetails", {name: "Olly"}));
-        thenThe(jQuery(".userDetails .login")).should(haveText("Logged in as Olly"));
+        thenThe(jQuery(".user-details .login")).should(haveText("Logged in as Olly"));
     });
 
     test("Show User Details only if defined", function () {
         given(loggedIn());
         given(newView());
         when(authorizer.fire("gotUserDetails", {}));
-        thenThe(jQuery(".userDetails .login")).should(haveText("Logged in"));
+        thenThe(jQuery(".user-details .login")).should(haveText("Logged in"));
     });
 
     /* End of tests */
@@ -59,7 +59,7 @@
     }
 
     function newView() {
-        view = new guardian.facebook.LoginButtonView(".facebookAuthStatus", authorizer)
+        view = new guardian.facebook.LoginButtonView(".facebook-auth-status", authorizer)
     }
 
 })();

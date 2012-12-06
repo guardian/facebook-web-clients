@@ -9,19 +9,19 @@
     module("Vote Component", {
         setup: function () {
             jQuery("body").append('' +
-                '<div class="voteComponent">' +
-                '<div class="voteArea">' +
+                '<div class="vote-component">' +
+                '<div class="vote-area">' +
                 '<span class="choice btn agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +
-                '<div class="donutContainer"></div>' +
+                '<div class="donut-container"></div>' +
                 '<span class="choice btn disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>' +
                 '</div>' +
-                '<div class="socialSummary">' +
+                '<div class="social-summary">' +
                 '<span class="text">Be the first of your friends to share your opinion.</span>' +
                 '<img src="../static/facebookIcon_16x16.gif"/>' +
                 '</div>' +
                 '</div>');
             model = new guardian.facebook.VoteModel();
-            view = new guardian.facebook.VoteComponent(".voteComponent", model, Donut);
+            view = new guardian.facebook.VoteComponent(".vote-component", model, Donut);
             view.on("voted", function (vote) {
                 model.registerVote(vote);
             });
@@ -29,7 +29,7 @@
         teardown: function () {
             model.destroy();
             view.destroy();
-            jQuery(".voteComponent").remove();
+            jQuery(".vote-component").remove();
         }
     });
 
@@ -80,7 +80,7 @@
 
         when(theUserClicksOn("[data-action='answer2']"));
 
-        thenThe(jQuery(".socialSummary .text"))
+        thenThe(jQuery(".social-summary .text"))
             .should(haveText("Your response was: Unlikely"));
 
     });

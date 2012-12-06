@@ -1,10 +1,10 @@
-.voteComponent .voteArea {
+.vote-component .vote-area {
     position: relative;
     height: 120px;
     margin-bottom: 20px;
 }
 
-.voteComponent .donutContainer {
+.vote-component .donut-container {
     position: absolute;
     top: 0;
     left: 50%;
@@ -13,7 +13,7 @@
     margin-left: -60px;
 }
 
-.voteComponent .choice {
+.vote-component .choice {
     position: absolute;
     top: 45px;
     width: 90px;
@@ -25,7 +25,7 @@
     transition: 1s all ease;
 }
 
-.voteComponent .btn {
+.vote-component .btn {
 
     background: #fcfcfc; /* Old browsers */
     background: -moz-linear-gradient(top, #fcfcfc 0%, #e4e4e4 100%); /* FF3.6+ */
@@ -49,11 +49,11 @@
 
 }
 
-.voteComponent .btn:hover {
+.vote-component .btn:hover {
     border-color: #999;
 }
 
-.voteComponent .choice .count {
+.vote-component .choice .count {
     position: absolute;
     border-radius: 10px;
     color: white;
@@ -61,26 +61,26 @@
     padding: 0 7px;
 }
 
-.voteComponent .choice.agree {
+.vote-component .choice.agree {
     left: 45px;
 }
 
-.voteComponent .choice.agree .count {
+.vote-component .choice.agree .count {
     right: 5px;
     background: #3A7D00;
 }
 
-.voteComponent .choice.disagree {
+.vote-component .choice.disagree {
     right: 45px;
     text-align: right;
 }
 
-.voteComponent .choice.disagree .count {
+.vote-component .choice.disagree .count {
     left: 5px;
     background: #0D3D00;
 }
 
-.voteComponent .socialSummary {
+.vote-component .social-summary {
     font-size: 11px;
     font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
     color: #333;
@@ -89,11 +89,11 @@
     direction: ltr;
 }
 
-.voteComponent .socialSummary img {
+.vote-component .social-summary img {
     float: right;
 }
 
-.userDetails .login {
+.user-details .login {
     display: inline-block;
     background: url(facebookIcon_16x16.gif) no-repeat;
     padding-left: 20px;

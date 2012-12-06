@@ -68,19 +68,19 @@
 
         <div id="article-wrapper">
             <div id="article-body-blocks">
-                <div class="voteComponent">
-                    <div class="voteArea">
+                <div class="vote-component">
+                    <div class="vote-area">
                         <span class="choice agree" data-action="agree"><span class="label"></span><span
                                 class="count"></span></span>
 
-                        <div class="donutContainer"></div>
+                        <div class="donut-container"></div>
                         <span class="choice disagree" data-action="disagree"><span class="count"></span><span
                                 class="label"></span></span>
                     </div>
-                    <div class="socialSummary">
+                    <div class="social-summary">
                         <span class="text"></span>
-                        <div class="facebookAuthStatus">
-                            <div class="userDetails"></div>
+                        <div class="facebook-auth-status">
+                            <div class="user-details"></div>
                         </div>
                     </div>
                 </div>
@@ -96,8 +96,8 @@
     var
             authorizer = new guardian.facebook.Authorizer(document),
             model = new guardian.facebook.VoteModel(),
-            loginButtonView = new guardian.facebook.LoginButtonView(".facebookAuthStatus", authorizer),
-            view = new guardian.facebook.VoteComponent(".voteComponent", model, guardian.ui.CanvasDonut, authorizer),
+            loginButtonView = new guardian.facebook.LoginButtonView(".facebook-auth-status", authorizer),
+            view = new guardian.facebook.VoteComponent(".vote-component", model, guardian.ui.CanvasDonut, authorizer),
             controller = new guardian.facebook.VoteController(model, view, authorizer);
 
     controller.initialise("/");

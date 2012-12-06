@@ -10,12 +10,13 @@
     VoteController.prototype.view = null;
     VoteController.prototype.authorizer = null;
 
-    VoteController.prototype.initialise = function () {
+    VoteController.prototype.initialise = function (baseURI) {
+        this.baseURI = baseURI;
         this.authorizer.on("connected", this.checkExistingVote, this);
         this.authorizer.on("notAuthorized", this.handleNotAuthorized, this);
         this.view.on("voted", this.submitVote, this);
         jQuery.ajax({
-            url: "/vote",
+            url: this.baseURI + "/vote",
             dataType:'jsonp',
             data: {
                 article: this.getArticleId()
@@ -36,7 +37,7 @@
         console.log("Controller: Checking for existing votes  on user " + this.authorizer.userId);
 
         jQuery.ajax({
-            url: "/user",
+            url: this.baseURI + "/user",
             type: "GET",
             dataType:'jsonp',
             data: {
@@ -66,7 +67,7 @@
     VoteController.prototype.submitVote = function (choice) {
         this.authorizer.authUser().then(function () {
             jQuery.ajax({
-                url: "/vote",
+                url: this.baseURI + "/vote",
                 type: "POST",
                 dataType:'jsonp',
                 data: {

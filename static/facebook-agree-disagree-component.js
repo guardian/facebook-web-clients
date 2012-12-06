@@ -1,7 +1,7 @@
 (function() {
 
     var baseURI = "http://facebook-web-clients.appspot.com",
-        cssFile = "/static/votecomponent.css";
+        cssFile = baseURI + "/static/votecomponent.css";
 
     (document.createStyleSheet) ? document.createStyleSheet(cssFile) : jQuery('<link rel="stylesheet" type="text/css" href="' + cssFile + '" />').appendTo('head');
 
@@ -14,7 +14,7 @@
             loginButtonView = new guardian.facebook.LoginButtonView(".facebook-auth-status", authorizer),
             controller = new guardian.facebook.VoteController(model, view, authorizer);
 
-        controller.initialise();
+        controller.initialise(baseURI);
 
     });
 })();

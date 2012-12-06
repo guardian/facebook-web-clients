@@ -1,7 +1,7 @@
 (function () {
 
     function VoteComponent(selector, model, donutClass) {
-        this.jContainer = jQuery(selector);
+        this.jContainer = jQuery(selector).removeClass("initially-off");
         this.model = model;
         this.initialise(donutClass);
     }

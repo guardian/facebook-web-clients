@@ -11,8 +11,8 @@
     CanvasDonut.prototype.getCanvas = function () {
 
         var canvas = document.createElement("canvas");
-        canvas.width = this.jContainer.width();
-        canvas.height = this.jContainer.height();
+        canvas.width = this.jContainer.width() || 160;
+        canvas.height = this.jContainer.height() || 160;
         this.jContainer[0].appendChild(canvas);
 
         if (window.G_vmlCanvasManager) {

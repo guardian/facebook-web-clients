@@ -13,12 +13,13 @@
     VoteComponent.prototype.model = null;
 
     VoteComponent.prototype.initialise = function (donutClass) {
+        this.jContainer.html(VoteComponent.HTML);
         this.model.on("dataChanged", this.render, this);
         this.donut = new donutClass(this.jContainer.find(".donut-container"));
         this.jContainer.delegate(".btn", "click.vote-component", this.handleButtonClick.bind(this));
     };
 
-    VoteComponent.prototype.setVotingInProgress = function() {
+    VoteComponent.prototype.setVotingInProgress = function () {
         this.jContainer.find(".social-summary .text").html("Sending your vote to Facebook...");
     };
 
@@ -51,6 +52,21 @@
         this.model.un(null, this);
         this.jContainer.undelegate(".vote-component");
     };
+
+    VoteComponent.HTML = '' +
+        '<div class="vote-component">' +
+        '<div class="vote-area">' +
+        '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +
+        '<div class="donut-container"></div>' +
+        '<span class="choice disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>' +
+        '</div>' +
+        '<div class="social-summary">' +
+        '<span class="text"></span>' +
+        '<div class="facebook-auth-status">' +
+        '<div class="user-details"></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
 
     guardian.facebook.VoteComponent = VoteComponent;
 

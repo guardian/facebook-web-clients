@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<microapp interface-version="1" version="1.0" provider="guardian.co.uk">
+    <components>
+
+        <component-definition
+                display-name="Agree / Disagree on Facebook"
+                name="facebook-agree-disagree-component"
+                path="static/facebook-web-clients-1.0.min.js"
+                ajax="true"
+                widths="460"/>
+
+    </components>
+</microapp>

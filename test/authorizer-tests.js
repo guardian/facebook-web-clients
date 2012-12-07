@@ -7,12 +7,15 @@
                 api: sinon.spy(function (path, callback) {
                     callback(userData);
                 }),
+                login: sinon.spy(function (callback, permissions) {
+                    callback(loginResponse);
+                }),
                 getLoginStatus: sinon.stub(),
                 init: sinon.stub()
             };
             userDetailsCallback = sinon.stub();
-            authorizer._configureFacebookScript = function() {
-                this.scriptLoaded();
+            authorizer._configureFacebookScript = function () {
+                this.scriptLoaded(FB);
             };
             authorizer.on("gotUserDetails", userDetailsCallback);
         },
@@ -23,27 +26,45 @@
         }
     });
 
-    var authorizer, userData, userDetailsCallback;
+    var authorizer, userData, loginResponse, userDetailsCallback;
 
     test("Calls FB.init() after loading the script", function () {
 
-        authorizer.loadFacebookAPI();
+        authorizer.getLoginStatus();
 
         thenThe(FB.init).shouldHaveBeen(calledOnce);
 
     });
 
-    test("Doesn't add the script or FB.init() more than once", function () {
+    test("Doesn't load the script or call FB.init() more than once", function () {
 
-        authorizer.loadFacebookAPI();
+        authorizer.getLoginStatus();
 
         thenThe(FB.init).shouldHaveBeen(calledOnce);
 
         equal(jQuery("#facebook-jssdk").length, 1);
 
-        authorizer.loadFacebookAPI();
+        authorizer.getLoginStatus();
 
         thenThe(FB.init).shouldNotHaveBeen(calledAgain);
+
+    });
+
+    test("Will load Facebook if requested to auth the user", function () {
+
+        given(loginResponse = {
+            status: 'connected',
+            authResponse: {
+                accessToken: '123',
+                userID: '123456'
+            }
+        });
+
+        authorizer.authUser();
+
+        thenThe(FB.init).shouldHaveBeen(calledOnce);
+        equal(authorizer.accessToken, '123');
+        equal(authorizer.userId, '123456');
 
     });
 
@@ -71,11 +92,15 @@
 
     test("Gets user data", function () {
 
+        given(loginResponse = {
+            status: 'not_authorized'
+        });
+
         given(userData = {
             "name": "Olly"
         });
 
-        when(authorizer.getUserData());
+        when(authorizer.authUser());
 
         thenThe(userDetailsCallback)
             .shouldHaveBeen(calledOnce)
@@ -85,11 +110,15 @@
 
     test("Doesn't fire if no user data", function () {
 
+        given(loginResponse = {
+            status: 'not_authorized'
+        });
+
         given(userData = {
             "error": "Something bad happened"
         });
 
-        when(authorizer.getUserData());
+        when(authorizer.authUser());
 
         thenThe(userDetailsCallback).shouldHaveBeen(notCalled);
 

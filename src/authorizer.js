@@ -79,15 +79,26 @@
         }.bind(this));
     };
 
-    Authorizer.prototype.authorize = function () {
-        var js, id = 'facebook-jssdk', ref = document.getElementsByTagName('script')[0];
-        if (!document.getElementById(id)) {
-            js = document.createElement('script');
-            js.id = id;
-            js.async = true;
-            js.src = "//connect.facebook.net/en_US/all.js";
-            js.onload = this.scriptLoaded.bind(this);
-            ref.parentNode.insertBefore(js, ref);
+    var scriptId = 'facebook-jssdk';
+
+    /**
+     * @private
+     */
+    Authorizer.prototype._configureFacebookScript = function (js) {
+        js.async = true;
+        js.src = "//connect.facebook.net/en_US/all.js";
+        js.onload = this.scriptLoaded.bind(this);
+    };
+
+    Authorizer.prototype.loadFacebookAPI = function () {
+        var firstScript, scriptElement;
+
+        if (!document.getElementById(scriptId)) {
+            scriptElement = document.createElement('script');
+            scriptElement.id = scriptId;
+            firstScript = document.getElementsByTagName('script')[0];
+            this._configureFacebookScript(scriptElement);
+            firstScript.parentNode.insertBefore(scriptElement, firstScript);
         } else {
             this.getLoginStatus();
         }

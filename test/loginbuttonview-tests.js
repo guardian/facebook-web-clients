@@ -51,7 +51,7 @@
     /* End of tests */
 
     function loggedIn() {
-        authorizer.authorize.returns({
+        authorizer.loadFacebookAPI.returns({
             then: function (fn) {
                 fn();
             }

@@ -1,21 +1,51 @@
 (function () {
 
-    module("Authorizer", {
+    module("Facebook Authorizer", {
         setup: function () {
             authorizer = new guardian.facebook.Authorizer();
-            FB = {};
-            FB.api = sinon.spy(function (path, callback) {
-                callback(userData);
-            });
+            FB = {
+                api: sinon.spy(function (path, callback) {
+                    callback(userData);
+                }),
+                getLoginStatus: sinon.stub(),
+                init: sinon.stub()
+            };
             userDetailsCallback = sinon.stub();
+            authorizer._configureFacebookScript = function() {
+                this.scriptLoaded();
+            };
             authorizer.on("gotUserDetails", userDetailsCallback);
         },
         teardown: function () {
+            delete window.FB;
             jQuery("meta").remove();
+            jQuery("#facebook-jssdk").remove();
         }
     });
 
     var authorizer, userData, userDetailsCallback;
+
+    test("Calls FB.init() after loading the script", function () {
+
+        authorizer.loadFacebookAPI();
+
+        thenThe(FB.init).shouldHaveBeen(calledOnce);
+
+    });
+
+    test("Doesn't add the script or FB.init() more than once", function () {
+
+        authorizer.loadFacebookAPI();
+
+        thenThe(FB.init).shouldHaveBeen(calledOnce);
+
+        equal(jQuery("#facebook-jssdk").length, 1);
+
+        authorizer.loadFacebookAPI();
+
+        thenThe(FB.init).shouldNotHaveBeen(calledAgain);
+
+    });
 
     test("Gets Facebook App Id from the page", function () {
 
@@ -27,7 +57,7 @@
 
     test("Gets Facebook from identity if provided by identity", function () {
 
-        given (window.identity = {
+        given(window.identity = {
             facebook: {
                 appId: "123456789"
             }

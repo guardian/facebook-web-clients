@@ -3,7 +3,7 @@
     function LoginButtonView(selector, authorizer) {
         this.jContainer = jQuery(selector);
         this.authorizer = authorizer;
-        this.authorizer.authorize().then(this.showLoggedIn.bind(this));
+        this.authorizer.loadFacebookAPI().then(this.showLoggedIn.bind(this));
         this.authorizer.on("notLoggedIn", this.showLoginButton, this);
         this.authorizer.on("notAuthorized", this.showAuthorizeButton, this);
         this.authorizer.on("gotUserDetails", this.showLoggedIn, this);

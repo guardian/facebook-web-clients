@@ -15,11 +15,6 @@
             deferred = jQuery.Deferred();
             model.whenDataIsSet.returns(deferred.promise());
             authorizer = sinon.stub(Object.create(guardian.facebook.Authorizer.prototype));
-            authorizer.authorize.returns({
-                then: function (fn) {
-                    fn();
-                }
-            });
             authorizer.getLoginStatus.returns({
                 then: function (fn) {
                     fn();

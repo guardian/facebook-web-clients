@@ -1,7 +1,8 @@
 /* Facebook Web Clients 1.0 */
 
 .vote-component {
-    min-height: 180px;
+    height: 0;
+    overflow-y: hidden;
 }
 
 .vote-component .vote-area {

@@ -1,5 +1,6 @@
 .vote-component {
-    min-height: 180px;
+    height: 0;
+    overflow-y: hidden;
 }
 
 .vote-component .vote-area {

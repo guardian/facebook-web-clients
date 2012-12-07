@@ -39,6 +39,11 @@
 
         this.jContainer.find(".choice").toggleClass("btn", this.model.canVote());
         this.jContainer.find(".social-summary .text").html(this.model.getSummaryText());
+
+        if (!this.animated) {
+            this.animated = true;
+            jQuery(".vote-component").animate({"height": "180px"});
+        }
     };
 
     VoteComponent.prototype.handleButtonClick = function (jEvent) {

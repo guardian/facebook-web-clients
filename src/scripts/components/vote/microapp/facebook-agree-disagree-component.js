@@ -1,6 +1,6 @@
 (function () {
 
-    var baseURI = "http://facebook-web-clients.appspot.com",
+    var baseURI = window.baseURI || "http://facebook-web-clients.appspot.com",
         cssFile = baseURI + "/static/facebook-components-vote-1.0.css";
 
     (document.createStyleSheet) ? document.createStyleSheet(cssFile) : jQuery('<link rel="stylesheet" type="text/css" href="' + cssFile + '" />').appendTo('head');

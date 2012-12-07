@@ -1,3 +1,5 @@
+/* Facebook Web Clients 1.0 */
+
 .vote-component {
     min-height: 180px;
 }
@@ -99,7 +101,7 @@
 
 .user-details .login {
     display: inline-block;
-    background: url(facebookIcon_16x16.gif) no-repeat;
+    background: url(../../../../static/facebookIcon_16x16.gif) no-repeat;
     padding-left: 20px;
     line-height: 18px;
 }

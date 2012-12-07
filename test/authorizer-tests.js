@@ -47,7 +47,7 @@
 
     });
 
-    test("Gets Facebook App Id from the page", function () {
+    test("Gets Facebook App ID from the page", function () {
 
         given(jQuery("head").append('<meta property="fb:app_id" content="289251094430759">'));
 
@@ -55,7 +55,7 @@
 
     });
 
-    test("Gets Facebook from identity if provided by identity", function () {
+    test("Gets Facebook App ID from identity if available", function () {
 
         given(window.identity = {
             facebook: {

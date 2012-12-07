@@ -1,5 +1,7 @@
 (function (jQuery) {
 
+    ensurePackage("guardian.ui");
+
     function CanvasDonut(container) {
         this.jContainer = jQuery(container);
         this.initialise();

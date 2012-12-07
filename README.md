@@ -3,9 +3,22 @@ Facebook Web Clients
 
 A set of front end components for performing social actions.
 
+Building
+--------
+
+The Javascript files are built with GruntJS (npm install gruntjs)
+
+To build and run the tests, enter the following from the project base dir:
+
+```
+grunt test
+```
+
 Running Locally
 ---------------
-Note that you will need to be on a guardian.co.uk domain
+Note that you will need to be on a domain expected by the appropriate guardian facebook app for the auth to be successful.
+
+For instance, for "theguardian" facebook app:
 
 Add the following to your /etc/hosts:
 ```
@@ -18,7 +31,7 @@ Then visit http://fwc.guardian.co.uk:8080/test/demo.html
 Facebook Users
 --------------
 
-Here's a test user account:
+Here's a test user FB account:
 vkokdic_wongson_1354618831@tfbnw.net
 PW: 123456
 
@@ -26,6 +39,7 @@ Micro App
 ---------
 
 Slot: above-article-embed
+
 Name: facebook-agree-disagree-component
 
 On App Engine
@@ -40,4 +54,19 @@ Authorizer
 
 Authorizer provides a mechanism for getting access to the FB object. It takes care of loading and authing your apps and
 makes it easy to ensure that tasks are executed in the right order.
+
+```
+require([baseURI + "/static/facebook-authorizer-1.0.js"],
+    function () {
+
+        var authorizer = new guardian.facebook.Authorizer(document);
+
+        authorizer.loadFacebookAPI().then(function () {
+            FB.api(...);
+        });
+
+    });
+```
+
+
 

@@ -333,7 +333,7 @@ if(typeof module !== 'undefined') {
      */
     Authorizer.prototype.authUser = function () {
         if (!this.accessToken) {
-            this._loadFacebookAPI().then(function (FB) {
+            this._loadFacebookAPI().then(function () {
                 FB.login(this.handleGotLoginStatus.bind(this), permissions);
             }.bind(this))
         }
@@ -345,7 +345,7 @@ if(typeof module !== 'undefined') {
      * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
      */
     Authorizer.prototype.getLoginStatus = function () {
-        this._loadFacebookAPI().then(function (FB) {
+        this._loadFacebookAPI().then(function () {
             // Checks if the current user is logged in and has authorized the app
             FB.getLoginStatus(this.handleGotLoginStatus.bind(this), permissions);
         }.bind(this));

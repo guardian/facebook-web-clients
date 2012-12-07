@@ -53,13 +53,11 @@ JS API
 Authorizer provides a mechanism for getting access to the FB object. It takes care of loading and authing your apps and
 makes it easy to ensure that tasks are executed in the right order.
 
-It also passes you a reference to the FB instance so you don't need to rely on globals.
-
 ```
 require([baseURI + "/static/facebook-authorizer-1.0.js"],
     function () {
         var authorizer = new guardian.facebook.Authorizer(document);
-        authorizer.loadFacebookAPI().then(function (FB) {
+        authorizer.loadFacebookAPI().then(function () {
             FB.api(...);
         });
     });

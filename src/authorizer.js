@@ -16,7 +16,8 @@
     };
 
     Authorizer.prototype.getAppId = function () {
-        return jQuery("meta[property='fb:app_id']").attr("content");
+        var identityId = window.identity && identity.facebook && identity.facebook.appId;
+        return identityId || jQuery("meta[property='fb:app_id']").attr("content");
     };
 
     Authorizer.prototype.scriptLoaded = function () {
@@ -87,6 +88,8 @@
             js.src = "//connect.facebook.net/en_US/all.js";
             js.onload = this.scriptLoaded.bind(this);
             ref.parentNode.insertBefore(js, ref);
+        } else {
+            this.getLoginStatus();
         }
         return this.getPromise();
     };

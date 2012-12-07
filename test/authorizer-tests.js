@@ -4,7 +4,7 @@
         setup: function () {
             authorizer = new guardian.facebook.Authorizer();
             FB = {};
-            FB.api = sinon.spy(function(path, callback) {
+            FB.api = sinon.spy(function (path, callback) {
                 callback(userData);
             });
             userDetailsCallback = sinon.stub();
@@ -25,7 +25,21 @@
 
     });
 
-    test("Gets user data", function() {
+    test("Gets Facebook from identity if provided by identity", function () {
+
+        given (window.identity = {
+            facebook: {
+                appId: "123456789"
+            }
+        });
+
+        given(jQuery("head").append('<meta property="fb:app_id" content="289251094430759">'));
+
+        equal(authorizer.getAppId(), "123456789");
+
+    });
+
+    test("Gets user data", function () {
 
         given(userData = {
             "name": "Olly"
@@ -39,7 +53,7 @@
 
     });
 
-    test("Doesn't fire if no user data", function() {
+    test("Doesn't fire if no user data", function () {
 
         given(userData = {
             "error": "Something bad happened"

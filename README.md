@@ -33,3 +33,11 @@ On App Engine
 
 http://facebook-web-clients.appspot.com/test/demo.html
 
+JS API
+------
+
+Authorizer
+
+Authorizer provides a mechanism for getting access to the FB object. It takes care of loading and authing your apps and
+makes it easy to ensure that tasks are executed in the right order.
+

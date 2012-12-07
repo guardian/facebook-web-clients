@@ -3,8 +3,7 @@ from google.appengine.api import urlfetch
 from google.appengine.ext import db
 import json, webapp2, logging, urllib
 
-#app_id = "theguardian-spike"
-app_id = "theguardian"
+app_namespace = "theguardian-gucode"
 
 class UserVote(db.Model):
     userId = db.StringProperty(required=True)
@@ -112,7 +111,7 @@ def post_to_facebook(article_id, facebook_token, choice):
         "access_token": facebook_token
     }
 
-    url = "https://graph.facebook.com/me/%s:%s" % (app_id, choice)
+    url = "https://graph.facebook.com/me/%s:%s" % (app_namespace, choice)
 
     form_data = urllib.urlencode(form_fields)
     return urlfetch.fetch(url=url, payload=form_data, method=urlfetch.POST)

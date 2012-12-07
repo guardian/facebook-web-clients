@@ -3,19 +3,19 @@
     module("Facebook Authorizer", {
         setup: function () {
             authorizer = new guardian.facebook.Authorizer();
-            FB = {
-                api: sinon.spy(function (path, callback) {
-                    callback(userData);
-                }),
-                login: sinon.spy(function (callback, permissions) {
-                    callback(loginResponse);
-                }),
-                getLoginStatus: sinon.stub(),
-                init: sinon.stub()
-            };
             userDetailsCallback = sinon.stub();
             authorizer._configureFacebookScript = function () {
-                this.scriptLoaded(FB);
+                window.FB = {
+                    api: sinon.spy(function (path, callback) {
+                        callback(userData);
+                    }),
+                    login: sinon.spy(function (callback, permissions) {
+                        callback(loginResponse);
+                    }),
+                    getLoginStatus: sinon.stub(),
+                    init: sinon.stub()
+                };
+                this.scriptLoaded(window.FB);
             };
             authorizer.on("gotUserDetails", userDetailsCallback);
         },

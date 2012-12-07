@@ -532,7 +532,7 @@ if(typeof module !== 'undefined') {
         if (this.choice) {
             return "Your response was: " + this.getAnswerById(this.choice).label;
         } else {
-            return "Your vote will be counted and shared on Facebook";
+            return "Share your prediction via Facebook";
         }
     };
 

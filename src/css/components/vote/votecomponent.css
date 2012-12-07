@@ -1,6 +1,6 @@
 .vote-component {
     height: 0;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 .vote-component .vote-area {

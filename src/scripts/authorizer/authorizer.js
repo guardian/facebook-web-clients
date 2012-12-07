@@ -17,6 +17,7 @@
      * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
      */
     Authorizer.prototype.authUser = function () {
+        console.log("Authorizer: authUser");
         if (!this.accessToken) {
             this._loadFacebookAPI().then(function () {
                 FB.login(this.handleGotLoginStatus.bind(this), permissions);
@@ -30,6 +31,7 @@
      * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
      */
     Authorizer.prototype.getLoginStatus = function () {
+        console.log("Authorizer: getLoginStatus");
         this._loadFacebookAPI().then(function () {
             // Checks if the current user is logged in and has authorized the app
             FB.getLoginStatus(this.handleGotLoginStatus.bind(this), permissions);
@@ -81,6 +83,7 @@
      * @private
      */
     Authorizer.prototype.getAppId = function () {
+        console.log("Authorizer: Getting app id");
         var identityId = window.identity && identity.facebook && identity.facebook.appId;
         return identityId || jQuery("meta[property='fb:app_id']").attr("content");
     };
@@ -90,6 +93,8 @@
      */
     Authorizer.prototype.scriptLoaded = function () {
 
+        console.log("Authorizer: Handling script loaded");
+
         FB.init({
             appId: this.getAppId(),
             channelUrl: '//' + document.location.host + ':' + document.location.port + '/channel.html',
@@ -98,33 +103,28 @@
             xfbml: true  // parse XFBML
         });
 
-        this.scriptLoadDeferred.resolve(FB);
+        this.scriptLoadDeferred.resolve();
 
     };
 
     /**
      * @private
      */
-    Authorizer.prototype._configureFacebookScript = function (js) {
-        js.async = true;
-        js.src = "//connect.facebook.net/en_US/all.js";
-        js.onload = this.scriptLoaded.bind(this);
+    Authorizer.prototype._configureFacebookScript = function () {
+        require(['http:////connect.facebook.net/en_US/all.js'], this.scriptLoaded.bind(this))
     };
 
     /**
      * @private
      */
     Authorizer.prototype._loadFacebookAPI = function () {
-        var firstScript, scriptElement;
+        console.log("Authorizer: Loading Facebook API");
 
-        if (!document.getElementById(scriptId)) {
-            scriptElement = document.createElement('script');
-            scriptElement.id = scriptId;
-            firstScript = document.getElementsByTagName('script')[0];
-            this._configureFacebookScript(scriptElement);
-            firstScript.parentNode.insertBefore(scriptElement, firstScript);
-        } else {
-            this.scriptLoadDeferred.resolve({FB: window.FB})
+        if (window.FB) {
+            this.scriptLoadDeferred.resolve();
+        } else if (!document.getElementById(scriptId) && this.requiredAlready) {
+            this.requiredAlready = true;
+            this._configureFacebookScript();
         }
         return this.scriptLoadDeferred.promise();
     };

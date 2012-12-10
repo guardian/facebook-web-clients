@@ -12,9 +12,14 @@
 
     VoteController.prototype.initialise = function (baseURI) {
         this.baseURI = baseURI;
-        this.authorizer.on("connected", this.checkExistingVote, this);
-        this.authorizer.on("notAuthorized", this.handleNotAuthorized, this);
-        this.view.on("voted", this.submitVote, this);
+
+        this.checkExistingVoteCallback = this.checkExistingVote.bind(this);
+        this.authorizer.on(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
+
+        this.handleNotAuthorizedCallback = this.handleNotAuthorized.bind(this);
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
+
+        this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
             url: this.baseURI + "/poll",
             dataType:'jsonp',
@@ -90,7 +95,8 @@
     };
 
     VoteController.prototype.destroy = function () {
-        this.model.un(null, this);
+        this.model.removeEvent(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
+        this.model.removeEvent(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
     };
 
     VoteController.APP_NAMESPACE = "theguardian-spike";

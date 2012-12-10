@@ -17,10 +17,11 @@
                 };
                 this.scriptLoaded(window.FB);
             };
-            authorizer.on("gotUserDetails", userDetailsCallback);
+            authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, userDetailsCallback);
         },
         teardown: function () {
             delete window.FB;
+            authorizer.destroy();
             jQuery("meta").remove();
             jQuery("#facebook-jssdk").remove();
         }
@@ -41,8 +42,6 @@
         authorizer.getLoginStatus();
 
         thenThe(FB.init).shouldHaveBeen(calledOnce);
-
-        equal(jQuery("#facebook-jssdk").length, 1);
 
         authorizer.getLoginStatus();
 

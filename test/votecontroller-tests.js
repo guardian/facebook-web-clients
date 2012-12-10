@@ -25,11 +25,12 @@
                     fn();
                 }
             });
-            view = new Subscribable();
+            view = new EventEmitter();
             controller = new guardian.facebook.VoteController(model, view, authorizer)
         },
         teardown: function () {
-            jQuery.ajax.restore()
+            jQuery.ajax.restore();
+            delete window.FB;
         }
     });
 
@@ -64,7 +65,7 @@
         when(controller.initialise("/some_url"));
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledOnce)
-        when(view.fire("voted", "Disagree"));
+        when(view.trigger("voted", ["Disagree"]));
         thenThe(authorizer.authUser).shouldHaveBeen(calledOnce);
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledAgain);
@@ -73,14 +74,14 @@
     test("Handles already voted", function () {
         when(controller.initialise("/some_url"));
         given(userAlreadyVoted());
-        when(view.fire("voted", "Disagree"));
+        when(view.trigger("voted", ["Disagree"]));
         thenThe(model.registerVote).shouldNotHaveBeen(calledOnce);
     });
 
     test("Handles error", function () {
         when(controller.initialise("/some_url"));
         given(serverHasError());
-        when(view.fire("voted", "Disagree"));
+        when(view.trigger("voted", ["Disagree"]));
         thenThe(model.registerVote).shouldNotHaveBeen(calledOnce);
     });
 

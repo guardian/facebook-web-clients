@@ -2,317 +2,295 @@
 
 ensurePackage("guardian.facebook");
 /**
- * @class
+ * EventEmitter v4.0.3 - git.io/ee
+ * Oliver Caldwell
+ * MIT license
  */
-var Subscribable = (function () {
 
-    "use strict";
+;(function(exports) {
+    // JSHint config - http://www.jshint.com/
+    /*jshint laxcomma:true*/
+    /*global define:true*/
+
+    // Place the script in strict mode
+    'use strict';
 
     /**
-     * The Subscribable class is the underlying component in a pub/sub application providing the ability
-     * to "fire" events and bind handlers using "on" and remove them again with "un"
+     * Class for managing events.
+     * Can be extended to provide event functionality in other classes.
      *
-     * @constructor
-     * @name Subscribable
+     * @class Manages event registering and emitting.
      */
-    function Subscribable() {
+    function EventEmitter(){}
+
+    // Shortcuts to improve speed and size
+
+    // Easy access to the prototype
+    var proto = EventEmitter.prototype
+
+    // Existence of a native indexOf
+        , nativeIndexOf = Array.prototype.indexOf ? true : false;
+
+    /**
+     * Finds the index of the listener for the event in it's storage array
+     *
+     * @param {Function} listener Method to look for.
+     * @param {Function[]} listeners Array of listeners to search through.
+     * @return {Number} Index of the specified listener, -1 if not found
+     */
+    function indexOfListener(listener, listeners) {
+        // Return the index via the native method if possible
+        if(nativeIndexOf) {
+            return listeners.indexOf(listener);
+        }
+
+        // There is no native method
+        // Use a manual loop to find the index
+        var i = listeners.length;
+        while(i--) {
+            // If the listener matches, return it's index
+            if(listeners[i] === listener) {
+                return i;
+            }
+        }
+
+        // Default to returning -1
+        return -1;
     }
 
     /**
+     * Returns the listener array for the specified event.
+     * Will initialise the event object and listener arrays if required.
      *
-     * @param {Object} subscribable
+     * @param {String} evt Name of the event to return the listeners from.
+     * @return {Function[]} All listener functions for the event.
+     * @doc
      */
-    Subscribable.prepareInstance = function(subscribable) {
-        subscribable.__events = {};
-        subscribable.__handlers = [];
-        subscribable.on = Subscribable.on;
-        subscribable.un = Subscribable.un;
-        subscribable.fire = Subscribable.fire;
-        subscribable.hasListener = Subscribable.hasListener;
+    proto.getListeners = function(evt) {
+        // Create a shortcut to the storage object
+        // Initialise it if it does not exists yet
+        var events = this._events || (this._events = {});
+
+        // Return the listener array
+        // Initialise it if it does not exist
+        return events[evt] || (events[evt] = []);
     };
 
     /**
-     * The events object stores the names of the events that have listeners and the numeric IDs of the handlers
-     * that are listening to the events.
-     * @type {Object[]}
-     */
-    Subscribable.prototype.__events = null;
-
-    /**
-     * The handlers object is an array of handlers that will respond to the events being fired.
-     * @type {Object[]}
-     */
-    Subscribable.prototype.__handlers = null;
-
-    /**
+     * Adds a listener function to the specified event.
+     * The listener will not be added if it is a duplicate.
+     * If the listener returns true then it will be removed after it is called.
      *
+     * @param {String} evt Name of the event to attach the listener to.
+     * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     * @doc
      */
-    Subscribable.prototype.on = function() {
-        Subscribable.prepareInstance(this);
-        return this.on.apply(this, arguments);
-    };
+    proto.addListener = function(evt, listener) {
+        // Fetch the listeners
+        var listeners = this.getListeners(evt);
 
-    /**
-     *
-     */
-    Subscribable.prototype.un = function() {
+        // Push the listener into the array if it is not already there
+        if(indexOfListener(listener, listeners) === -1) {
+            listeners.push(listener);
+        }
+
+        // Return the instance of EventEmitter to allow chaining
         return this;
     };
 
     /**
-     *
+     * Alias of addListener
+     * @doc
      */
-    Subscribable.prototype.fire = function() {
-        return true;
-    };
+    proto.on = proto.addListener;
 
     /**
-     * Checks for whether there are any listeners for the supplied event type, where the event type can either be the
-     * string name of an event or an event constructor.
+     * Removes a listener function from the specified event.
      *
-     * When the eventType parameter is omitted, the method will check for a handler against any event type.
-     *
-     * @param {String|Function} [eventType]
+     * @param {String} evt Name of the event to remove the listener from.
+     * @param {Function} listener Method to remove from the event.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     * @doc
      */
-    Subscribable.prototype.hasListener = function(eventType) {
-        return false;
-    };
+    proto.removeListener = function(evt, listener) {
+        // Fetch the listeners
+        // And get the index of the listener in the array
+        var listeners = this.getListeners(evt)
+            , index = indexOfListener(listener, listeners);
 
-    /**
-     * Fires the named event with any arguments used as the call to fire.
-     *
-     * @param {String} eventName
-     */
-    Subscribable.fire = function(eventName) {
-        var i, l,
-            returnValue,
-            args,
-            handler,
-            handlerIds;
+        // If the listener was found then remove it
+        if(index !== -1) {
+            listeners.splice(index, 1);
 
-        if(typeof eventName == 'object') {
-            args = [eventName];
-            eventName = eventName.constructor.toString();
-        }
-
-        handlerIds = Subscribable._getHandlersList(this, eventName, false);
-
-        if(handlerIds && handlerIds.length) {
-            args = args || Array.prototype.slice.call(arguments, 1);
-            for(returnValue, i = 0, l = handlerIds.length; i < l && returnValue !== false; i++) {
-                if(handler = this.__handlers[handlerIds[i]]) {
-                    returnValue = handler[0].apply(handler[1], args);
-                }
-            }
-            return returnValue !== false;
-        }
-
-        return true;
-    };
-
-    /**
-     * Gets the list of handler IDs for the supplied event name in the Subscribable instance. When
-     * the create parameter is set to true and the event has not yet been set up in the Subscribable
-     * it will be created.
-     *
-     * @param {Subscribable} instance
-     * @param {String} eventName
-     * @param {Boolean} create
-     * @return {Number[]}
-     */
-    Subscribable._getHandlersList = function(instance, eventName, create) {
-        eventName = ('' + eventName).toLowerCase();
-        if(!instance.__events[eventName] && create) {
-            instance.__events[eventName] = [];
-        }
-        return instance.__events[eventName];
-    };
-
-    /**
-     * Attaches the supplied handler/scope as a listener in the supplied event list.
-     *
-     * @param {Function} handler
-     * @param {Object} scope
-     * @param {Number[]} eventList
-     */
-    Subscribable._saveHandler = function(instance, handler, scope, eventList) {
-        var handlerId = instance.__handlers.length;
-        instance.__handlers.push( [handler, scope, handlerId] );
-        eventList.push(handlerId);
-
-        return handlerId;
-    };
-
-    /**
-     * Attaches the supplied handler and scope as a listener for the supplied event name. The return value is
-     * the numerical ID of the handler that has been added to allow for removal of a single event handler in the
-     * "un" method.
-     *
-     * @param {String} eventName
-     * @param {Function} handler
-     * @param {Object} scope
-     * @return {Number}
-     */
-    Subscribable.on = function(eventName, handler, scope) {
-        return Subscribable._saveHandler(this, handler, scope, Subscribable._getHandlersList(this, eventName, true));
-    };
-
-    /**
-     * Remove handlers for the specified selector - the selector type can either be a number (which is the ID of a single
-     * handler and is the result of using the .on method), a string event name (which is the same string used as the event
-     * name in the .on method), the Function constructor of an event object (that has a .toString method to return the
-     * name of the associated event) or an object that is the scope of a handler (in which case, any handler for any
-     * event that uses that object as the scope will be removed).
-     *
-     * @param {Object|String|Number|Function} un
-     * @param {Object} [scopeCheck]
-     */
-    Subscribable.un = function(un, scopeCheck) {
-        var typeofRemoval = typeof un;
-        switch(typeofRemoval) {
-            case 'number':
-                Subscribable.removeSingleEvent(this, un, scopeCheck);
-                break;
-
-            case 'string':
-            case 'function':
-                un = ('' + un).toLowerCase();
-                Subscribable.removeMultipleEvents(this,
-                    Subscribable._getHandlersList(this, un, false), scopeCheck);
-                if(scopeCheck) {
-                    Subscribable.consolidateEvents(this, un);
-                }
-                break;
-
-            default:
-                if(un) {
-                    Subscribable.removeMultipleHandlers(this, this.__handlers, un || null);
-                    Subscribable.consolidateEvents(this);
-                }
-                else {
-                    this.__handlers = [];
-                    this.__events = {};
-                }
-                break;
-        }
-    };
-
-    /**
-     * Consolidates the handler IDs registered for the supplied named event; when the event name is not specified
-     * all event containers will be consolidated.
-     *
-     * @param {String} [eventName]
-     */
-    Subscribable.consolidateEvents = function(instance, eventName) {
-        if(!arguments.length) {
-            for(var eventName in instance.__events) {
-                Subscribable.consolidateEvents(eventName);
+            // If there are no more listeners in this array then remove it
+            if(listeners.length === 0) {
+                this._events[evt] = null;
             }
         }
 
-        var handlerList = instance.__events[eventName];
+        // Return the instance of EventEmitter to allow chaining
+        return this;
+    };
 
-        if(handlerList && handlerList.length) {
-            for(var i = handlerList.length - 1; i >= 0; i--) {
-                if(!instance.__handlers[handlerList[i]]) {
-                    handlerList.splice(i,1);
+    /**
+     * Alias of removeListener
+     * @doc
+     */
+    proto.off = proto.removeListener;
+
+    /**
+     * Adds listeners in bulk using the manipulateListeners method.
+     * If you pass an object as the second argument you can add to multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+     * You can also pass it an event name and an array of listeners to be added.
+     *
+     * @param {String|Object} evt An event name if you will pass an array of listeners next. An object if you wish to add to multiple events at once.
+     * @param {Function[]} [listeners] An optional array of listener functions to add.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     * @doc
+     */
+    proto.addListeners = function(evt, listeners) {
+        // Pass through to manipulateListeners
+        return this.manipulateListeners(false, evt, listeners);
+    };
+
+    /**
+     * Removes listeners in bulk using the manipulateListeners method.
+     * If you pass an object as the second argument you can remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+     * You can also pass it an event name and an array of listeners to be removed.
+     *
+     * @param {String|Object} evt An event name if you will pass an array of listeners next. An object if you wish to remove from multiple events at once.
+     * @param {Function[]} [listeners] An optional array of listener functions to remove.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     * @doc
+     */
+    proto.removeListeners = function(evt, listeners) {
+        // Pass through to manipulateListeners
+        return this.manipulateListeners(true, evt, listeners);
+    };
+
+    /**
+     * Edits listeners in bulk. The addListeners and removeListeners methods both use this to do their job. You should really use those instead, this is a little lower level.
+     * The first argument will determine if the listeners are removed (true) or added (false).
+     * If you pass an object as the second argument you can add/remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+     * You can also pass it an event name and an array of listeners to be added/removed.
+     *
+     * @param {Boolean} remove True if you want to remove listeners, false if you want to add.
+     * @param {String|Object} evt An event name if you will pass an array of listeners next. An object if you wish to add/remove from multiple events at once.
+     * @param {Function[]} [listeners] An optional array of listener functions to add/remove.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     * @doc
+     */
+    proto.manipulateListeners = function(remove, evt, listeners) {
+        // Initialise any required variables
+        var i
+            , value
+            , single = remove ? this.removeListener : this.addListener
+            , multiple = remove ? this.removeListeners : this.addListeners;
+
+        // If evt is an object then pass each of it's properties to this method
+        if(typeof evt === 'object') {
+            for(i in evt) {
+                if(evt.hasOwnProperty(i) && (value = evt[i])) {
+                    // Pass the single listener straight through to the singular method
+                    if(typeof value === 'function') {
+                        single.call(this, i, value);
+                    }
+                    else {
+                        // Otherwise pass back to the multiple function
+                        multiple.call(this, i, value);
+                    }
                 }
             }
         }
-
-        if(handlerList && !handlerList.length) {
-            delete instance.__events[eventName];
-        }
-    };
-
-    /**
-     * Attempts to nullify the handler with the supplied list of handler IDs in the Subscribable instance. If the
-     * optional scopeCheck parameter is supplied, each handler will only be nullified when the scope it was attached
-     * with is the same entity as the scopeCheck.
-     *
-     * @param {Subscribable} instance
-     * @param {Number[]} handlerList
-     * @param {Object} [scopeCheck]
-     */
-    Subscribable.removeMultipleEvents = function(instance, handlerList, scopeCheck) {
-        for(var i = 0, l = handlerList.length; i < l; i++) {
-            Subscribable.removeSingleEvent(instance, handlerList[i], scopeCheck);
-        }
-    };
-
-    /**
-     * Attempts to nullify the supplied handlers (note that in this case the handler array is the list of actual handlers
-     * rather than their handler ID values). If the optional scopeCheck parameter is supplied, each handler will only be
-     * nullified when the scope it was attached with the same entity as the scopeCheck.
-     *
-     * @param {Subscribable} instance
-     * @param {Object[]} handlers
-     * @param {Object} [scopeCheck]
-     */
-    Subscribable.removeMultipleHandlers = function(instance, handlers, scopeCheck) {
-        var handler;
-        for(var i = 0, l = handlers.length; i < l; i++) {
-            if(handler = handlers[i]) {
-                Subscribable.removeSingleEvent(instance, handler[2], scopeCheck);
-            }
-        }
-    };
-
-    /**
-     * Attempts to nullify the handler with the supplied handler ID in the Subscribable instance. If the optional
-     * scopeCheck parameter is supplied, the handler will only be nullified when the scope it was attached with is
-     * the same entity as the scopeCheck.
-     *
-     * @param {Subscribable} instance
-     * @param {Number} handlerId
-     * @param {Object} [scopeCheck]
-     */
-    Subscribable.removeSingleEvent = function(instance, handlerId, scopeCheck) {
-        if(instance.__handlers[handlerId]) {
-            if(!scopeCheck || instance.__handlers[handlerId][1] === scopeCheck) {
-                instance.__handlers[handlerId] = null;
-            }
-        }
-    };
-
-    /**
-     *
-     * @param {String|Function} [eventType]
-     */
-    Subscribable.hasListener = function(eventType) {
-        var handlers, handlerIds, i, l;
-
-        if(eventType === undefined) {
-            handlers = this.__handlers;
-            for(i = 0, l = handlers.length; i < l; i++) {
-                if(!!handlers[i]) {
-                    return true;
-                }
+        else {
+            // So evt must be a string
+            // And listeners must be an array of listeners
+            // Loop over it and pass each one to the multiple method
+            i = listeners.length;
+            while(i--) {
+                single.call(this, evt, listeners[i]);
             }
         }
 
-        else if(handlerIds = this.__events[('' + eventType).toLowerCase()]) {
-            for(var i = 0, l = handlerIds.length; i < l; i++) {
-                if(this.__handlers[handlerIds[i]]) {
-                    return true;
-                }
+        // Return the instance of EventEmitter to allow chaining
+        return this;
+    };
+
+    /**
+     * Removes all listeners from a specified event.
+     * If you do not specify an event then all listeners will be removed.
+     * That means every event will be emptied.
+     *
+     * @param {String} [evt] Optional name of the event to remove all listeners for. Will remove from every event if not passed.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     * @doc
+     */
+    proto.removeEvent = function(evt) {
+        // Remove different things depending on the state of evt
+        if(evt) {
+            // Remove all listeners for the specified event
+            this._events[evt] = null;
+        }
+        else {
+            // Remove all listeners in all events
+            this._events = null;
+        }
+
+        // Return the instance of EventEmitter to allow chaining
+        return this;
+    };
+
+    /**
+     * Emits an event of your choice.
+     * When emitted, every listener attached to that event will be executed.
+     * If you pass the optional argument array then those arguments will be passed to every listener upon execution.
+     * Because it uses `apply`, your array of arguments will be passed as if you wrote them out separately.
+     * So they will not arrive within the array on the other side, they will be separate.
+     *
+     * @param {String} evt Name of the event to emit and execute listeners for.
+     * @param {Array} [args] Optional array of arguments to be passed to each argument.
+     * @return {Object} Current instance of EventEmitter for chaining.
+     * @doc
+     */
+    proto.emitEvent = function(evt, args) {
+        // Get the listeners for the event
+        // Also initialise any other required variables
+        var listeners = this.getListeners(evt)
+            , i = listeners.length
+            , response;
+
+        // Loop over all listeners assigned to the event
+        // Apply the arguments array to each listener function
+        while(i--) {
+            // If the listener returns true then it shall be removed from the event
+            // The function is executed either with a basic call or an apply if there is an args array
+            response = args ? listeners[i].apply(null, args) : listeners[i]();
+            if(response === true) {
+                this.removeListener(evt, listeners[i]);
             }
         }
 
-        return false;
+        // Return the instance of EventEmitter to allow chaining
+        return this;
     };
 
-    return Subscribable;
+    /**
+     * Alias of emitEvent
+     * @doc
+     */
+    proto.trigger = proto.emitEvent;
 
-}());
-
-/*
- * If this is being used in a browser as a requireJs or commonJs module, or is being used as part of a NodeJS
- * app, externalise the Subscribable constructor as module.exports
- */
-if(typeof module !== 'undefined') {
-    module.exports = Subscribable;
-}
+    // Expose the class either via AMD or the global object
+    if(typeof define === 'function' && define.amd) {
+        define(function() {
+            return EventEmitter;
+        });
+    }
+    else {
+        exports.EventEmitter = EventEmitter;
+    }
+}(this));
 (function () {
 
     function VoteController(model, view, authorizer) {
@@ -327,9 +305,14 @@ if(typeof module !== 'undefined') {
 
     VoteController.prototype.initialise = function (baseURI) {
         this.baseURI = baseURI;
-        this.authorizer.on("connected", this.checkExistingVote, this);
-        this.authorizer.on("notAuthorized", this.handleNotAuthorized, this);
-        this.view.on("voted", this.submitVote, this);
+
+        this.checkExistingVoteCallback = this.checkExistingVote.bind(this);
+        this.authorizer.on(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
+
+        this.handleNotAuthorizedCallback = this.handleNotAuthorized.bind(this);
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
+
+        this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
             url: this.baseURI + "/poll",
             dataType:'jsonp',
@@ -405,7 +388,8 @@ if(typeof module !== 'undefined') {
     };
 
     VoteController.prototype.destroy = function () {
-        this.model.un(null, this);
+        this.model.removeEvent(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
+        this.model.removeEvent(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
     };
 
     VoteController.APP_NAMESPACE = "theguardian-spike";
@@ -419,9 +403,9 @@ if(typeof module !== 'undefined') {
         this.jContainer = jQuery(selector);
         this.authorizer = authorizer;
         this.authorizer.getLoginStatus().then(this.showLoggedIn.bind(this));
-        this.authorizer.on("notLoggedIn", this.showLoginButton, this);
-        this.authorizer.on("notAuthorized", this.showAuthorizeButton, this);
-        this.authorizer.on("gotUserDetails", this.showLoggedIn, this);
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_LOGGED_IN, this.showLoginButton.bind(this));
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.showAuthorizeButton.bind(this));
+        this.authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, this.showLoggedIn.bind(this));
         this.jContainer.delegate(".login", "click.vote-component", this.handleLoginClick.bind(this));
     }
 
@@ -467,7 +451,7 @@ if(typeof module !== 'undefined') {
         this.dataDeferred = jQuery.Deferred();
     }
 
-    VoteModel.prototype = Object.create(Subscribable.prototype);
+    VoteModel.prototype = Object.create(EventEmitter.prototype);
 
     VoteModel.prototype.questionId = null;
     VoteModel.prototype.options = null;
@@ -475,9 +459,8 @@ if(typeof module !== 'undefined') {
     VoteModel.prototype.allowedToVote = null;
 
     VoteModel.prototype.setAllData = function (data) {
-        this.questionId = data.id;
         this.answers = data.answers;
-        this.fire("dataChanged");
+        this.trigger(VoteModel.DATA_CHANGED);
         this.dataDeferred.resolve();
     };
 
@@ -487,7 +470,7 @@ if(typeof module !== 'undefined') {
 
     VoteModel.prototype.setAllowedToVote = function (allowedToVote) {
         this.allowedToVote = allowedToVote;
-        this.fire("dataChanged");
+        this.trigger(VoteModel.DATA_CHANGED);
     };
 
     VoteModel.prototype.getAgree = function () {
@@ -520,7 +503,7 @@ if(typeof module !== 'undefined') {
                     console.log("Model: Noticing existing vote: " + answerId);
                 }
                 this.choice = answerId;
-                this.fire("dataChanged");
+                this.trigger(VoteModel.DATA_CHANGED);
             } else {
                 console.log("Unrecognised vote: " + answerId)
             }
@@ -550,8 +533,10 @@ if(typeof module !== 'undefined') {
     };
 
     VoteModel.prototype.destroy = function () {
-        this.un();
+        this.removeEvent(); // remove all events
     };
+
+    VoteModel.DATA_CHANGED = "dataChanged";
 
     VoteModel.EVEN = 50;
 
@@ -566,7 +551,7 @@ if(typeof module !== 'undefined') {
         this.initialise(donutClass);
     }
 
-    VoteComponent.prototype = Object.create(Subscribable.prototype);
+    VoteComponent.prototype = Object.create(EventEmitter.prototype);
 
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
@@ -574,7 +559,8 @@ if(typeof module !== 'undefined') {
 
     VoteComponent.prototype.initialise = function (donutClass) {
         this.jContainer.html(VoteComponent.HTML);
-        this.model.on("dataChanged", this.render, this);
+        this.renderCallback = this.render.bind(this);
+        this.model.on("dataChanged", this.renderCallback);
         this.donut = new donutClass(this.jContainer.find(".donut-container"));
         this.jContainer.delegate(".btn", "click.vote-component", this.handleButtonClick.bind(this));
     };
@@ -610,11 +596,11 @@ if(typeof module !== 'undefined') {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
         this.jContainer.find(".btn").removeClass("btn");
-        this.fire("voted", action);
+        this.trigger("voted", [action]);
     };
 
     VoteComponent.prototype.destroy = function () {
-        this.model.un(null, this);
+        this.model.removeEvent("dataChanged", this.renderCallback);
         this.jContainer.undelegate(".vote-component");
     };
 

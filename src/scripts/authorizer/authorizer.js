@@ -7,7 +7,7 @@
         this.scriptLoadDeferred = jQuery.Deferred();
     }
 
-    Authorizer.prototype = Object.create(Subscribable.prototype);
+    Authorizer.prototype = Object.create(EventEmitter.prototype);
 
     Authorizer.accessToken = null;
     Authorizer.userId = null;
@@ -53,16 +53,16 @@
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
                 console.log("Authorizer: Access token: " + this.accessToken);
-                this.fire("connected");
+                this.trigger(Authorizer.AUTHORIZED);
                 this._getUserData();
                 this.authDeferred.resolve();
                 break;
             case 'not_authorized':
                 this._getUserData();
-                this.fire("notAuthorized");
+                this.trigger(Authorizer.NOT_AUTHORIZED);
                 break;
             default:
-                this.fire("notLoggedIn");
+                this.trigger(Authorizer.NOT_LOGGED_IN);
         }
 
     };
@@ -74,7 +74,7 @@
         console.log("Authorizer: Getting user data");
         FB.api("/me", function (data) {
             if (data && !data.error) {
-                this.fire("gotUserDetails", data);
+                this.trigger(Authorizer.GOT_USER_DETAILS, [data]);
             }
         }.bind(this));
     };
@@ -111,7 +111,7 @@
      * @private
      */
     Authorizer.prototype._configureFacebookScript = function () {
-        require(['http:////connect.facebook.net/en_US/all.js'], this.scriptLoaded.bind(this))
+        require(['http://connect.facebook.net/en_US/all.js'], this.scriptLoaded.bind(this))
     };
 
     /**
@@ -122,12 +122,28 @@
 
         if (window.FB) {
             this.scriptLoadDeferred.resolve();
-        } else if (!document.getElementById(scriptId) && this.requiredAlready) {
+        } else if (!document.getElementById(scriptId) && !this.requiredAlready) {
             this.requiredAlready = true;
             this._configureFacebookScript();
         }
         return this.scriptLoadDeferred.promise();
     };
+
+    Authorizer.prototype.destroy = function() {
+        this.removeEvent(); // remove all events
+    };
+
+    /** @event */
+    Authorizer.GOT_USER_DETAILS = "gotUserDetails";
+
+    /** @event */
+    Authorizer.NOT_LOGGED_IN = "notLoggedIn";
+
+    /** @event */
+    Authorizer.NOT_AUTHORIZED = "notAuthorized";
+
+    /** @event */
+    Authorizer.AUTHORIZED = "connected";
 
     guardian.facebook.Authorizer = Authorizer;
 

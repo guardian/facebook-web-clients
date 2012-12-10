@@ -12,11 +12,11 @@ module.exports = function (grunt) {
         },
         concat: {
             authorizer: {
-                src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/subscribable.js', 'src/scripts/authorizer/*.js'],
+                src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/eventemitter.js', 'src/scripts/authorizer/*.js'],
                 dest: 'static/facebook-authorizer-<%= meta.version %>.js'
             },
             voteComponentJS: {
-                src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/subscribable.js', 'src/scripts/components/vote/*.js'],
+                src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/eventemitter.js', 'src/scripts/components/vote/*.js'],
                 dest: 'static/facebook-components-vote-<%= meta.version %>.js'
             },
             voteComponentCSS: {

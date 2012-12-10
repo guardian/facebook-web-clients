@@ -6,7 +6,7 @@
         this.dataDeferred = jQuery.Deferred();
     }
 
-    VoteModel.prototype = Object.create(Subscribable.prototype);
+    VoteModel.prototype = Object.create(EventEmitter.prototype);
 
     VoteModel.prototype.questionId = null;
     VoteModel.prototype.options = null;
@@ -14,9 +14,8 @@
     VoteModel.prototype.allowedToVote = null;
 
     VoteModel.prototype.setAllData = function (data) {
-        this.questionId = data.id;
         this.answers = data.answers;
-        this.fire("dataChanged");
+        this.trigger(VoteModel.DATA_CHANGED);
         this.dataDeferred.resolve();
     };
 
@@ -26,7 +25,7 @@
 
     VoteModel.prototype.setAllowedToVote = function (allowedToVote) {
         this.allowedToVote = allowedToVote;
-        this.fire("dataChanged");
+        this.trigger(VoteModel.DATA_CHANGED);
     };
 
     VoteModel.prototype.getAgree = function () {
@@ -59,7 +58,7 @@
                     console.log("Model: Noticing existing vote: " + answerId);
                 }
                 this.choice = answerId;
-                this.fire("dataChanged");
+                this.trigger(VoteModel.DATA_CHANGED);
             } else {
                 console.log("Unrecognised vote: " + answerId)
             }
@@ -89,8 +88,10 @@
     };
 
     VoteModel.prototype.destroy = function () {
-        this.un();
+        this.removeEvent(); // remove all events
     };
+
+    VoteModel.DATA_CHANGED = "dataChanged";
 
     VoteModel.EVEN = 50;
 

@@ -4,9 +4,9 @@
         this.jContainer = jQuery(selector);
         this.authorizer = authorizer;
         this.authorizer.getLoginStatus().then(this.showLoggedIn.bind(this));
-        this.authorizer.on("notLoggedIn", this.showLoginButton, this);
-        this.authorizer.on("notAuthorized", this.showAuthorizeButton, this);
-        this.authorizer.on("gotUserDetails", this.showLoggedIn, this);
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_LOGGED_IN, this.showLoginButton.bind(this));
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.showAuthorizeButton.bind(this));
+        this.authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, this.showLoggedIn.bind(this));
         this.jContainer.delegate(".login", "click.vote-component", this.handleLoginClick.bind(this));
     }
 

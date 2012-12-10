@@ -6,7 +6,7 @@
         this.initialise(donutClass);
     }
 
-    VoteComponent.prototype = Object.create(Subscribable.prototype);
+    VoteComponent.prototype = Object.create(EventEmitter.prototype);
 
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
@@ -14,7 +14,8 @@
 
     VoteComponent.prototype.initialise = function (donutClass) {
         this.jContainer.html(VoteComponent.HTML);
-        this.model.on("dataChanged", this.render, this);
+        this.renderCallback = this.render.bind(this);
+        this.model.on("dataChanged", this.renderCallback);
         this.donut = new donutClass(this.jContainer.find(".donut-container"));
         this.jContainer.delegate(".btn", "click.vote-component", this.handleButtonClick.bind(this));
     };
@@ -50,11 +51,11 @@
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
         this.jContainer.find(".btn").removeClass("btn");
-        this.fire("voted", action);
+        this.trigger("voted", [action]);
     };
 
     VoteComponent.prototype.destroy = function () {
-        this.model.un(null, this);
+        this.model.removeEvent("dataChanged", this.renderCallback);
         this.jContainer.undelegate(".vote-component");
     };
 

@@ -27,8 +27,8 @@
             });
         },
         teardown: function () {
-            model.destroy();
             view.destroy();
+            model.destroy();
             jQuery(".vote-component").remove();
         }
     });

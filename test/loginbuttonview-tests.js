@@ -5,7 +5,7 @@
             jQuery("body").append('' +
                 '<div class="social-summary">' +
                 '<div class="avatar"></div>' +
-                '<a></a>' +
+                '<div class="message"></div>' +
                 '</div>'
             );
             authorizer = new guardian.facebook.Authorizer();
@@ -24,14 +24,14 @@
     test("Logged In", function () {
         given(loggedIn());
         given(newView());
-        thenThe(jQuery(".social-summary a")).should(haveText("Your vote will be counted and shared on Facebook"));
+        thenThe(jQuery(".social-summary .message a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
     test("Not Logged In", function () {
         given(loggedIn());
         given(newView());
         when(authorizer.trigger(guardian.facebook.Authorizer.NOT_LOGGED_IN));
-        thenThe(jQuery(".social-summary a")).should(haveText("Your vote will be counted and shared on Facebook"));
+        thenThe(jQuery(".social-summary .message a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
     test("Auth User on Second Login Attempt", function () {
@@ -47,13 +47,13 @@
         given(newView());
         when(userHasLoginDetails({first_name: "Olly", username: "foo"}));
         thenThe(jQuery(".social-summary"))
-            .should(haveText("Olly, your vote will be counted and shared on Facebook"), inElement("a"))
+            .should(haveText("Olly, your vote will be counted and shared on Facebook"), inElement(".message"))
             .should(haveAttribute("src", "http://graph.facebook.com/foo/picture"), inElement(".avatar"));
 
         when(theUserVotesFor("agree"));
 
         thenThe(jQuery(".social-summary"))
-            .should(haveText("Olly, your vote 'agree' was counted and shared on Facebook"), inElement("a"));
+            .should(haveText("Olly, your vote 'agree' was counted and shared on Facebook"), inElement(".message"));
 
     });
 
@@ -61,7 +61,7 @@
         given(loggedIn());
         given(newView());
         when(userHasLoginDetails(null));
-        thenThe(jQuery(".social-summary a")).should(haveText("Your vote will be counted and shared on Facebook"));
+        thenThe(jQuery(".social-summary .message a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
     /* End of tests */

@@ -91,7 +91,7 @@
     line-height: 16px;
 }
 
-.vote-component .social-summary a.authRequired {
+.vote-component .social-summary a {
     cursor: pointer;
 }
 

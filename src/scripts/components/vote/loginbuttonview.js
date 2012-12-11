@@ -11,7 +11,7 @@
         this.authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, this.render.bind(this));
         this.authorizer.on(guardian.facebook.Authorizer.NOT_LOGGED_IN, this.showAuthorizeButton.bind(this));
         this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.showAuthorizeButton.bind(this));
-        this.jContainer.delegate("a.authRequired", "click.loginbutton", this.handleLoginClick.bind(this));
+        this.jContainer.delegate("a", "click.loginbutton", this.handleLoginClick.bind(this));
     }
 
     LoginButtonView.prototype.model = null;
@@ -33,16 +33,14 @@
                 txt += ", your vote will be counted and shared on Facebook";
             }
 
-            this.jContainer.find("a")
-                .html(txt)
-                .removeClass("authRequired");
+            this.jContainer.find(".message").html(txt);
 
             this.jContainer.find(".avatar")
                 .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
+
         } else {
-            this.jContainer.find("a")
-                .html("Your vote will be counted and shared on Facebook")
-                .addClass("authRequired")
+            this.jContainer.find(".message")
+                .html("<a>Your vote will be counted and shared on Facebook</a>")
         }
     };
 

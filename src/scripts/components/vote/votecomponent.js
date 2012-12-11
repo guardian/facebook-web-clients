@@ -59,7 +59,7 @@
         '<div class="vote-component">' +
         '<div class="social-summary">' +
         '<img class="avatar" src="http://facebook-web-clients.appspot.com/static/facebookIcon_16x16.gif" />' +
-        '<a></a>' +
+        '<div class="message"></div>' +
         '</div>' +
         '<div class="vote-area">' +
         '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +

@@ -3,7 +3,6 @@
     ensurePackage("guardian.ui");
 
     function CanvasDonut(container) {
-        window.foo = this;
         this.jContainer = jQuery(container);
         this.currentDp = 50;
         this.initialise();

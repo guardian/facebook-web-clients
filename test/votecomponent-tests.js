@@ -3,11 +3,10 @@
     function Donut() {
     }
 
-    Donut.prototype.render = function () {
-    };
 
     module("Vote Component", {
         setup: function () {
+            Donut.prototype.setPercent = sinon.stub();
             jQuery("body").append('' +
                 '<div class="vote-component">' +
                 '<div class="vote-area">' +
@@ -50,6 +49,8 @@
             .should(haveText("0"), inElement(".count"))
             .should(haveText("Unlikely"), inElement(".label"));
 
+        thenThe(Donut.prototype.setPercent).shouldHaveBeen(calledWith(50));
+
     });
 
     test("Formats Counts", function () {
@@ -90,6 +91,8 @@
 
         thenThe(jQuery("[data-action='answer1']"))
             .should(haveText("1"), inElement(".count"));
+
+        thenThe(Donut.prototype.setPercent).shouldHaveBeen(calledWith(100));
 
     });
 

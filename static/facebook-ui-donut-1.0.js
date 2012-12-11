@@ -5,7 +5,6 @@
     ensurePackage("guardian.ui");
 
     function CanvasDonut(container) {
-        window.foo = this;
         this.jContainer = jQuery(container);
         this.currentDp = 50;
         this.initialise();
@@ -36,9 +35,11 @@
 
     CanvasDonut.prototype.setPercent = function (dp) {
         if (window.webkitRequestAnimationFrame) {
+            // smooth animation (currently only on Chrome)
             this.targetDp = dp;
             this.animate();
         } else {
+            // skip straight to the right position
             this.currentDp = dp;
             this.render();
         }

@@ -44,9 +44,12 @@
         given(loggedIn());
         given(newView());
         when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [
-            {first_name: "Olly"}
+            {first_name: "Olly", username: "foo"},
         ]));
-        thenThe(jQuery(".social-summary a")).should(haveText("Olly, your vote will be counted and shared on Facebook"));
+        thenThe(jQuery(".social-summary"))
+            .should(haveText("Olly, your vote will be counted and shared on Facebook"), inElement("a"))
+            .should(haveAttribute("src", "http://graph.facebook.com/foo/picture"), inElement(".avatar"));
+
     });
 
     test("Show User Details only if defined", function () {

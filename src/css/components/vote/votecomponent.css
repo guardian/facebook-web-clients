@@ -91,10 +91,13 @@
     line-height: 16px;
 }
 
+.vote-component .social-summary a.authRequired {
+    cursor: pointer;
+}
+
 .vote-component .social-summary .avatar {
     float: left;
-    background: url(../../../../static/facebookIcon_16x16.gif) no-repeat;
     width: 16px;
     height: 16px;
-    padding-left: 5px;
+    margin-right: 5px;
 }

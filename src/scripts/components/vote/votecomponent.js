@@ -62,7 +62,7 @@
     VoteComponent.HTML = '' +
         '<div class="vote-component">' +
         '<div class="social-summary">' +
-        '<div class="avatar"></div>' +
+        '<img class="avatar" src="http://facebook-web-clients.appspot.com/static/facebookIcon_16x16.gif" />' +
         '<a></a>' +
         '</div>' +
         '<div class="vote-area">' +

@@ -101,3 +101,13 @@
     height: 16px;
     margin-right: 5px;
 }
+
+.vote-component .social-summary .facebookIcon {
+    float: right;
+    width: 16px;
+    height: 16px;
+}
+
+ul.article-attributes {
+    clear: both;
+}

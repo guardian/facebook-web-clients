@@ -36,6 +36,7 @@
             this.jContainer.find(".message").html(txt);
 
             this.jContainer.find(".avatar")
+                .removeClass("initially-off")
                 .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
 
         } else {

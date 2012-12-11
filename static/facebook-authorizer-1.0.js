@@ -297,6 +297,7 @@ ensurePackage("guardian.facebook");
 
     Authorizer.accessToken = null;
     Authorizer.userId = null;
+    Authorizer.userData = null;
 
     /**
      * Gets the user to login
@@ -353,16 +354,19 @@ ensurePackage("guardian.facebook");
 
     };
 
+    Authorizer.prototype._handleGotUserData = function(data) {
+        if (data && !data.error) {
+            this.userData = data;
+            this.trigger(Authorizer.GOT_USER_DETAILS, [data]);
+        }
+    };
+
     /**
      * Gets the user data
      */
     Authorizer.prototype._getUserData = function () {
         console.log("Authorizer: Getting user data");
-        FB.api("/me", function (data) {
-            if (data && !data.error) {
-                this.trigger(Authorizer.GOT_USER_DETAILS, [data]);
-            }
-        }.bind(this));
+        FB.api("/me", this._handleGotUserData.bind(this));
     };
 
     /**

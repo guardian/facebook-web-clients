@@ -3,8 +3,8 @@ from google.appengine.api import urlfetch
 from google.appengine.ext import db
 import json, webapp2, logging, urllib
 
-# live: app_namespace = "theguardian"
-app_namespace = "guardian-gucode"
+app_namespace = "theguardian"
+#app_namespace = "guardian-gucode"
 
 class UserVote(db.Model):
     userId = db.StringProperty(required=True)

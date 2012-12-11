@@ -296,8 +296,24 @@ ensurePackage("guardian.facebook");
      * @return {String} The formatted value
      */
     function BigNumberFormatter(value) {
+
+        var i, l, multiplier, newValue;
+
+        for (i = 0, l = multipliers.length; i < l; i++) {
+            multiplier = multipliers[i];
+            if (value >= multiplier.n) {
+                newValue = value / multiplier.n;
+                return newValue.toFixed(newValue < 10 ? 1 : 0) + multiplier.abbr;
+            }
+        }
+
         return value;
     }
+
+    var multipliers = [
+        {abbr: 'M', n: 1000000},
+        {abbr: 'K', n: 1000}
+    ];
 
     guardian.facebook.BigNumberFormatter = BigNumberFormatter;
 
@@ -428,12 +444,17 @@ ensurePackage("guardian.facebook");
     LoginButtonView.prototype.authorizer = null;
     LoginButtonView.prototype.jContainer = null;
 
-    LoginButtonView.prototype.render = function (userDetails) {
-        if (userDetails && userDetails.first_name) {
+    LoginButtonView.prototype.render = function () {
 
-            var txt = userDetails.first_name;
-            if (this.model.getVotelabel()) {
-                txt += ", your vote '" + this.model.getVotelabel() + "' was counted and shared on Facebook";
+        var userData = this.authorizer.userData;
+
+        if (userData) {
+
+            var txt = userData.first_name,
+                voteLabel = this.model.getVotelabel();
+
+            if (voteLabel) {
+                txt += ", your vote '" + voteLabel + "' was counted and shared on Facebook";
             } else {
                 txt += ", your vote will be counted and shared on Facebook";
             }
@@ -443,7 +464,7 @@ ensurePackage("guardian.facebook");
                 .removeClass("authRequired");
 
             this.jContainer.find(".avatar")
-                .attr("src", "http://graph.facebook.com/" + userDetails.username + "/picture")
+                .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
         } else {
             this.jContainer.find("a")
                 .html("Your vote will be counted and shared on Facebook")

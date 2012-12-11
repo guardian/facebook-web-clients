@@ -45,21 +45,13 @@
     test("Show User Details", function () {
         given(loggedIn());
         given(newView());
-        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [
-            {first_name: "Olly", username: "foo"},
-        ]));
+        when(userHasLoginDetails({first_name: "Olly", username: "foo"}));
         thenThe(jQuery(".social-summary"))
             .should(haveText("Olly, your vote will be counted and shared on Facebook"), inElement("a"))
             .should(haveAttribute("src", "http://graph.facebook.com/foo/picture"), inElement(".avatar"));
 
-    });
-    test("Shows User Choice", function () {
-        given(loggedIn());
-        given(model.getVotelabel.returns("agree"));
-        given(newView());
-        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [
-            {first_name: "Olly", username: "foo"}
-        ]));
+        when(theUserVotesFor("agree"));
+
         thenThe(jQuery(".social-summary"))
             .should(haveText("Olly, your vote 'agree' was counted and shared on Facebook"), inElement("a"));
 
@@ -68,9 +60,7 @@
     test("Show User Details only if defined", function () {
         given(loggedIn());
         given(newView());
-        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [
-            {}
-        ]));
+        when(userHasLoginDetails(null));
         thenThe(jQuery(".social-summary a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
@@ -86,6 +76,16 @@
 
     function newView() {
         view = new guardian.facebook.LoginButtonView(".social-summary", authorizer, model)
+    }
+
+    function userHasLoginDetails(json) {
+        authorizer._handleGotUserData(json);
+    }
+
+    function theUserVotesFor(choice) {
+        model.choice = choice;
+        model.getVotelabel.returns(choice);
+        model.trigger(guardian.facebook.VoteModel.DATA_CHANGED);
     }
 
 })();

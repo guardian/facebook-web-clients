@@ -5,12 +5,15 @@
     ensurePackage("guardian.ui");
 
     function CanvasDonut(container) {
+        window.foo = this;
         this.jContainer = jQuery(container);
+        this.currentDp = 50;
         this.initialise();
     }
 
     CanvasDonut.prototype.jContainer = null;
     CanvasDonut.prototype.ctx = null;
+    CanvasDonut.prototype.currentDp = null;
 
     CanvasDonut.prototype.getCanvas = function () {
 
@@ -31,9 +34,29 @@
         this.ctx = canvas.getContext('2d');
     };
 
-    CanvasDonut.prototype.render = function (dp) {
+    CanvasDonut.prototype.setPercent = function (dp) {
+        if (window.webkitRequestAnimationFrame) {
+            this.targetDp = dp;
+            this.animate();
+        } else {
+            this.currentDp = dp;
+            this.render();
+        }
+    };
 
-        var ctx = this.ctx,
+    CanvasDonut.prototype.animate = function () {
+        var delta = (this.targetDp - this.currentDp);
+        this.currentDp += delta * 0.1;
+        this.render();
+        if (Math.abs(delta) > 0.1) {
+            window.webkitRequestAnimationFrame(this.animate.bind(this));
+        }
+    };
+
+    CanvasDonut.prototype.render = function () {
+
+        var dp = this.currentDp,
+            ctx = this.ctx,
             width = this.jContainer.width(),
             height = this.jContainer.height(),
             cx = width / 2,

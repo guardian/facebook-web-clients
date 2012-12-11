@@ -32,12 +32,12 @@ class FacebookPoll(db.Model):
                         {
                             "id": "agree",
                             "count": self.yesCount,
-                            "label": "Agree"
+                            "label": "Likely"
                         },
                         {
                             "id": "disagree",
                             "count": self.noCount,
-                            "label": "Disagree"
+                            "label": "Unlikely"
                         }
                     ]
                 }

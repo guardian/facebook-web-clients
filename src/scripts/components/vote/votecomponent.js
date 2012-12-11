@@ -31,7 +31,7 @@
 
     VoteComponent.prototype.render = function () {
 
-        this.donut.render(this.model.getAgreePercent());
+        this.donut.setPercent(this.model.getAgreePercent());
 
         this.jContainer.find(".choice")
             .each(this.updateButton.bind(this, this.model.answers))

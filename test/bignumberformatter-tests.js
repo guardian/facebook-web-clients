@@ -13,7 +13,7 @@
         equal(format(1000), "1.0K");
         equal(format(2500), "2.5K");
         equal(format(2501), "2.5K");
-        equal(format(9999), "9.9K");
+        equal(format(9900), "9.9K");
     });
 
     test("Ten thousands", function () {
@@ -29,9 +29,9 @@
     });
 
     test("Millions", function () {
-        equal(format(100000000), "1.0M");
-        equal(format(160000000), "1.6M");
-        equal(format(163213211), "1.6M");
+        equal(format(1000000), "1.0M");
+        equal(format(1600000), "1.6M");
+        equal(format(1632132), "1.6M");
     });
 
     /* End of Tests */

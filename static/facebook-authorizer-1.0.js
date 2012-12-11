@@ -281,15 +281,8 @@ ensurePackage("guardian.facebook");
      */
     proto.trigger = proto.emitEvent;
 
-    // Expose the class either via AMD or the global object
-    if(typeof define === 'function' && define.amd) {
-        define(function() {
-            return EventEmitter;
-        });
-    }
-    else {
-        exports.EventEmitter = EventEmitter;
-    }
+    exports.EventEmitter = EventEmitter;
+
 }(this));
 (function () {
 

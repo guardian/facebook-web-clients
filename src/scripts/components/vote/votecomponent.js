@@ -61,16 +61,14 @@
 
     VoteComponent.HTML = '' +
         '<div class="vote-component">' +
+        '<div class="social-summary">' +
+        '<span class="text"></span>' +
+        '<div class="facebook-auth-status"><div class="user-details"></div></div>' +
+        '</div>' +
         '<div class="vote-area">' +
         '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +
         '<div class="donut-container"></div>' +
         '<span class="choice disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>' +
-        '</div>' +
-        '<div class="social-summary">' +
-        '<span class="text"></span>' +
-        '<div class="facebook-auth-status">' +
-        '<div class="user-details"></div>' +
-        '</div>' +
         '</div>' +
         '</div>';
 

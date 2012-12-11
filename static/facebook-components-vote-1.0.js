@@ -461,9 +461,11 @@ ensurePackage("guardian.facebook");
 
             this.jContainer.find(".message").html(txt);
 
+            if (userData.username) {
             this.jContainer.find(".avatar")
                 .removeClass("initially-off")
                 .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
+            }
 
         } else {
             this.jContainer.find(".message")

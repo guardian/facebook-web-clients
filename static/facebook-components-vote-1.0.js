@@ -413,40 +413,32 @@ ensurePackage("guardian.facebook");
     function LoginButtonView(selector, authorizer) {
         this.jContainer = jQuery(selector);
         this.authorizer = authorizer;
+        this.jContainer.find("a").html("Your vote will be counted and shared on Facebook");
         this.authorizer.getLoginStatus().then(this.showLoggedIn.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_LOGGED_IN, this.showLoginButton.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.showAuthorizeButton.bind(this));
         this.authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, this.showLoggedIn.bind(this));
-        this.jContainer.delegate(".login", "click.vote-component", this.handleLoginClick.bind(this));
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_LOGGED_IN, this.showAuthorizeButton.bind(this));
+        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.showAuthorizeButton.bind(this));
+        this.jContainer.delegate(".login", "click.loginbutton", this.handleLoginClick.bind(this));
     }
 
     LoginButtonView.prototype.showLoggedIn = function (userDetails) {
-        if (userDetails && userDetails.name) {
-            this.jContainer.find(".user-details").html("<span class='login'>Logged in as " + userDetails.name + "</span>");
+        console.log(userDetails);
+        if (userDetails && userDetails.first_name) {
+            this.jContainer.find("a").html(userDetails.first_name + ", your vote will be counted and shared on Facebook");
         } else {
-            this.jContainer.find(".user-details").html("<span class='login'>Logged in</span>");
+            this.jContainer.find("a").html("Your vote will be counted and shared on Facebook");
         }
-    };
-
-    LoginButtonView.prototype.showLoginButton = function () {
-        if (this.jContainer.find("a.login").length) {
-            this.handleLoginClick();
-            return;
-        }
-        this.jContainer.find(".user-details").html("<a class='login' href='http://www.facebook.com/'>Log in to Facebook</a>")
     };
 
     LoginButtonView.prototype.showAuthorizeButton = function () {
-        console.log("Showing authorize button");
-        if (this.jContainer.find(".login").length) {
+        if (this.shouldLogInNow) {
             this.handleLoginClick();
             return;
         }
-        this.jContainer.find(".user-details").html("<a class='login' href='http://www.facebook.com/'>Use the Guardian Facebook App</a>")
+        this.shouldLogInNow = true;
     };
 
     LoginButtonView.prototype.handleLoginClick = function () {
-        this.jContainer.find(".user-details").empty();
         this.authorizer.authUser();
         return false;
     };
@@ -526,7 +518,7 @@ ensurePackage("guardian.facebook");
         if (this.choice) {
             return "Your response was: " + this.getAnswerById(this.choice).label;
         } else {
-            return "Share your prediction via Facebook";
+            return undefined;
         }
     };
 
@@ -578,10 +570,6 @@ ensurePackage("guardian.facebook");
         this.jContainer.delegate(".btn", "click.vote-component", this.handleButtonClick.bind(this));
     };
 
-    VoteComponent.prototype.setVotingInProgress = function () {
-        this.jContainer.find(".social-summary .text").html("Sending your vote to Facebook...");
-    };
-
     VoteComponent.prototype.updateButton = function (answers, index, element) {
         var answer = answers[index], jElement = jQuery(element);
         jElement.attr("data-action", answer.id);
@@ -597,7 +585,9 @@ ensurePackage("guardian.facebook");
             .each(this.updateButton.bind(this, this.model.answers))
             .toggleClass("btn", this.model.canVote());
 
-        this.jContainer.find(".social-summary .text").html(this.model.getSummaryText());
+        if (this.model.getSummaryText()) {
+            this.jContainer.find(".social-summary a").html(this.model.getSummaryText());
+        }
 
         if (!this.animated) {
             this.animated = true;
@@ -620,8 +610,8 @@ ensurePackage("guardian.facebook");
     VoteComponent.HTML = '' +
         '<div class="vote-component">' +
         '<div class="social-summary">' +
-        '<span class="text"></span>' +
-        '<div class="facebook-auth-status"><div class="user-details"></div></div>' +
+        '<div class="avatar"></div>' +
+        '<a></a>' +
         '</div>' +
         '<div class="vote-area">' +
         '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +

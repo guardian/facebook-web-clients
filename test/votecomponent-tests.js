@@ -99,7 +99,7 @@
 
         when(theUserClicksOn("[data-action='answer2']"));
 
-        thenThe(jQuery(".social-summary .text"))
+        thenThe(jQuery(".social-summary a"))
             .should(haveText("Your response was: Unlikely"));
 
     });

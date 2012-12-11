@@ -23,7 +23,7 @@
                     guardian.ui.CanvasDonut,
                     guardian.facebook.BigNumberFormatter),
 
-                loginButtonView = new guardian.facebook.LoginButtonView(".facebook-auth-status", authorizer),
+                loginButtonView = new guardian.facebook.LoginButtonView(".social-summary", authorizer),
 
                 controller = new guardian.facebook.VoteController(model, view, authorizer);
 

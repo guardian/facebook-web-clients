@@ -70,7 +70,7 @@
         if (this.choice) {
             return "Your response was: " + this.getAnswerById(this.choice).label;
         } else {
-            return "Share your prediction via Facebook";
+            return undefined;
         }
     };
 

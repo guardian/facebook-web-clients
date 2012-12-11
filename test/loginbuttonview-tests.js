@@ -2,13 +2,18 @@
 
     module("Login Button", {
         setup: function () {
-            jQuery("body").append('<div class="facebook-auth-status"><div class="user-details"></div></div>');
+            jQuery("body").append('' +
+                '<div class="social-summary">' +
+                '<div class="avatar"></div>' +
+                '<a></a>' +
+                '</div>'
+            );
             authorizer = new guardian.facebook.Authorizer();
             sinon.spy(authorizer, "authUser");
             authorizer._configureFacebookScript = sinon.stub();
         },
         teardown: function () {
-            jQuery(".facebook-auth-status").remove();
+            jQuery(".social-summary").remove();
         }
     });
 
@@ -17,14 +22,14 @@
     test("Logged In", function () {
         given(loggedIn());
         given(newView());
-        thenThe(jQuery(".user-details .login")).should(haveText("Logged in"));
+        thenThe(jQuery(".social-summary a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
     test("Not Logged In", function () {
         given(loggedIn());
         given(newView());
         when(authorizer.trigger(guardian.facebook.Authorizer.NOT_LOGGED_IN));
-        thenThe(jQuery(".user-details .login")).should(haveText("Log in to Facebook"));
+        thenThe(jQuery(".social-summary a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
     test("Auth User on Second Login Attempt", function () {
@@ -38,15 +43,19 @@
     test("Show User Details", function () {
         given(loggedIn());
         given(newView());
-        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [{name: "Olly"}]));
-        thenThe(jQuery(".user-details .login")).should(haveText("Logged in as Olly"));
+        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [
+            {first_name: "Olly"}
+        ]));
+        thenThe(jQuery(".social-summary a")).should(haveText("Olly, your vote will be counted and shared on Facebook"));
     });
 
     test("Show User Details only if defined", function () {
         given(loggedIn());
         given(newView());
-        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [{}]));
-        thenThe(jQuery(".user-details .login")).should(haveText("Logged in"));
+        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [
+            {}
+        ]));
+        thenThe(jQuery(".social-summary a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
     /* End of tests */
@@ -60,7 +69,7 @@
     }
 
     function newView() {
-        view = new guardian.facebook.LoginButtonView(".facebook-auth-status", authorizer)
+        view = new guardian.facebook.LoginButtonView(".social-summary", authorizer)
     }
 
 })();

@@ -22,10 +22,6 @@
         this.jContainer.delegate(".btn", "click.vote-component", this.handleButtonClick.bind(this));
     };
 
-    VoteComponent.prototype.setVotingInProgress = function () {
-        this.jContainer.find(".social-summary .text").html("Sending your vote to Facebook...");
-    };
-
     VoteComponent.prototype.updateButton = function (answers, index, element) {
         var answer = answers[index], jElement = jQuery(element);
         jElement.attr("data-action", answer.id);
@@ -41,7 +37,9 @@
             .each(this.updateButton.bind(this, this.model.answers))
             .toggleClass("btn", this.model.canVote());
 
-        this.jContainer.find(".social-summary .text").html(this.model.getSummaryText());
+        if (this.model.getSummaryText()) {
+            this.jContainer.find(".social-summary a").html(this.model.getSummaryText());
+        }
 
         if (!this.animated) {
             this.animated = true;
@@ -64,8 +62,8 @@
     VoteComponent.HTML = '' +
         '<div class="vote-component">' +
         '<div class="social-summary">' +
-        '<span class="text"></span>' +
-        '<div class="facebook-auth-status"><div class="user-details"></div></div>' +
+        '<div class="avatar"></div>' +
+        '<a></a>' +
         '</div>' +
         '<div class="vote-area">' +
         '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +

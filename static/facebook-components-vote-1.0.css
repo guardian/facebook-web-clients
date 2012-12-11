@@ -88,20 +88,15 @@
 }
 
 .vote-component .social-summary {
-    font-size: 11px;
-    font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
-    color: #333;
-    line-height: 1.28;
     margin-bottom: 8px;
+    font-size: 12px;
+    line-height: 16px;
 }
 
-.vote-component .social-summary img {
-    float: right;
-}
-
-.user-details .login {
-    display: inline-block;
+.vote-component .social-summary .avatar {
+    float: left;
     background: url(../../../../static/facebookIcon_16x16.gif) no-repeat;
-    padding-left: 20px;
-    line-height: 18px;
+    width: 16px;
+    height: 16px;
+    padding-left: 5px;
 }

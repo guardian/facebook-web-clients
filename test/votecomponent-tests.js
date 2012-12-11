@@ -21,7 +21,8 @@
                 '</div>' +
                 '</div>');
             model = new guardian.facebook.VoteModel();
-            view = new guardian.facebook.VoteComponent(".vote-component", model, Donut);
+            numberFormatter = sinon.spy(function(v) {return v});
+            view = new guardian.facebook.VoteComponent(".vote-component", model, Donut, numberFormatter);
             view.on("voted", function (vote) {
                 model.registerVote(vote);
             });
@@ -33,7 +34,7 @@
         }
     });
 
-    var model, view;
+    var model, view, numberFormatter;
 
     test("Render", function () {
 
@@ -48,6 +49,24 @@
         thenThe(jQuery("[data-action='answer2']"))
             .should(haveText("0"), inElement(".count"))
             .should(haveText("Unlikely"), inElement(".label"));
+
+    });
+
+    test("Formats Counts", function () {
+
+        given(view.numberFormatter = function(v) {
+            return "A" + v;
+        });
+
+        givenSomeData();
+
+        when(view.render());
+
+        thenThe(jQuery("[data-action='answer1']"))
+            .should(haveText("A0"), inElement(".count"));
+
+        thenThe(jQuery("[data-action='answer2']"))
+            .should(haveText("A0"), inElement(".count"));
 
     });
 

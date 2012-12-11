@@ -286,6 +286,24 @@ ensurePackage("guardian.facebook");
 }(this));
 (function () {
 
+    /**
+     * Abbreviates the given numeric such that they never exceed four characters.
+     * Small numbers (<1000) are returned as-is
+     * Numbers like 3000 are rendered as 3.5K
+     * Numbers beyond 5 digits are rendered like 20K, 21K, 500K
+     * Numbers in millions are rendered as 1.5M, 10M, 20M.
+     * @param {Number} value The value to abbreviate
+     * @return {String} The formatted value
+     */
+    function BigNumberFormatter(value) {
+        return value;
+    }
+
+    guardian.facebook.BigNumberFormatter = BigNumberFormatter;
+
+})();
+(function () {
+
     function VoteController(model, view, authorizer) {
         this.model = model;
         this.view = view;
@@ -538,9 +556,10 @@ ensurePackage("guardian.facebook");
 })();
 (function () {
 
-    function VoteComponent(selector, model, donutClass) {
+    function VoteComponent(selector, model, donutClass, numberFormatter) {
         this.jContainer = jQuery(selector).removeClass("initially-off");
         this.model = model;
+        this.numberFormatter = numberFormatter;
         this.initialise(donutClass);
     }
 
@@ -548,6 +567,7 @@ ensurePackage("guardian.facebook");
 
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
+    VoteComponent.prototype.numberFormatter = null;
     VoteComponent.prototype.model = null;
 
     VoteComponent.prototype.initialise = function (donutClass) {
@@ -562,21 +582,21 @@ ensurePackage("guardian.facebook");
         this.jContainer.find(".social-summary .text").html("Sending your vote to Facebook...");
     };
 
+    VoteComponent.prototype.updateButton = function (answers, index, element) {
+        var answer = answers[index], jElement = jQuery(element);
+        jElement.attr("data-action", answer.id);
+        jElement.find(".count").html(this.numberFormatter(answer.count));
+        jElement.find(".label").html(answer.label);
+    };
+
     VoteComponent.prototype.render = function () {
 
         this.donut.render(this.model.getAgreePercent());
 
-        var answers = this.model.answers;
-        this.jContainer.find(".choice").each(function (index, element) {
+        this.jContainer.find(".choice")
+            .each(this.updateButton.bind(this, this.model.answers))
+            .toggleClass("btn", this.model.canVote());
 
-            var answer = answers[index];
-            jQuery(element).attr("data-action", answer.id);
-            jQuery(element).find(".count").html(answer.count);
-            jQuery(element).find(".label").html(answer.label);
-
-        });
-
-        this.jContainer.find(".choice").toggleClass("btn", this.model.canVote());
         this.jContainer.find(".social-summary .text").html(this.model.getSummaryText());
 
         if (!this.animated) {

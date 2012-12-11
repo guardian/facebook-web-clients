@@ -11,13 +11,15 @@
             authorizer = new guardian.facebook.Authorizer();
             sinon.spy(authorizer, "authUser");
             authorizer._configureFacebookScript = sinon.stub();
+            model = new EventEmitter();
+            model.getVotelabel = sinon.stub();
         },
         teardown: function () {
             jQuery(".social-summary").remove();
         }
     });
 
-    var authorizer, view;
+    var authorizer, view, model;
 
     test("Logged In", function () {
         given(loggedIn());
@@ -51,6 +53,17 @@
             .should(haveAttribute("src", "http://graph.facebook.com/foo/picture"), inElement(".avatar"));
 
     });
+    test("Shows User Choice", function () {
+        given(loggedIn());
+        given(model.getVotelabel.returns("agree"));
+        given(newView());
+        when(authorizer.trigger(guardian.facebook.Authorizer.GOT_USER_DETAILS, [
+            {first_name: "Olly", username: "foo"}
+        ]));
+        thenThe(jQuery(".social-summary"))
+            .should(haveText("Olly, your vote 'agree' was counted and shared on Facebook"), inElement("a"));
+
+    });
 
     test("Show User Details only if defined", function () {
         given(loggedIn());
@@ -72,7 +85,7 @@
     }
 
     function newView() {
-        view = new guardian.facebook.LoginButtonView(".social-summary", authorizer)
+        view = new guardian.facebook.LoginButtonView(".social-summary", authorizer, model)
     }
 
 })();

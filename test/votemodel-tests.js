@@ -86,7 +86,7 @@
 
         when(model.registerVote("answer2"));
 
-        equal(model.getSummaryText(), "Your response was: Unlikely");
+        equal(model.getVotelabel(), "Unlikely");
 
     });
 

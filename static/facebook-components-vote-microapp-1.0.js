@@ -25,7 +25,7 @@
                     guardian.ui.CanvasDonut,
                     guardian.facebook.BigNumberFormatter),
 
-                loginButtonView = new guardian.facebook.LoginButtonView(".social-summary", authorizer),
+                loginButtonView = new guardian.facebook.LoginButtonView(".social-summary", authorizer, model),
 
                 controller = new guardian.facebook.VoteController(model, view, authorizer);
 

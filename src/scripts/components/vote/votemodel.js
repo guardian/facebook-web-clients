@@ -66,9 +66,9 @@
 
     };
 
-    VoteModel.prototype.getSummaryText = function () {
+    VoteModel.prototype.getVotelabel = function () {
         if (this.choice) {
-            return "Your response was: " + this.getAnswerById(this.choice).label;
+            return this.getAnswerById(this.choice).label;
         } else {
             return undefined;
         }

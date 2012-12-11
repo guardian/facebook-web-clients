@@ -93,17 +93,6 @@
 
     });
 
-    test("Updates social summary", function () {
-
-        givenSomeData();
-
-        when(theUserClicksOn("[data-action='answer2']"));
-
-        thenThe(jQuery(".social-summary a"))
-            .should(haveText("Your response was: Unlikely"));
-
-    });
-
     function givenSomeData() {
         given(model.setAllData({
             "id": "question1",

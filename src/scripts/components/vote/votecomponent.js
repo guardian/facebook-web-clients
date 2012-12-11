@@ -37,10 +37,6 @@
             .each(this.updateButton.bind(this, this.model.answers))
             .toggleClass("btn", this.model.canVote());
 
-        if (this.model.getSummaryText()) {
-            this.jContainer.find(".social-summary a").html(this.model.getSummaryText());
-        }
-
         if (!this.animated) {
             this.animated = true;
             jQuery(".vote-component").animate({"height": "180px"});

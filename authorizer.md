@@ -28,11 +28,8 @@ Gets an instance of authorizer which is shared between all clients in the browse
 
 ```
 require(["facebook-authorizer-1.0.js"], function () {
-
         var authorizer = guardian.facebook.Authorizer.getInstance();
-
     });
-
 ```
 
 authorizer.getLoginStatus()
@@ -43,20 +40,19 @@ To assess if you're logged in or not.  If the Facebook SDK is not already on the
 After checking login status, authorizer will fetch basic user data (see below)
 
 ```
-    authorizer.getLoginStatus()
+authorizer.getLoginStatus()
 
-    authorizer.onConnected.then(function(FB) {
-        FB.api(...);
-    });
+authorizer.onConnected.then(function(FB) {
+    FB.api(...);
+});
 
-    authorizer.onNotLoggedIn.then(function() {
-        console.log("Please log in");
-    });
+authorizer.onNotLoggedIn.then(function() {
+    console.log("Please log in");
+});
 
-    authorizer.onNotAuthorized.then(function() {
-        console.log("Please authorize the Guardian!");
-    });
-
+authorizer.onNotAuthorized.then(function() {
+    console.log("Please authorize the Guardian!");
+});
 ```
 
 authorizer.login()
@@ -71,9 +67,9 @@ and within the same execution scope (ie. not resulting from a callback).
 After logging in, authorizer will fetch basic user data (see below)
 
 ```
-    authorizer.login().then(function (FB) {
-        FB.api(...);
-    });
+authorizer.login().then(function (FB) {
+    FB.api(...);
+});
 ```
 
 authorizer.onUserDataLoaded
@@ -82,12 +78,44 @@ authorizer.onUserDataLoaded
 A promise like object which is resolved following a call to login or getLoginStatus. You can register it before or after the call to login or getLoginStatus.
 
 ```
-    authorizer.login();
+authorizer.login();
 
-    authorizer.onUserDataLoaded.then(function(userData) {
-        console.log("Hi " + userData.first_name);
-    });
+authorizer.onUserDataLoaded.then(function(userData) {
+    console.log("Hi " + userData.first_name);
+});
 ```
 
+authorizer.onConnected
+----------------
 
+A promise like object which is resolved once the user is logged in and fully auth'd the Guardian app. It gives you a reference to the FB object.
 
+```
+authorizer.login();
+
+authorizer.onConnected.then(function(FB) {
+    FB.api(...);
+});
+```
+
+authorizer.onNotLoggedIn
+----------------
+
+A promise like object which is resolved if the user is not logged in
+
+```
+authorizer.notLoggedIn.then(function() {
+    console.log("Please log in");
+});
+```
+
+authorizer.onNotAuthorized
+----------------
+
+A promise like object which is resolved if the user is logged in but not authorized to use the app.
+
+```
+authorizer.onNotAuthorized.then(function() {
+    console.log("Please use the Guardian with Facebook!");
+});
+```

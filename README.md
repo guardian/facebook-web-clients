@@ -47,4 +47,9 @@ On App Engine
 
 http://facebook-web-clients.appspot.com/test/demo.html
 
+Authorizer API
+--------------
+
+https://github.com/guardian/facebook-web-clients/blob/master/authorizer.md
+
 

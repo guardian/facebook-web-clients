@@ -7,30 +7,7 @@ ensurePackage("guardian.facebook");
         return;
     }
 
-    function RepeatablePromise() {
-        this.callbacks = [];
-    }
-
-    RepeatablePromise.prototype.invalidate = function () {
-        this.args = undefined;
-    };
-
-    RepeatablePromise.prototype.resolve = function () {
-        this.args = Array.prototype.slice.apply(arguments);
-        var i, numCallbacks = this.callbacks.length;
-        for (i = 0; i < numCallbacks; i++) {
-            this.callbacks[i].apply(null, this.args);
-        }
-    };
-
-    RepeatablePromise.prototype.then = function (fn) {
-        this.callbacks.push(fn);
-        if (this.args !== undefined) {
-            fn.apply(null, this.args);
-        }
-    };
-
-    var permissions = {scope: 'email,publish_actions,publish_stream'};
+    var instance = null;
 
     /**
      * Provides a means for client scripts to access the Facebook API and authenticate users.
@@ -44,6 +21,12 @@ ensurePackage("guardian.facebook");
         this.onNotAuthorized = new RepeatablePromise();
         this.onNotLoggedIn = new RepeatablePromise();
     }
+
+    /**
+     * The default set of permissions to request
+     * @type {{scope: string}}
+     */
+    Authorizer.DEFAULT_PERMISSIONS = {scope: 'email,publish_actions,publish_stream'};
 
     /**
      * Promise like object which is resolved when the user is logged in.
@@ -108,12 +91,13 @@ ensurePackage("guardian.facebook");
      * following events fired during the login process (see _handleGotLoginStatus)
      *
      * @see https://developers.facebook.com/docs/reference/javascript/FB.login/
+     * @param {Object} permissions The permissions to send to the FB.login() call
      * @return A promise which is resolved once the user has been authenticated and authorized the Guardian app
      */
-    Authorizer.prototype.login = function () {
+    Authorizer.prototype.login = function (permissions) {
         if (!this.accessToken) {
             this._loadFacebookAPI().then(function (FB) {
-                FB.login(this._handleGotLoginStatus.bind(this), permissions);
+                FB.login(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this))
         }
         return this.onLoggedIn;
@@ -127,11 +111,11 @@ ensurePackage("guardian.facebook");
      * @see https://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus/
      * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
      */
-    Authorizer.prototype.getLoginStatus = function () {
+    Authorizer.prototype.getLoginStatus = function (permissions) {
         if (!this.loginStatusPending) {
             this.loginStatusPending = true;
             this._loadFacebookAPI().then(function (FB) {
-                FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions);
+                FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this));
         }
         return this.onLoggedIn;
@@ -258,7 +242,28 @@ ensurePackage("guardian.facebook");
         instance = null;
     };
 
-    var instance = null;
+    function RepeatablePromise() {
+        this.callbacks = [];
+    }
+
+    RepeatablePromise.prototype.invalidate = function () {
+        this.args = undefined;
+    };
+
+    RepeatablePromise.prototype.resolve = function () {
+        this.args = Array.prototype.slice.apply(arguments);
+        var i, numCallbacks = this.callbacks.length;
+        for (i = 0; i < numCallbacks; i++) {
+            this.callbacks[i].apply(null, this.args);
+        }
+    };
+
+    RepeatablePromise.prototype.then = function (fn) {
+        this.callbacks.push(fn);
+        if (this.args !== undefined) {
+            fn.apply(null, this.args);
+        }
+    };
 
     guardian.facebook.Authorizer = {
         getInstance: function () {

@@ -53,6 +53,8 @@ JS API
 Authorizer provides a mechanism for getting access to the FB object. It takes care of loading and auth'ing your apps and
 makes it easy to ensure that tasks are executed in the right order.
 
+It automatically retrieves the facebook app id from the document.
+
 ```
 require([baseURI + "/static/facebook-authorizer-1.0.js"],
     function () {

@@ -286,6 +286,10 @@ ensurePackage("guardian.facebook");
 }(this));
 (function () {
 
+    if (guardian.facebook.Authorizer) {
+        return;
+    }
+
     function RepeatablePromise() {
         this.callbacks = [];
     }
@@ -317,9 +321,9 @@ ensurePackage("guardian.facebook");
      * @constructor
      */
     function Authorizer() {
-        this.authDeferred = new RepeatablePromise();
-        this.scriptLoadDeferred = new RepeatablePromise();
-        this.userDataDeferred = new RepeatablePromise();
+        this._loggedIn = new RepeatablePromise();
+        this._facebookScriptLoaded = new RepeatablePromise();
+        this._userDataLoaded = new RepeatablePromise();
     }
 
     Authorizer.prototype = Object.create(EventEmitter.prototype);
@@ -363,7 +367,7 @@ ensurePackage("guardian.facebook");
                 FB.login(this._handleGotLoginStatus.bind(this), permissions);
             }.bind(this))
         }
-        return this.authDeferred;
+        return this._loggedIn;
     };
 
     /**
@@ -378,7 +382,7 @@ ensurePackage("guardian.facebook");
         this._loadFacebookAPI().then(function (FB) {
             FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions);
         }.bind(this));
-        return this.authDeferred;
+        return this._loggedIn;
     };
 
     /**
@@ -386,7 +390,7 @@ ensurePackage("guardian.facebook");
      * @return {*}
      */
     Authorizer.prototype.whenGotUserData = function () {
-        return this.userDataDeferred;
+        return this._userDataLoaded;
     };
 
     /* End of public methods */
@@ -413,7 +417,7 @@ ensurePackage("guardian.facebook");
                 this.userId = response.authResponse.userID;
                 this.trigger(Authorizer.AUTHORIZED);
                 this._getUserData();
-                this.authDeferred.resolve(FB);
+                this._loggedIn.resolve(FB);
                 break;
             case 'not_authorized':
                 this._getUserData();
@@ -442,9 +446,51 @@ ensurePackage("guardian.facebook");
     Authorizer.prototype._handleGotUserData = function (data) {
         if (data && !data.error) {
             this.userData = data;
-            this.userDataDeferred.resolve(this.userData);
+            this._userDataLoaded.resolve(this.userData);
             this.trigger(Authorizer.GOT_USER_DETAILS, [data]);
         }
+    };
+
+    /**
+     * Loads the Facebook API. Not intended for direct use: call the function you intend to use (login or getloginstatus)
+     * and these will load the facebook api or use the existing version as required.
+     * @private
+     */
+    Authorizer.prototype._loadFacebookAPI = function () {
+        if (window.FB) {
+            this._facebookScriptLoaded.resolve(window.FB);
+        } else if (!document.getElementById(scriptId) && !this._requiredAlready) {
+            this._requiredAlready = true;
+            this._loadFacebookScript();
+        }
+        return this._facebookScriptLoaded;
+    };
+
+    /**
+     * Loads the Facebook script using RequireJS or Curl JS
+     * @private
+     */
+    Authorizer.prototype._loadFacebookScript = function () {
+        var scriptLoader = require || curl;
+        scriptLoader(['//connect.facebook.net/en_US/all.js'], this._handleScriptLoaded.bind(this))
+    };
+
+    /**
+     * Called when the Facebook script is loaded.
+     * @private
+     */
+    Authorizer.prototype._handleScriptLoaded = function () {
+
+        FB.init({
+            appId: this.getAppId(),
+            channelUrl: '//' + document.location.host + ':' + document.location.port + '/channel.html',
+            status: true, // check login status
+            cookie: true, // enable cookies to allow the server to access the session
+            xfbml: true  // parse XFBML
+        });
+
+        this._facebookScriptLoaded.resolve(FB);
+
     };
 
     /**
@@ -460,47 +506,6 @@ ensurePackage("guardian.facebook");
         var identityId = window.identity && identity.facebook && identity.facebook.appId,
             metaTag = document.querySelector && document.querySelector("meta[property='fb:app_id']");
         return identityId || metaTag && metaTag.content;
-    };
-
-    /**
-     * @private
-     */
-    Authorizer.prototype._handleScriptLoaded = function () {
-
-        FB.init({
-            appId: this.getAppId(),
-            channelUrl: '//' + document.location.host + ':' + document.location.port + '/channel.html',
-            status: true, // check login status
-            cookie: true, // enable cookies to allow the server to access the session
-            xfbml: true  // parse XFBML
-        });
-
-        this.scriptLoadDeferred.resolve(FB);
-
-    };
-
-    /**
-     * Loads the Facebook script using RequireJS or Curl JS
-     * @private
-     */
-    Authorizer.prototype._loadFacebookScript = function () {
-        var scriptLoader = require || curl;
-        scriptLoader(['//connect.facebook.net/en_US/all.js'], this._handleScriptLoaded.bind(this))
-    };
-
-    /**
-     * Loads the Facebook API. Not intended for direct use: call the function you intend to use (login or getloginstatus)
-     * and these will load the facebook api or use the existing version as required.
-     * @private
-     */
-    Authorizer.prototype._loadFacebookAPI = function () {
-        if (window.FB) {
-            this.scriptLoadDeferred.resolve(window.FB);
-        } else if (!document.getElementById(scriptId) && !this._requiredAlready) {
-            this._requiredAlready = true;
-            this._loadFacebookScript();
-        }
-        return this.scriptLoadDeferred;
     };
 
     /**

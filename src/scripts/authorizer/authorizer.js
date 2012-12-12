@@ -171,8 +171,9 @@
      * @private
      */
     Authorizer.prototype.getAppId = function () {
-        var identityId = window.identity && identity.facebook && identity.facebook.appId;
-        return identityId || jQuery("meta[property='fb:app_id']").attr("content");
+        var identityId = window.identity && identity.facebook && identity.facebook.appId,
+            metaTag = document.querySelector && document.querySelector("meta[property='fb:app_id']");
+        return identityId || metaTag && metaTag.content;
     };
 
     /**

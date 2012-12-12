@@ -131,10 +131,16 @@ authorizer.onNotAuthorized.then(function() {
 });
 ```
 
-authorizer.getAppId
+authorizer.getAppId()
 -------------------
 
-The Facebook SDK is initialised with an app id. In the first instance Authorizer will check for a variable set in
+The Facebook SDK is initialised with an app id.
+
+```
+var appId = authorizer.getAppId();
+```
+
+In the first instance authorizer will check for a value set in
 
 ```
 identity.facebook.appId

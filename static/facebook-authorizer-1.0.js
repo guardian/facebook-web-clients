@@ -248,7 +248,7 @@ ensurePackage("guardian.facebook");
     };
 
     /**
-     * Removes all events from the authorizer
+     * Destroys the instance allowing a new authorizer to be created. Useful for testing.
      */
     Authorizer.prototype.destroy = function () {
         instance = null;

@@ -17,7 +17,6 @@ ensurePackage("guardian.facebook");
 
     RepeatablePromise.prototype.resolve = function () {
         this.args = Array.prototype.slice.apply(arguments);
-        console.log(this.args);
         var i, numCallbacks = this.callbacks.length;
         for (i = 0; i < numCallbacks; i++) {
             this.callbacks[i].apply(null, this.args);

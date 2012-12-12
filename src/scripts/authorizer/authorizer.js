@@ -202,12 +202,11 @@
     };
 
     /**
-     * Loads the Facebook script using RequireJS or Curl JS
+     * Loads the Facebook script using a Require compatible Script Loader.
      * @private
      */
     Authorizer.prototype._loadFacebookScript = function () {
-        var scriptLoader = require || curl;
-        scriptLoader(['//connect.facebook.net/en_US/all.js'], this._handleScriptLoaded.bind(this))
+        require(['//connect.facebook.net/en_US/all.js'], this._handleScriptLoaded.bind(this))
     };
 
     /**

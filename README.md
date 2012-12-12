@@ -50,14 +50,14 @@ http://facebook-web-clients.appspot.com/test/demo.html
 JS API
 ------
 
-Authorizer provides a mechanism for getting access to the FB object. It takes care of loading and authing your apps and
+Authorizer provides a mechanism for getting access to the FB object. It takes care of loading and auth'ing your apps and
 makes it easy to ensure that tasks are executed in the right order.
 
 ```
 require([baseURI + "/static/facebook-authorizer-1.0.js"],
     function () {
-        var authorizer = new guardian.facebook.Authorizer(document);
-        authorizer.loadFacebookAPI().then(function () {
+        var authorizer = new guardian.facebook.Authorizer();
+        authorizer.getLoginStatus().then(function () {
             FB.api(...);
         });
     });

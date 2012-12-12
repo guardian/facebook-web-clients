@@ -448,8 +448,6 @@ ensurePackage("guardian.facebook");
 
         var userData = this.authorizer.userData;
 
-        console.log(userData);
-
         if (userData) {
 
             var txt = userData.first_name,

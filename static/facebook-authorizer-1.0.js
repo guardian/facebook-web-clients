@@ -446,11 +446,12 @@ ensurePackage("guardian.facebook");
     };
 
     /**
-     * Loads the Facebook script using RequireJS. This can be changed to use curl.js later if desired.
+     * Loads the Facebook script using RequireJS or Curl JS
      * @private
      */
     Authorizer.prototype._loadFacebookScript = function () {
-        require(['http://connect.facebook.net/en_US/all.js'], this._handleScriptLoaded.bind(this))
+        var scriptLoader = require || curl;
+        scriptLoader(['//connect.facebook.net/en_US/all.js'], this._handleScriptLoaded.bind(this))
     };
 
     /**

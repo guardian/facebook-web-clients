@@ -57,7 +57,7 @@
 
     LoginButtonView.prototype.handleLoginClick = function () {
         console.log("Auth'ing user");
-        this.authorizer.authUser();
+        this.authorizer.login();
         return false;
     };
 

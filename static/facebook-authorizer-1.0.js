@@ -288,6 +288,10 @@ ensurePackage("guardian.facebook");
 
     var permissions = {scope: 'email,publish_actions,publish_stream'};
 
+    /**
+     * Provides a means for client scripts to access the Facebook API and authenticate users.
+     * @constructor
+     */
     function Authorizer() {
         this.authDeferred = jQuery.Deferred();
         this.scriptLoadDeferred = jQuery.Deferred();
@@ -295,33 +299,59 @@ ensurePackage("guardian.facebook");
 
     Authorizer.prototype = Object.create(EventEmitter.prototype);
 
+    /**
+     * An access token used to authenticate the user's Facebook session. Note that at present
+     * the authenticator does not handle access tokens expiring.
+     * @see https://developers.facebook.com/docs/howtos/login/debugging-access-tokens/
+     * @type {String}
+     */
     Authorizer.accessToken = null;
+
+    /**
+     * The user's id which can be used to retrieve further data from the Facebook open graph
+     * For instance you could call the following URL: https://graph.facebook.com/{userId}
+     * @type {String}
+     */
     Authorizer.userId = null;
+
+    /**
+     * The Facebook user data object. Includes propertiers for the user's id, name, first_name, last_name, username, gender and locale.
+     * You can get the user's profile picture by substituting the username into the following call to the Graph API
+     * http://graph.facebook.com/" + userData.username + "/picture
+     * @see http://graph.facebook.com/btaylor
+     * @type {Object}
+     */
     Authorizer.userData = null;
 
     /**
-     * Gets the user to login
-     * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
+     * Gets the user to login. This may generate a popup dialog prompting the user for their username and password.
+     * To prevent popup blockers from supressing the dialog this call must be made as a direct result of a user action
+     * and within the same execution scope (ie not resulting from a callback). Client methods can also subscribe to the
+     * following events fired during the login process (see _handleGotLoginStatus)
+     *
+     * @see https://developers.facebook.com/docs/reference/javascript/FB.login/
+     * @return A promise which is resolved once the user has been authenticated and authorized the Guardian app
      */
-    Authorizer.prototype.authUser = function () {
-        console.log("Authorizer: authUser");
+    Authorizer.prototype.login = function () {
         if (!this.accessToken) {
             this._loadFacebookAPI().then(function () {
-                FB.login(this.handleGotLoginStatus.bind(this), permissions);
+                FB.login(this._handleGotLoginStatus.bind(this), permissions);
             }.bind(this))
         }
         return this.authDeferred.promise();
     };
 
     /**
-     * Checks if the user is logged in and has authorised the app
+     * Checks whether the user is logged in and has authorised the app. Returns a promise which is resolved
+     * when the user is full connected and authenticated for the app.Client methods can also subscribe to the
+     * following events fired during the login process (see _handleGotLoginStatus)
+     *
+     * @see https://developers.facebook.com/docs/reference/javascript/FB.getLoginStatus/
      * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
      */
     Authorizer.prototype.getLoginStatus = function () {
-        console.log("Authorizer: getLoginStatus");
         this._loadFacebookAPI().then(function () {
-            // Checks if the current user is logged in and has authorized the app
-            FB.getLoginStatus(this.handleGotLoginStatus.bind(this), permissions);
+            FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions);
         }.bind(this));
         return this.authDeferred.promise();
     };
@@ -331,15 +361,24 @@ ensurePackage("guardian.facebook");
 
     var scriptId = 'facebook-jssdk';
 
-    Authorizer.prototype.handleGotLoginStatus = function (response) {
-
-        console.log("Authorizer: Got Login Status: " + response.status);
-
+    /**
+     * Called when the user logs in or checks login status. If the user is fully auth'd to use the app, then
+     * it will resolve the authorized promise. It will also trigger one of the following events
+     *
+     * Authorizer.AUTHORIZED: Triggered when the user is not signed into their account
+     * Authorizer.NOT_LOGGED_IN: Triggered when the user is not signed into their account
+     * Authorizer.NOT_AUTHORIZED: Triggered when the user signed into their account but has not authorised the app
+     *
+     * If the user is logged in, the Authorizer will also fetch user data (see _handleGotUserData)
+     *
+     * @param response The response from facebook following a call to getLoginStatus or getLogin.
+     * @private
+     */
+    Authorizer.prototype._handleGotLoginStatus = function (response) {
         switch (response.status) {
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
-                console.log("Authorizer: Access token: " + this.accessToken);
                 this.trigger(Authorizer.AUTHORIZED);
                 this._getUserData();
                 this.authDeferred.resolve();
@@ -354,7 +393,21 @@ ensurePackage("guardian.facebook");
 
     };
 
-    Authorizer.prototype._handleGotUserData = function(data) {
+    /**
+     * Fetches data about the user. When this is complete it triggers the following:
+     * Authorizer.GOT_USER_DETAILS: Which includes a single parameter with the userData JSON
+     * This data is also made available as a field on the authorizer.
+     */
+    Authorizer.prototype._getUserData = function () {
+        FB.api("/me", this._handleGotUserData.bind(this));
+    };
+
+    /**
+     * Called when the Facebook API returns data about the user
+     * @param {Object} data The data from the server
+     * @private
+     */
+    Authorizer.prototype._handleGotUserData = function (data) {
         if (data && !data.error) {
             this.userData = data;
             this.trigger(Authorizer.GOT_USER_DETAILS, [data]);
@@ -362,18 +415,15 @@ ensurePackage("guardian.facebook");
     };
 
     /**
-     * Gets the user data
-     */
-    Authorizer.prototype._getUserData = function () {
-        console.log("Authorizer: Getting user data");
-        FB.api("/me", this._handleGotUserData.bind(this));
-    };
-
-    /**
+     * Gets the Facebook APP id for the relevent guardian app. It will first check
+     * window.identity.facebook.appId.
+     *
+     * If this is not present, then it will extract the from the fb:app_id meta tag on the page.
+     * Note that the meta tag always displays the production app id, so is not correct in preproduction environments.
+     *
      * @private
      */
     Authorizer.prototype.getAppId = function () {
-        console.log("Authorizer: Getting app id");
         var identityId = window.identity && identity.facebook && identity.facebook.appId;
         return identityId || jQuery("meta[property='fb:app_id']").attr("content");
     };
@@ -381,9 +431,7 @@ ensurePackage("guardian.facebook");
     /**
      * @private
      */
-    Authorizer.prototype.scriptLoaded = function () {
-
-        console.log("Authorizer: Handling script loaded");
+    Authorizer.prototype._handleScriptLoaded = function () {
 
         FB.init({
             appId: this.getAppId(),
@@ -398,29 +446,33 @@ ensurePackage("guardian.facebook");
     };
 
     /**
+     * Loads the Facebook script using RequireJS. This can be changed to use curl.js later if desired.
      * @private
      */
-    Authorizer.prototype._configureFacebookScript = function () {
-        require(['http://connect.facebook.net/en_US/all.js'], this.scriptLoaded.bind(this))
+    Authorizer.prototype._loadFacebookScript = function () {
+        require(['http://connect.facebook.net/en_US/all.js'], this._handleScriptLoaded.bind(this))
     };
 
     /**
+     * Loads the Facebook API. Not intended for direct use: call the function you intend to use (login or getloginstatus)
+     * and these will load the facebook api or use the existing version as required.
      * @private
      */
     Authorizer.prototype._loadFacebookAPI = function () {
-        console.log("Authorizer: Loading Facebook API");
-
         if (window.FB) {
             this.scriptLoadDeferred.resolve();
         } else if (!document.getElementById(scriptId) && !this.requiredAlready) {
             this.requiredAlready = true;
-            this._configureFacebookScript();
+            this._loadFacebookScript();
         }
         return this.scriptLoadDeferred.promise();
     };
 
-    Authorizer.prototype.destroy = function() {
-        this.removeEvent(); // remove all events
+    /**
+     * Removes all events from the authorizer
+     */
+    Authorizer.prototype.destroy = function () {
+        this.removeEvent(); // removes all events
     };
 
     /** @event */

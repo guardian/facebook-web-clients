@@ -70,7 +70,7 @@
     };
 
     VoteController.prototype.submitVote = function (choice) {
-        this.authorizer.authUser().then(function () {
+        this.authorizer.login().then(function () {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
                 dataType:'jsonp',

@@ -20,7 +20,7 @@
                     fn();
                 }
             });
-            authorizer.authUser.returns({
+            authorizer.login.returns({
                 then: function (fn) {
                     fn();
                 }
@@ -66,7 +66,7 @@
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledOnce)
         when(view.trigger("voted", ["Disagree"]));
-        thenThe(authorizer.authUser).shouldHaveBeen(calledOnce);
+        thenThe(authorizer.login).shouldHaveBeen(calledOnce);
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledAgain);
     });

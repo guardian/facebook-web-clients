@@ -4,7 +4,7 @@
         setup: function () {
             authorizer = new guardian.facebook.Authorizer();
             userDetailsCallback = sinon.stub();
-            authorizer._configureFacebookScript = function () {
+            authorizer._loadFacebookScript = function () {
                 window.FB = {
                     api: sinon.spy(function (path, callback) {
                         callback(userData);
@@ -15,7 +15,7 @@
                     getLoginStatus: sinon.stub(),
                     init: sinon.stub()
                 };
-                this.scriptLoaded(window.FB);
+                this._handleScriptLoaded(window.FB);
             };
             authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, userDetailsCallback);
         },
@@ -59,7 +59,7 @@
             }
         });
 
-        authorizer.authUser();
+        authorizer.login();
 
         thenThe(FB.init).shouldHaveBeen(calledOnce);
         equal(authorizer.accessToken, '123');
@@ -99,7 +99,7 @@
             "name": "Olly"
         });
 
-        when(authorizer.authUser());
+        when(authorizer.login());
 
         thenThe(userDetailsCallback)
             .shouldHaveBeen(calledOnce)
@@ -117,7 +117,7 @@
             "error": "Something bad happened"
         });
 
-        when(authorizer.authUser());
+        when(authorizer.login());
 
         thenThe(userDetailsCallback).shouldHaveBeen(notCalled);
 

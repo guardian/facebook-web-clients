@@ -390,7 +390,7 @@ ensurePackage("guardian.facebook");
     };
 
     VoteController.prototype.submitVote = function (choice) {
-        this.authorizer.authUser().then(function () {
+        this.authorizer.login().then(function () {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
                 dataType:'jsonp',
@@ -448,6 +448,8 @@ ensurePackage("guardian.facebook");
 
         var userData = this.authorizer.userData;
 
+        console.log(userData);
+
         if (userData) {
 
             var txt = userData.first_name,
@@ -483,7 +485,7 @@ ensurePackage("guardian.facebook");
 
     LoginButtonView.prototype.handleLoginClick = function () {
         console.log("Auth'ing user");
-        this.authorizer.authUser();
+        this.authorizer.login();
         return false;
     };
 

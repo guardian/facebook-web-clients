@@ -9,8 +9,8 @@
                 '</div>'
             );
             authorizer = new guardian.facebook.Authorizer();
-            sinon.spy(authorizer, "authUser");
-            authorizer._configureFacebookScript = sinon.stub();
+            sinon.spy(authorizer, "login");
+            authorizer._loadFacebookScript = sinon.stub();
             model = new EventEmitter();
             model.getVotelabel = sinon.stub();
         },
@@ -39,7 +39,7 @@
         given(newView());
         when(authorizer.trigger(guardian.facebook.Authorizer.NOT_LOGGED_IN));
         when(authorizer.trigger(guardian.facebook.Authorizer.NOT_LOGGED_IN));
-        thenThe(authorizer.authUser).shouldHaveBeen(calledOnce);
+        thenThe(authorizer.login).shouldHaveBeen(calledOnce);
     });
 
     test("Show User Details", function () {

@@ -14,10 +14,10 @@
         this.baseURI = baseURI;
 
         this.checkExistingVoteCallback = this.checkExistingVote.bind(this);
-        this.authorizer.on(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
+        this.authorizer.onLoggedIn.then(this.checkExistingVoteCallback);
 
         this.handleNotAuthorizedCallback = this.handleNotAuthorized.bind(this);
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
+        this.authorizer.onNotAuthorized.then(this.handleNotAuthorizedCallback);
 
         this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({

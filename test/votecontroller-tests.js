@@ -1,5 +1,11 @@
 (function () {
 
+    var fakePromise = {
+        then: function (fn) {
+            fn();
+        }
+    };
+
     module("Vote Controller", {
         setup: function () {
             jQuery.ajax = sinon.stub(jQuery, "ajax");
@@ -14,17 +20,13 @@
             model = sinon.stub(new guardian.facebook.VoteModel());
             deferred = jQuery.Deferred();
             model.whenDataIsSet.returns(deferred.promise());
+
             authorizer = sinon.stub(Object.create(guardian.facebook.Authorizer.prototype));
-            authorizer.getLoginStatus.returns({
-                then: function (fn) {
-                    fn();
-                }
-            });
-            authorizer.login.returns({
-                then: function (fn) {
-                    fn();
-                }
-            });
+            authorizer.getLoginStatus.returns(fakePromise);
+            authorizer.login.returns(fakePromise);
+            authorizer.onLoggedIn = fakePromise;
+            authorizer.onNotAuthorized = fakePromise;
+
             view = new EventEmitter();
             controller = new guardian.facebook.VoteController(model, view, authorizer)
         },
@@ -64,11 +66,11 @@
     test("Posts the custom action to facebook", function () {
         when(controller.initialise("/some_url"));
         thenThe(jQuery.ajax)
-            .shouldHaveBeen(calledOnce)
+            .shouldHaveBeen(calledTwice);
         when(view.trigger("voted", ["Disagree"]));
         thenThe(authorizer.login).shouldHaveBeen(calledOnce);
         thenThe(jQuery.ajax)
-            .shouldHaveBeen(calledAgain);
+            .shouldHaveBeen(calledAgain)
     });
 
     test("Handles already voted", function () {
@@ -92,7 +94,7 @@
             then: function (callback) {
                 // dont call the success
             },
-            fail: function(callback) {
+            fail: function (callback) {
                 callback();
             }
         });

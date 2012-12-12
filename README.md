@@ -65,12 +65,8 @@ require([baseURI + "/static/facebook-authorizer-1.0.js"],
             FB.api(...);
         });
 
-        authorizer.whenGotUserData().then(function(userData)) {
+        authorizer.onUserDataLoaded.then(function(userData)) {
             console.log("Hi, " + userData.first_name);
-        });
-
-        authorizer.on("notAuthorized", function() {
-           console.log("You haven't authorized the Guardian App");
         });
 
     });

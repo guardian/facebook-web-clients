@@ -6,11 +6,15 @@
         this.model = model;
 
         this.render();
-        this.authorizer.getLoginStatus().then(this.render.bind(this));
+
         this.model.on(guardian.facebook.VoteModel.DATA_CHANGED, this.render.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, this.render.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_LOGGED_IN, this.showAuthorizeButton.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.showAuthorizeButton.bind(this));
+
+        this.authorizer.getLoginStatus().then(this.render.bind(this));
+
+        this.authorizer.onUserDataLoaded.then(this.render.bind(this));
+        this.authorizer.onNotLoggedIn.then(this.showAuthorizeButton.bind(this));
+        this.authorizer.onNotAuthorized.then(this.showAuthorizeButton.bind(this));
+
         this.jContainer.delegate("a", "click.loginbutton", this.handleLoginClick.bind(this));
     }
 

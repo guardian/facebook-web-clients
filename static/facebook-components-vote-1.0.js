@@ -334,10 +334,10 @@ ensurePackage("guardian.facebook");
         this.baseURI = baseURI;
 
         this.checkExistingVoteCallback = this.checkExistingVote.bind(this);
-        this.authorizer.on(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
+        this.authorizer.onLoggedIn.then(this.checkExistingVoteCallback);
 
         this.handleNotAuthorizedCallback = this.handleNotAuthorized.bind(this);
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
+        this.authorizer.onNotAuthorized.then(this.handleNotAuthorizedCallback);
 
         this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
@@ -432,11 +432,15 @@ ensurePackage("guardian.facebook");
         this.model = model;
 
         this.render();
-        this.authorizer.getLoginStatus().then(this.render.bind(this));
+
         this.model.on(guardian.facebook.VoteModel.DATA_CHANGED, this.render.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, this.render.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_LOGGED_IN, this.showAuthorizeButton.bind(this));
-        this.authorizer.on(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.showAuthorizeButton.bind(this));
+
+        this.authorizer.getLoginStatus().then(this.render.bind(this));
+
+        this.authorizer.onUserDataLoaded.then(this.render.bind(this));
+        this.authorizer.onNotLoggedIn.then(this.showAuthorizeButton.bind(this));
+        this.authorizer.onNotAuthorized.then(this.showAuthorizeButton.bind(this));
+
         this.jContainer.delegate("a", "click.loginbutton", this.handleLoginClick.bind(this));
     }
 

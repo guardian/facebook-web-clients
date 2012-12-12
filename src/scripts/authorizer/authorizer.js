@@ -35,12 +35,44 @@
      * @constructor
      */
     function Authorizer() {
-        this._loggedIn = new RepeatablePromise();
-        this._facebookScriptLoaded = new RepeatablePromise();
-        this._userDataLoaded = new RepeatablePromise();
+        this.onLoggedIn = new RepeatablePromise();
+        this.onFBScriptLoaded = new RepeatablePromise();
+        this.onUserDataLoaded = new RepeatablePromise();
+        this.onNotAuthorized = new RepeatablePromise();
+        this.onNotLoggedIn = new RepeatablePromise();
     }
 
-    Authorizer.prototype = Object.create(EventEmitter.prototype);
+    /**
+     * Promise like object which is resolved when the user is logged in.
+     * @type {Object}
+     */
+    Authorizer.prototype.onLoggedIn = null;
+
+    /**
+     * Promise like object which is resolved when the facebook script is loaded
+     * @type {Object}
+     */
+    Authorizer.prototype.onFBScriptLoaded = null;
+
+    /**
+     * Promise like object which is resolved when the user's data is loaded (as a result
+     * of a call to login() or getLoginStatus().
+     * @type {Object}
+     */
+    Authorizer.prototype.onUserDataLoaded = null;
+
+    /**
+     * Promise like object which is resolved when the user is logged in but not authorized
+     * to use the app.
+     * @type {Object}
+     */
+    Authorizer.prototype.onNotAuthorized = null;
+
+    /**
+     * Promise like object which is resolved when the user is not logged in.
+     * @type {Object}
+     */
+    Authorizer.prototype.onNotLoggedIn = null;
 
     /**
      * An access token used to authenticate the user's Facebook session. Note that at present
@@ -81,7 +113,7 @@
                 FB.login(this._handleGotLoginStatus.bind(this), permissions);
             }.bind(this))
         }
-        return this._loggedIn;
+        return this.onLoggedIn;
     };
 
     /**
@@ -96,15 +128,22 @@
         this._loadFacebookAPI().then(function (FB) {
             FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions);
         }.bind(this));
-        return this._loggedIn;
+        return this.onLoggedIn;
     };
 
     /**
-     * Returns a promise providing access to the user data.
-     * @return {*}
+     * Gets the Facebook APP id for the relevent guardian app. It will first check
+     * window.identity.facebook.appId.
+     *
+     * If this is not present, then it will extract the from the fb:app_id meta tag on the page.
+     * Note that the meta tag always displays the production app id, so is not correct in preproduction environments.
+     *
+     * @private
      */
-    Authorizer.prototype.whenGotUserData = function () {
-        return this._userDataLoaded;
+    Authorizer.prototype.getAppId = function () {
+        var identityId = window.identity && identity.facebook && identity.facebook.appId,
+            metaTag = document.querySelector && document.querySelector("meta[property='fb:app_id']");
+        return identityId || metaTag && metaTag.content;
     };
 
     /* End of public methods */
@@ -129,16 +168,15 @@
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
-                this.trigger(Authorizer.AUTHORIZED);
                 this._getUserData();
-                this._loggedIn.resolve(FB);
+                this.onLoggedIn.resolve(FB);
                 break;
             case 'not_authorized':
                 this._getUserData();
-                this.trigger(Authorizer.NOT_AUTHORIZED);
+                this.onNotAuthorized.resolve(this);
                 break;
             default:
-                this.trigger(Authorizer.NOT_LOGGED_IN);
+                this.onNotLoggedIn.resolve();
         }
 
     };
@@ -160,8 +198,7 @@
     Authorizer.prototype._handleGotUserData = function (data) {
         if (data && !data.error) {
             this.userData = data;
-            this._userDataLoaded.resolve(this.userData);
-            this.trigger(Authorizer.GOT_USER_DETAILS, [data]);
+            this.onUserDataLoaded.resolve(data);
         }
     };
 
@@ -172,12 +209,12 @@
      */
     Authorizer.prototype._loadFacebookAPI = function () {
         if (window.FB) {
-            this._facebookScriptLoaded.resolve(window.FB);
+            this.onFBScriptLoaded.resolve(window.FB);
         } else if (!document.getElementById(scriptId) && !this._requiredAlready) {
             this._requiredAlready = true;
             this._loadFacebookScript();
         }
-        return this._facebookScriptLoaded;
+        return this.onFBScriptLoaded;
     };
 
     /**
@@ -203,43 +240,15 @@
             xfbml: true  // parse XFBML
         });
 
-        this._facebookScriptLoaded.resolve(FB);
+        this.onFBScriptLoaded.resolve(FB);
 
-    };
-
-    /**
-     * Gets the Facebook APP id for the relevent guardian app. It will first check
-     * window.identity.facebook.appId.
-     *
-     * If this is not present, then it will extract the from the fb:app_id meta tag on the page.
-     * Note that the meta tag always displays the production app id, so is not correct in preproduction environments.
-     *
-     * @private
-     */
-    Authorizer.prototype.getAppId = function () {
-        var identityId = window.identity && identity.facebook && identity.facebook.appId,
-            metaTag = document.querySelector && document.querySelector("meta[property='fb:app_id']");
-        return identityId || metaTag && metaTag.content;
     };
 
     /**
      * Removes all events from the authorizer
      */
     Authorizer.prototype.destroy = function () {
-        this.removeEvent(); // removes all events
     };
-
-    /** @event */
-    Authorizer.GOT_USER_DETAILS = "gotUserDetails";
-
-    /** @event */
-    Authorizer.NOT_LOGGED_IN = "notLoggedIn";
-
-    /** @event */
-    Authorizer.NOT_AUTHORIZED = "notAuthorized";
-
-    /** @event */
-    Authorizer.AUTHORIZED = "connected";
 
     guardian.facebook.Authorizer = Authorizer;
 

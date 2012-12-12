@@ -17,7 +17,7 @@
                 };
                 this._handleScriptLoaded(window.FB);
             };
-            authorizer.on(guardian.facebook.Authorizer.GOT_USER_DETAILS, userDetailsCallback);
+            authorizer.onUserDataLoaded.then(userDetailsCallback);
         },
         teardown: function () {
             delete window.FB;

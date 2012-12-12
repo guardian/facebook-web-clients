@@ -30,15 +30,15 @@
     test("Not Logged In", function () {
         given(loggedIn());
         given(newView());
-        when(authorizer.trigger(guardian.facebook.Authorizer.NOT_LOGGED_IN));
+        when(authorizer.onNotLoggedIn.resolve());
         thenThe(jQuery(".social-summary .message a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
     test("Auth User on Second Login Attempt", function () {
         given(loggedIn());
         given(newView());
-        when(authorizer.trigger(guardian.facebook.Authorizer.NOT_LOGGED_IN));
-        when(authorizer.trigger(guardian.facebook.Authorizer.NOT_LOGGED_IN));
+        when(authorizer.onNotLoggedIn.resolve());
+        when(authorizer.onNotLoggedIn.resolve());
         thenThe(authorizer.login).shouldHaveBeen(calledOnce);
     });
 

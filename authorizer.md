@@ -24,6 +24,9 @@ Curl, depending on which is available. It also relies on ECMAScript5 functions (
 getInstance()
 ---------------
 
+Gets an instance of authorizer which is shared between all clients in the browser.
+
+```
 require(["facebook-authorizer-1.0.js"], function () {
 
         var authorizer = guardian.facebook.Authorizer.getInstance();
@@ -32,11 +35,12 @@ require(["facebook-authorizer-1.0.js"], function () {
 
 ```
 
-
 authorizer.getLoginStatus()
 ----------------
 
 To assess if you're logged in or not.  If the Facebook SDK is not already on the page, authorizer will insert it for you.
+
+After checking login status, authorizer will fetch basic user data (see below)
 
 ```
     authorizer.getLoginStatus()
@@ -58,11 +62,13 @@ To assess if you're logged in or not.  If the Facebook SDK is not already on the
 authorizer.login()
 ----------------
 
-Prompts your user to log into facebook and authorize the relevent Guardian app.
+If not logged in, prompts your user to log into facebook and authorize the relevent Guardian app.
 
-This may generate a popup dialog prompting the user for their username and password.
-To prevent popup blockers from supressing the dialog this call must be made as a direct result of a user action (eg button click)
+This may generate a popup dialog prompting the user for their username and password. To prevent popup blockers from
+supressing the dialog this call must be made as a direct result of a user action (e.g. a button click)
 and within the same execution scope (ie. not resulting from a callback).
+
+After logging in, authorizer will fetch basic user data (see below)
 
 ```
     authorizer.login().then(function (FB) {

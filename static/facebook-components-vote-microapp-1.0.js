@@ -15,7 +15,7 @@
         function () {
 
             var
-                authorizer = new guardian.facebook.Authorizer(document),
+                authorizer = guardian.facebook.Authorizer.getInstance(),
 
                 model = new guardian.facebook.VoteModel(),
 

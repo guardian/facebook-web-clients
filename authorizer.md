@@ -13,7 +13,18 @@ It automatically retrieves the Facebook app id from the document.
 Built Files
 -----------
 http://facebook-web-clients.appspot.com/static/facebook-authorizer-1.0.js
+
 http://facebook-web-clients.appspot.com/static/facebook-authorizer-1.0.min.js
+
+Code
+---------
+
+https://github.com/guardian/facebook-web-clients/blob/master/static/facebook-authorizer-1.0.js
+
+Tests
+---------
+
+http://facebook-web-clients.appspot.com/test/tests.html
 
 Dependencies
 ------------
@@ -119,3 +130,15 @@ authorizer.onNotAuthorized.then(function() {
     console.log("Please use the Guardian with Facebook!");
 });
 ```
+
+authorizer.getAppId
+-------------------
+
+The Facebook SDK is initialised with an app id. In the first instance Authorizer will check for a variable set in
+
+```
+identity.facebook.appId
+```
+
+Otherwise, it will retrieve one from the facebook fb:appid meta tag on the page
+

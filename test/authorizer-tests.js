@@ -2,7 +2,7 @@
 
     module("Facebook Authorizer", {
         setup: function () {
-            authorizer = new guardian.facebook.Authorizer();
+            authorizer = guardian.facebook.Authorizer.getInstance();
             userDetailsCallback = sinon.stub();
             authorizer._loadFacebookScript = function () {
                 window.FB = {

@@ -59,7 +59,7 @@ It automatically retrieves the facebook app id from the document.
 require([baseURI + "/static/facebook-authorizer-1.0.js"],
     function () {
 
-        var authorizer = new guardian.facebook.Authorizer();
+        var authorizer = guardian.facebook.Authorizer.getInstance();
 
         authorizer.getLoginStatus().then(function (FB) {
             FB.api(...);

@@ -35,6 +35,7 @@
      * @constructor
      */
     function Authorizer() {
+        instance = this;
         this.onLoggedIn = new RepeatablePromise();
         this.onFBScriptLoaded = new RepeatablePromise();
         this.onUserDataLoaded = new RepeatablePromise();
@@ -244,10 +245,17 @@
 
     };
 
+    var instance = null;
+
+    Authorizer.getInstance = function () {
+        return instance || new Authorizer();
+    };
+
     /**
      * Removes all events from the authorizer
      */
     Authorizer.prototype.destroy = function () {
+        instance = null;
     };
 
     guardian.facebook.Authorizer = Authorizer;

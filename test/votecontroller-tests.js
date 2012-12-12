@@ -31,7 +31,7 @@
             authorizer.getLoginStatus.returns(fakePromise);
             authorizer.login.returns(fakePromise);
 
-            authorizer.onLoggedIn = fakePromise;
+            authorizer.onConnected = fakePromise;
             authorizer.onNotAuthorized = fakePromise;
 
             view = new EventEmitter();

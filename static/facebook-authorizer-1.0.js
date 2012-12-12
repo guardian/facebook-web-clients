@@ -15,7 +15,7 @@ ensurePackage("guardian.facebook");
      */
     function Authorizer() {
         instance = this;
-        this.onLoggedIn = new RepeatablePromise();
+        this.onConnected = new RepeatablePromise();
         this.onFBScriptLoaded = new RepeatablePromise();
         this.onUserDataLoaded = new RepeatablePromise();
         this.onNotAuthorized = new RepeatablePromise();
@@ -32,7 +32,7 @@ ensurePackage("guardian.facebook");
      * Promise like object which is resolved when the user is logged in.
      * @type {Object}
      */
-    Authorizer.prototype.onLoggedIn = null;
+    Authorizer.prototype.onConnected = null;
 
     /**
      * Promise like object which is resolved when the facebook script is loaded
@@ -100,7 +100,7 @@ ensurePackage("guardian.facebook");
                 FB.login(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this))
         }
-        return this.onLoggedIn;
+        return this.onConnected;
     };
 
     /**
@@ -118,7 +118,7 @@ ensurePackage("guardian.facebook");
                 FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this));
         }
-        return this.onLoggedIn;
+        return this.onConnected;
     };
 
     /**
@@ -160,7 +160,7 @@ ensurePackage("guardian.facebook");
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
                 this._getUserData();
-                this.onLoggedIn.resolve(FB);
+                this.onConnected.resolve(FB);
                 break;
             case 'not_authorized':
                 this._getUserData();

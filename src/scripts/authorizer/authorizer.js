@@ -12,7 +12,7 @@
      */
     function Authorizer() {
         instance = this;
-        this.onLoggedIn = new RepeatablePromise();
+        this.onConnected = new RepeatablePromise();
         this.onFBScriptLoaded = new RepeatablePromise();
         this.onUserDataLoaded = new RepeatablePromise();
         this.onNotAuthorized = new RepeatablePromise();
@@ -29,7 +29,7 @@
      * Promise like object which is resolved when the user is logged in.
      * @type {Object}
      */
-    Authorizer.prototype.onLoggedIn = null;
+    Authorizer.prototype.onConnected = null;
 
     /**
      * Promise like object which is resolved when the facebook script is loaded
@@ -97,7 +97,7 @@
                 FB.login(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this))
         }
-        return this.onLoggedIn;
+        return this.onConnected;
     };
 
     /**
@@ -115,7 +115,7 @@
                 FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this));
         }
-        return this.onLoggedIn;
+        return this.onConnected;
     };
 
     /**
@@ -140,11 +140,7 @@
     /**
      * Called when the user logs in or checks login status. If the user is fully auth'd to use the app, then
      * it will resolve the authorized promise. It will also trigger one of the following events
-     *
-     * Authorizer.AUTHORIZED: Triggered when the user is not signed into their account
-     * Authorizer.NOT_LOGGED_IN: Triggered when the user is not signed into their account
-     * Authorizer.NOT_AUTHORIZED: Triggered when the user signed into their account but has not authorised the app
-     *
+
      * If the user is logged in, the Authorizer will also fetch user data (see _handleGotUserData)
      *
      * @param response The response from facebook following a call to getLoginStatus or getLogin.
@@ -157,7 +153,7 @@
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
                 this._getUserData();
-                this.onLoggedIn.resolve(FB);
+                this.onConnected.resolve(FB);
                 break;
             case 'not_authorized':
                 this._getUserData();

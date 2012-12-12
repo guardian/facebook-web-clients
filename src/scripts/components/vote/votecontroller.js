@@ -14,7 +14,7 @@
         this.baseURI = baseURI;
 
         this.checkExistingVoteCallback = this.checkExistingVote.bind(this);
-        this.authorizer.onLoggedIn.then(this.checkExistingVoteCallback);
+        this.authorizer.onConnected.then(this.checkExistingVoteCallback);
 
         this.handleNotAuthorizedCallback = this.handleNotAuthorized.bind(this);
         this.authorizer.onNotAuthorized.then(this.handleNotAuthorizedCallback);

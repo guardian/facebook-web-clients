@@ -56,10 +56,21 @@ makes it easy to ensure that tasks are executed in the right order.
 ```
 require([baseURI + "/static/facebook-authorizer-1.0.js"],
     function () {
+
         var authorizer = new guardian.facebook.Authorizer();
-        authorizer.getLoginStatus().then(function () {
+
+        authorizer.getLoginStatus().then(function (FB) {
             FB.api(...);
         });
+
+        authorizer.whenGotUserData().then(function(userData)) {
+            console.log("Hi, " + userData.first_name);
+        });
+
+        authorizer.on("notAuthorized", function() {
+           console.log("You haven't authorized the Guardian App");
+        });
+
     });
 ```
 

@@ -1,5 +1,29 @@
 (function () {
 
+    function RepeatablePromise() {
+        this.callbacks = [];
+    }
+
+    RepeatablePromise.prototype.invalidate = function () {
+        this.args = undefined;
+    };
+
+    RepeatablePromise.prototype.resolve = function () {
+        this.args = Array.prototype.slice.apply(arguments);
+        console.log(this.args);
+        var i, numCallbacks = this.callbacks.length;
+        for (i = 0; i < numCallbacks; i++) {
+            this.callbacks[i].apply(null, this.args);
+        }
+    };
+
+    RepeatablePromise.prototype.then = function (fn) {
+        this.callbacks.push(fn);
+        if (this.args !== undefined) {
+            fn.apply(null, this.args);
+        }
+    };
+
     var permissions = {scope: 'email,publish_actions,publish_stream'};
 
     /**
@@ -7,8 +31,9 @@
      * @constructor
      */
     function Authorizer() {
-        this.authDeferred = jQuery.Deferred();
-        this.scriptLoadDeferred = jQuery.Deferred();
+        this.authDeferred = new RepeatablePromise();
+        this.scriptLoadDeferred = new RepeatablePromise();
+        this.userDataDeferred = new RepeatablePromise();
     }
 
     Authorizer.prototype = Object.create(EventEmitter.prototype);
@@ -48,11 +73,11 @@
      */
     Authorizer.prototype.login = function () {
         if (!this.accessToken) {
-            this._loadFacebookAPI().then(function () {
+            this._loadFacebookAPI().then(function (FB) {
                 FB.login(this._handleGotLoginStatus.bind(this), permissions);
             }.bind(this))
         }
-        return this.authDeferred.promise();
+        return this.authDeferred;
     };
 
     /**
@@ -64,12 +89,19 @@
      * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
      */
     Authorizer.prototype.getLoginStatus = function () {
-        this._loadFacebookAPI().then(function () {
+        this._loadFacebookAPI().then(function (FB) {
             FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions);
         }.bind(this));
-        return this.authDeferred.promise();
+        return this.authDeferred;
     };
 
+    /**
+     * Returns a promise providing access to the user data.
+     * @return {*}
+     */
+    Authorizer.prototype.whenGotUserData = function () {
+        return this.userDataDeferred;
+    };
 
     /* End of public methods */
 
@@ -95,7 +127,7 @@
                 this.userId = response.authResponse.userID;
                 this.trigger(Authorizer.AUTHORIZED);
                 this._getUserData();
-                this.authDeferred.resolve();
+                this.authDeferred.resolve(FB);
                 break;
             case 'not_authorized':
                 this._getUserData();
@@ -124,6 +156,7 @@
     Authorizer.prototype._handleGotUserData = function (data) {
         if (data && !data.error) {
             this.userData = data;
+            this.userDataDeferred.resolve(this.userData);
             this.trigger(Authorizer.GOT_USER_DETAILS, [data]);
         }
     };
@@ -155,7 +188,7 @@
             xfbml: true  // parse XFBML
         });
 
-        this.scriptLoadDeferred.resolve();
+        this.scriptLoadDeferred.resolve(FB);
 
     };
 
@@ -175,12 +208,12 @@
      */
     Authorizer.prototype._loadFacebookAPI = function () {
         if (window.FB) {
-            this.scriptLoadDeferred.resolve();
-        } else if (!document.getElementById(scriptId) && !this.requiredAlready) {
-            this.requiredAlready = true;
+            this.scriptLoadDeferred.resolve(window.FB);
+        } else if (!document.getElementById(scriptId) && !this._requiredAlready) {
+            this._requiredAlready = true;
             this._loadFacebookScript();
         }
-        return this.scriptLoadDeferred.promise();
+        return this.scriptLoadDeferred;
     };
 
     /**

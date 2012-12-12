@@ -8,13 +8,14 @@
                 '<div class="message"></div>' +
                 '</div>'
             );
-            authorizer = new guardian.facebook.Authorizer();
+            authorizer = guardian.facebook.Authorizer.getInstance();
             sinon.spy(authorizer, "login");
             authorizer._loadFacebookScript = sinon.stub();
             model = new EventEmitter();
             model.getVotelabel = sinon.stub();
         },
         teardown: function () {
+            authorizer.destroy();
             jQuery(".social-summary").remove();
         }
     });

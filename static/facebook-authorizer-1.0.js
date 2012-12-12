@@ -247,12 +247,6 @@ ensurePackage("guardian.facebook");
 
     };
 
-    var instance = null;
-
-    Authorizer.getInstance = function () {
-        return instance || new Authorizer();
-    };
-
     /**
      * Removes all events from the authorizer
      */
@@ -260,7 +254,13 @@ ensurePackage("guardian.facebook");
         instance = null;
     };
 
-    guardian.facebook.Authorizer = Authorizer;
+    var instance = null;
+
+    guardian.facebook.Authorizer = {
+        getInstance: function() {
+            return instance || new Authorizer();
+        }
+    }
 
 })();
 

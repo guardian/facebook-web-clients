@@ -21,9 +21,16 @@
             deferred = jQuery.Deferred();
             model.whenDataIsSet.returns(deferred.promise());
 
-            authorizer = sinon.stub(Object.create(guardian.facebook.Authorizer.prototype));
+            authorizer = guardian.facebook.Authorizer.getInstance();
+
+            sinon.stub(authorizer, "_loadFacebookAPI");
+            sinon.stub(authorizer, "getLoginStatus");
+            sinon.stub(authorizer, "login");
+
+            authorizer._loadFacebookAPI.returns(fakePromise);
             authorizer.getLoginStatus.returns(fakePromise);
             authorizer.login.returns(fakePromise);
+
             authorizer.onLoggedIn = fakePromise;
             authorizer.onNotAuthorized = fakePromise;
 
@@ -31,6 +38,7 @@
             controller = new guardian.facebook.VoteController(model, view, authorizer)
         },
         teardown: function () {
+            authorizer.destroy();
             jQuery.ajax.restore();
             delete window.FB;
         }

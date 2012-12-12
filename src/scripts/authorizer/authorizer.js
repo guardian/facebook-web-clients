@@ -244,20 +244,20 @@
 
     };
 
-    var instance = null;
-
-    Authorizer.getInstance = function () {
-        return instance || new Authorizer();
-    };
-
     /**
-     * Removes all events from the authorizer
+     * Destroys the instance allowing a new authorizer to be created. Useful for testing.
      */
     Authorizer.prototype.destroy = function () {
         instance = null;
     };
 
-    guardian.facebook.Authorizer = Authorizer;
+    var instance = null;
+
+    guardian.facebook.Authorizer = {
+        getInstance: function() {
+            return instance || new Authorizer();
+        }
+    }
 
 })();
 

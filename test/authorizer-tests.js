@@ -4,6 +4,7 @@
         setup: function () {
             authorizer = guardian.facebook.Authorizer.getInstance();
             userDetailsCallback = sinon.stub();
+            sinon.spy(authorizer, "getLoginStatus");
             authorizer._loadFacebookScript = function () {
                 window.FB = {
                     api: sinon.spy(function (path, callback) {
@@ -12,10 +13,11 @@
                     login: sinon.spy(function (callback, permissions) {
                         callback(loginResponse);
                     }),
-                    getLoginStatus: sinon.stub(),
+                    getLoginStatus: sinon.spy(function (callback) {
+                        callback(loginResponse);
+                    }),
                     init: sinon.stub()
                 };
-                this._handleScriptLoaded(window.FB);
             };
             authorizer.onUserDataLoaded.then(userDetailsCallback);
         },
@@ -27,11 +29,17 @@
         }
     });
 
-    var authorizer, userData, loginResponse, userDetailsCallback;
+    function whenTheScriptLoads() {
+        authorizer._handleScriptLoaded(window.FB);
+    }
+
+    var authorizer, userData, loginResponse = {status: 'unknown'}, userDetailsCallback;
 
     test("Calls FB.init() after loading the script", function () {
 
         authorizer.getLoginStatus();
+
+        whenTheScriptLoads();
 
         thenThe(FB.init).shouldHaveBeen(calledOnce);
 
@@ -41,11 +49,37 @@
 
         authorizer.getLoginStatus();
 
+        whenTheScriptLoads();
+
         thenThe(FB.init).shouldHaveBeen(calledOnce);
 
         authorizer.getLoginStatus();
 
         thenThe(FB.init).shouldNotHaveBeen(calledAgain);
+
+    });
+
+    test("Queues calls to getLoginStatus", function () {
+
+        var callback1 = sinon.stub(), callback2 = sinon.stub();
+
+        given(loginResponse = {
+            status: 'connected',
+            authResponse: {
+                accessToken: '123',
+                userID: '123456'
+            }
+        });
+
+        authorizer.getLoginStatus().then(callback1);
+
+        authorizer.getLoginStatus().then(callback2);
+
+        whenTheScriptLoads();
+
+        thenThe(callback1).shouldHaveBeen(calledOnce);
+        thenThe(callback2).shouldHaveBeen(calledOnce);
+        thenThe(FB.getLoginStatus).shouldHaveBeen(calledOnce);
 
     });
 
@@ -60,6 +94,8 @@
         });
 
         authorizer.login();
+
+        whenTheScriptLoads();
 
         thenThe(FB.init).shouldHaveBeen(calledOnce);
         equal(authorizer.accessToken, '123');
@@ -100,6 +136,8 @@
         });
 
         when(authorizer.login());
+
+        whenTheScriptLoads();
 
         thenThe(userDetailsCallback)
             .shouldHaveBeen(calledOnce)

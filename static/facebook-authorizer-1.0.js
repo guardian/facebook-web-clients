@@ -128,9 +128,12 @@ ensurePackage("guardian.facebook");
      * @return A promise which is resolved when the user has been authenticated and authorized the Guardian app
      */
     Authorizer.prototype.getLoginStatus = function () {
-        this._loadFacebookAPI().then(function (FB) {
-            FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions);
-        }.bind(this));
+        if (!this.loginStatusPending) {
+            this.loginStatusPending = true;
+            this._loadFacebookAPI().then(function (FB) {
+                FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions);
+            }.bind(this));
+        }
         return this.onLoggedIn;
     };
 
@@ -167,6 +170,7 @@ ensurePackage("guardian.facebook");
      * @private
      */
     Authorizer.prototype._handleGotLoginStatus = function (response) {
+        this.loginStatusPending = false;
         switch (response.status) {
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
@@ -257,7 +261,7 @@ ensurePackage("guardian.facebook");
     var instance = null;
 
     guardian.facebook.Authorizer = {
-        getInstance: function() {
+        getInstance: function () {
             return instance || new Authorizer();
         }
     }

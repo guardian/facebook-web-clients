@@ -57,15 +57,15 @@
 
     VoteComponent.HTML = '' +
         '<div class="vote-component">' +
-        '<div class="vote-area">' +
-        '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +
-        '<div class="donut-container"></div>' +
-        '<span class="choice disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>' +
-        '</div>' +
         '<div class="social-summary">' +
         '<img class="avatar initially-off" />' +
         '<img class="facebookIcon" src="http://facebook-web-clients.appspot.com/static/facebookIcon_16x16.gif" />' +
         '<div class="message"></div>' +
+        '</div>' +
+        '<div class="vote-area">' +
+        '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +
+        '<div class="donut-container"></div>' +
+        '<span class="choice disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>' +
         '</div>' +
         '</div>';
 

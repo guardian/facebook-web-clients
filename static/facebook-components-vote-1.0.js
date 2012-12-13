@@ -615,7 +615,7 @@ ensurePackage("guardian.facebook");
         this.renderCallback = this.render.bind(this);
         this.model.on("dataChanged", this.renderCallback);
         this.donut = new donutClass(this.jContainer.find(".donut-container"));
-        this.jContainer.delegate(".btn", "click.vote-component", this.handleButtonClick.bind(this));
+        this.jContainer.delegate(".btn:not(.disabled)", "click.vote-component", this.handleButtonClick.bind(this));
     };
 
     VoteComponent.prototype.updateButton = function (answers, index, element) {
@@ -623,6 +623,13 @@ ensurePackage("guardian.facebook");
         jElement.attr("data-action", answer.id);
         jElement.find(".count").html(this.numberFormatter(answer.count));
         jElement.find(".label").html(answer.label);
+        if (this.model.choice) {
+            if (answer.id == this.model.choice) {
+                jElement.addClass("selected");
+            } else {
+                jElement.addClass("disabled");
+            }
+        }
     };
 
     VoteComponent.prototype.render = function () {
@@ -630,8 +637,7 @@ ensurePackage("guardian.facebook");
         this.donut.setPercent(this.model.getAgreePercent());
 
         this.jContainer.find(".choice")
-            .each(this.updateButton.bind(this, this.model.answers))
-            .toggleClass("btn", this.model.canVote());
+            .each(this.updateButton.bind(this, this.model.answers));
 
         if (!this.animated) {
             this.animated = true;
@@ -642,8 +648,11 @@ ensurePackage("guardian.facebook");
     VoteComponent.prototype.handleButtonClick = function (jEvent) {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
-        this.jContainer.find(".btn").removeClass("btn");
-        this.trigger("voted", [action]);
+        if (this.model.canVote()) {
+            this.jContainer.find(".btn").addClass("disabled");
+            jTarget.addClass("selected");
+            this.trigger("voted", [action]);
+        }
     };
 
     VoteComponent.prototype.destroy = function () {
@@ -659,9 +668,9 @@ ensurePackage("guardian.facebook");
         '<div class="message"></div>' +
         '</div>' +
         '<div class="vote-area">' +
-        '<span class="choice agree" data-action="agree"><span class="label"></span><span class="count"></span></span>' +
+        '<span class="choice agree btn" data-action="agree"><span class="tick">&#10004;</span><span class="label"></span><span class="count"></span></span>' +
         '<div class="donut-container"></div>' +
-        '<span class="choice disagree" data-action="disagree"><span class="count"></span><span class="label"></span></span>' +
+        '<span class="choice disagree btn" data-action="disagree"><span class="count"></span><span class="label"></span><span class="tick">&#10004;</span></span>' +
         '</div>' +
         '</div>';
 

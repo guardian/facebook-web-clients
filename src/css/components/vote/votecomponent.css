@@ -22,12 +22,8 @@
     position: absolute;
     top: 45px;
     width: 90px;
-    padding: 3px 10px;
+    padding: 3px 5px;
     border: 1px solid transparent;
-
-    -webkit-transition: 1s all ease;
-    -moz-transition: 1s all ease;
-    transition: 1s all ease;
 }
 
 .vote-component .btn {
@@ -54,6 +50,13 @@
 
 }
 
+.vote-component .btn.disabled,
+.vote-component .btn.disabled:hover {
+    background: #ddd;
+    border-color: #ddd;
+    cursor: default;
+}
+
 .vote-component .btn:hover {
     border-color: #999;
 }
@@ -75,9 +78,48 @@
     background: #3A7D00;
 }
 
+.vote-component .btn.selected {
+    -webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2) inset;
+    -moz-box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2) inset;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2) inset;
+}
+
+.vote-component .btn.selected.agree,
+.vote-component .btn.selected.agree:hover {
+    background: #3A7D00;;
+    border-color: #3A7D00;
+    color: white;
+    cursor: default;
+}
+
 .vote-component .choice.disagree {
     right: 45px;
     text-align: right;
+}
+
+.vote-component .btn.selected.disagree,
+.vote-component .btn.selected.disagree:hover {
+    background: #0D3D00;;
+    border-color: #0D3D00;
+    color: white;
+    cursor: default;
+}
+
+/* Tick Marks */
+.vote-component .tick {
+    display: none;
+}
+
+.vote-component .agree .tick {
+    margin-right: 3px;
+}
+
+.vote-component .disagree .tick {
+    margin-left: 3px;
+}
+
+.vote-component .btn.selected .tick {
+    display: inline;
 }
 
 .vote-component .choice.disagree .count {

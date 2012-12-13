@@ -20,7 +20,10 @@
                 '</div>' +
                 '</div>');
             model = new guardian.facebook.VoteModel();
-            numberFormatter = sinon.spy(function(v) {return v});
+            sinon.spy(model, "registerVote");
+            numberFormatter = sinon.spy(function (v) {
+                return v
+            });
             view = new guardian.facebook.VoteComponent(".vote-component", model, Donut, numberFormatter);
             view.on("voted", function (vote) {
                 model.registerVote(vote);
@@ -43,11 +46,15 @@
 
         thenThe(jQuery("[data-action='answer1']"))
             .should(haveText("0"), inElement(".count"))
-            .should(haveText("Likely"), inElement(".label"));
+            .should(haveText("Likely"), inElement(".label"))
+            .shouldNot(haveClass("selected"))
+            .shouldNot(haveClass("disabled"));
 
         thenThe(jQuery("[data-action='answer2']"))
             .should(haveText("0"), inElement(".count"))
-            .should(haveText("Unlikely"), inElement(".label"));
+            .should(haveText("Unlikely"), inElement(".label"))
+            .shouldNot(haveClass("selected"))
+            .shouldNot(haveClass("disabled"));
 
         thenThe(Donut.prototype.setPercent).shouldHaveBeen(calledWith(50));
 
@@ -55,7 +62,7 @@
 
     test("Formats Counts", function () {
 
-        given(view.numberFormatter = function(v) {
+        given(view.numberFormatter = function (v) {
             return "A" + v;
         });
 
@@ -71,7 +78,7 @@
 
     });
 
-    test("Hides buttons after vote", function () {
+    test("Updates buttons after vote", function () {
 
         givenSomeData();
 
@@ -79,7 +86,26 @@
 
         when(theUserClicksOn("[data-action='answer1']"));
 
-        thenThe(jQuery(".btn")).should(haveSize(0));
+        thenThe(jQuery("[data-action='answer1']"))
+            .should(haveClass("selected"));
+
+        thenThe(jQuery("[data-action='answer2']"))
+            .should(haveClass("disabled"));
+
+    });
+
+    test("Can only vote once", function () {
+
+        givenSomeData();
+
+        when(theUserClicksOn("[data-action='answer1']"));
+        thenThe(model.registerVote).shouldHaveBeen(calledOnce);
+
+        when(theUserClicksOn("[data-action='answer1']"));
+        thenThe(model.registerVote).shouldNotHaveBeen(calledAgain);
+
+        when(theUserClicksOn("[data-action='answer2']"));
+        thenThe(model.registerVote).shouldNotHaveBeen(calledAgain);
 
     });
 

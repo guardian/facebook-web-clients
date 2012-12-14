@@ -103,6 +103,17 @@
 
     });
 
+    test("Will not try to login to facebook more than once", function () {
+
+        authorizer.login();
+        authorizer.login();
+
+        whenTheScriptLoads();
+
+        thenThe(FB.login).shouldHaveBeen(calledOnce);
+
+    });
+
     test("Gets Facebook App ID from the page", function () {
 
         given(jQuery("head").append('<meta property="fb:app_id" content="289251094430759">'));

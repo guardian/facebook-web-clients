@@ -92,7 +92,8 @@
      * @return A promise which is resolved once the user has been authenticated and authorized the Guardian app
      */
     Authorizer.prototype.login = function (permissions) {
-        if (!this.accessToken) {
+        if (!this.accessToken && !this.loginPending) {
+            this.loginPending = true;
             this._loadFacebookAPI().then(function (FB) {
                 FB.login(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this))
@@ -148,6 +149,7 @@
      */
     Authorizer.prototype._handleGotLoginStatus = function (response) {
         this.loginStatusPending = false;
+        this.loginPending = false;
         switch (response.status) {
             case 'connected':
                 this.accessToken = response.authResponse.accessToken;
@@ -238,22 +240,20 @@
         this.callbacks = [];
     }
 
-    RepeatablePromise.prototype.invalidate = function () {
-        this.args = undefined;
-    };
-
     RepeatablePromise.prototype.resolve = function () {
         this.args = Array.prototype.slice.apply(arguments);
         var i, numCallbacks = this.callbacks.length;
         for (i = 0; i < numCallbacks; i++) {
             this.callbacks[i].apply(null, this.args);
         }
+        this.callbacks = [];
     };
 
     RepeatablePromise.prototype.then = function (fn) {
-        this.callbacks.push(fn);
         if (this.args !== undefined) {
             fn.apply(null, this.args);
+        } else {
+            this.callbacks.push(fn);
         }
     };
 

@@ -53,8 +53,7 @@
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
         if (this.model.canVote()) {
-            this.jContainer.find(".btn").addClass("disabled");
-            jTarget.addClass("selected");
+            jTarget.find(".label").text("Voting...");
             this.trigger("voted", [action]);
         }
     };

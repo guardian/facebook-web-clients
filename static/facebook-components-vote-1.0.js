@@ -1,6 +1,14 @@
 /* Facebook Web Clients 1.0 */
 
 ensurePackage("guardian.facebook");
+
+// In case we forget to take out console statements. IE becomes very unhappy when we forget. Let's not make IE unhappy
+if (typeof(console) === 'undefined') {
+    var console = {};
+    console.log = console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = function () {
+    };
+}
+
 /**
  * EventEmitter v4.0.3 - git.io/ee
  * Oliver Caldwell
@@ -637,8 +645,7 @@ ensurePackage("guardian.facebook");
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
         if (this.model.canVote()) {
-            this.jContainer.find(".btn").addClass("disabled");
-            jTarget.addClass("selected");
+            jTarget.find(".label").text("Voting...");
             this.trigger("voted", [action]);
         }
     };

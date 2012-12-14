@@ -8,12 +8,8 @@
         this.render();
 
         this.model.on(guardian.facebook.VoteModel.DATA_CHANGED, this.render.bind(this));
-
         this.authorizer.getLoginStatus().then(this.render.bind(this));
-
         this.authorizer.onUserDataLoaded.then(this.render.bind(this));
-        this.authorizer.onNotLoggedIn.then(this.showAuthorizeButton.bind(this));
-        this.authorizer.onNotAuthorized.then(this.showAuthorizeButton.bind(this));
 
         this.jContainer.delegate("a", "click.loginbutton", this.handleLoginClick.bind(this));
     }
@@ -49,14 +45,6 @@
             this.jContainer.find(".message")
                 .html("<a>Your vote will be counted and shared on Facebook</a>")
         }
-    };
-
-    LoginButtonView.prototype.showAuthorizeButton = function () {
-        if (this.shouldLogInNow) {
-            this.handleLoginClick();
-            return;
-        }
-        this.shouldLogInNow = true;
     };
 
     LoginButtonView.prototype.handleLoginClick = function () {

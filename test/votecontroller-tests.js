@@ -30,8 +30,6 @@
             authorizer._loadFacebookAPI.returns(fakePromise);
             authorizer.getLoginStatus.returns(fakePromise);
             authorizer.login.returns(fakePromise);
-
-            authorizer.onConnected = fakePromise;
             authorizer.onNotAuthorized = fakePromise;
 
             view = new EventEmitter();
@@ -73,12 +71,11 @@
 
     test("Posts the custom action to facebook", function () {
         when(controller.initialise("/some_url"));
-        thenThe(jQuery.ajax)
-            .shouldHaveBeen(calledTwice);
+        thenThe(jQuery.ajax).shouldHaveBeen(calledOnce);
         when(view.trigger("voted", ["Disagree"]));
         thenThe(authorizer.login).shouldHaveBeen(calledOnce);
-        thenThe(jQuery.ajax)
-            .shouldHaveBeen(calledAgain)
+        when(authorizer.onConnected.resolve(window.FB));
+        thenThe(jQuery.ajax).shouldHaveBeen(calledAgain)
     });
 
     test("Handles already voted", function () {

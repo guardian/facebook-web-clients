@@ -13,16 +13,14 @@
     VoteController.prototype.initialise = function (baseURI) {
         this.baseURI = baseURI;
 
-        this.checkExistingVoteCallback = this.checkExistingVote.bind(this);
-        this.authorizer.onConnected.then(this.checkExistingVoteCallback);
-
-        this.handleNotAuthorizedCallback = this.handleNotAuthorized.bind(this);
-        this.authorizer.onNotAuthorized.then(this.handleNotAuthorizedCallback);
+        this.authorizer.onNotAuthorized.then(this.handleNotAuthorized.bind(this));
+        this.authorizer.onConnected.then(this.checkExistingVote.bind(this));
+        this.authorizer.onConnected.then(this.submitVoteWhenLoggedIn.bind(this));
 
         this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
             url: this.baseURI + "/poll",
-            dataType:'jsonp',
+            dataType: 'jsonp',
             data: {
                 article: this.getArticleId()
             }
@@ -44,7 +42,7 @@
         jQuery.ajax({
             url: this.baseURI + "/user",
             type: "GET",
-            dataType:'jsonp',
+            dataType: 'jsonp',
             data: {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
@@ -59,7 +57,6 @@
     };
 
     VoteController.prototype.handleUserExistingVote = function (user) {
-
         if (user.choice) {
             console.log("Controller: User has already voted for " + user.choice);
             this.model.registerVote(user.choice, false);
@@ -69,20 +66,25 @@
         }
     };
 
-    VoteController.prototype.submitVote = function (choice) {
-        this.authorizer.login().then(function () {
+    VoteController.prototype.submitVoteWhenLoggedIn = function () {
+        if (this.choice) {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
-                dataType:'jsonp',
+                dataType: 'jsonp',
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,
                     user: this.authorizer.userId,
-                    action: choice
+                    action: this.choice
                 }
-            }).then(this.handlePostResponse.bind(this, choice));
+            }).then(this.handlePostResponse.bind(this, this.choice));
+        }
+        this.choice = null;
+    };
 
-        }.bind(this));
+    VoteController.prototype.submitVote = function (choice) {
+        this.choice = choice;
+        this.authorizer.login();
     };
 
     VoteController.prototype.handlePostResponse = function (choice, response) {
@@ -95,8 +97,6 @@
     };
 
     VoteController.prototype.destroy = function () {
-        this.model.removeEvent(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
-        this.model.removeEvent(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
     };
 
     VoteController.APP_NAMESPACE = "theguardian-spike";

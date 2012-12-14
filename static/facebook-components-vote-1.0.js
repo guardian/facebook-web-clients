@@ -333,16 +333,14 @@ ensurePackage("guardian.facebook");
     VoteController.prototype.initialise = function (baseURI) {
         this.baseURI = baseURI;
 
-        this.checkExistingVoteCallback = this.checkExistingVote.bind(this);
-        this.authorizer.onConnected.then(this.checkExistingVoteCallback);
-
-        this.handleNotAuthorizedCallback = this.handleNotAuthorized.bind(this);
-        this.authorizer.onNotAuthorized.then(this.handleNotAuthorizedCallback);
+        this.authorizer.onNotAuthorized.then(this.handleNotAuthorized.bind(this));
+        this.authorizer.onConnected.then(this.checkExistingVote.bind(this));
+        this.authorizer.onConnected.then(this.submitVoteWhenLoggedIn.bind(this));
 
         this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
             url: this.baseURI + "/poll",
-            dataType:'jsonp',
+            dataType: 'jsonp',
             data: {
                 article: this.getArticleId()
             }
@@ -364,7 +362,7 @@ ensurePackage("guardian.facebook");
         jQuery.ajax({
             url: this.baseURI + "/user",
             type: "GET",
-            dataType:'jsonp',
+            dataType: 'jsonp',
             data: {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
@@ -379,7 +377,6 @@ ensurePackage("guardian.facebook");
     };
 
     VoteController.prototype.handleUserExistingVote = function (user) {
-
         if (user.choice) {
             console.log("Controller: User has already voted for " + user.choice);
             this.model.registerVote(user.choice, false);
@@ -389,20 +386,25 @@ ensurePackage("guardian.facebook");
         }
     };
 
-    VoteController.prototype.submitVote = function (choice) {
-        this.authorizer.login().then(function () {
+    VoteController.prototype.submitVoteWhenLoggedIn = function () {
+        if (this.choice) {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
-                dataType:'jsonp',
+                dataType: 'jsonp',
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,
                     user: this.authorizer.userId,
-                    action: choice
+                    action: this.choice
                 }
-            }).then(this.handlePostResponse.bind(this, choice));
+            }).then(this.handlePostResponse.bind(this, this.choice));
+        }
+        this.choice = null;
+    };
 
-        }.bind(this));
+    VoteController.prototype.submitVote = function (choice) {
+        this.choice = choice;
+        this.authorizer.login();
     };
 
     VoteController.prototype.handlePostResponse = function (choice, response) {
@@ -415,8 +417,6 @@ ensurePackage("guardian.facebook");
     };
 
     VoteController.prototype.destroy = function () {
-        this.model.removeEvent(guardian.facebook.Authorizer.AUTHORIZED, this.checkExistingVoteCallback);
-        this.model.removeEvent(guardian.facebook.Authorizer.NOT_AUTHORIZED, this.handleNotAuthorizedCallback);
     };
 
     VoteController.APP_NAMESPACE = "theguardian-spike";
@@ -434,12 +434,8 @@ ensurePackage("guardian.facebook");
         this.render();
 
         this.model.on(guardian.facebook.VoteModel.DATA_CHANGED, this.render.bind(this));
-
         this.authorizer.getLoginStatus().then(this.render.bind(this));
-
         this.authorizer.onUserDataLoaded.then(this.render.bind(this));
-        this.authorizer.onNotLoggedIn.then(this.showAuthorizeButton.bind(this));
-        this.authorizer.onNotAuthorized.then(this.showAuthorizeButton.bind(this));
 
         this.jContainer.delegate("a", "click.loginbutton", this.handleLoginClick.bind(this));
     }
@@ -475,14 +471,6 @@ ensurePackage("guardian.facebook");
             this.jContainer.find(".message")
                 .html("<a>Your vote will be counted and shared on Facebook</a>")
         }
-    };
-
-    LoginButtonView.prototype.showAuthorizeButton = function () {
-        if (this.shouldLogInNow) {
-            this.handleLoginClick();
-            return;
-        }
-        this.shouldLogInNow = true;
     };
 
     LoginButtonView.prototype.handleLoginClick = function () {

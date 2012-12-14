@@ -35,14 +35,24 @@
         thenThe(jQuery(".social-summary .message a")).should(haveText("Your vote will be counted and shared on Facebook"));
     });
 
-    test("Auth User on Second Login Attempt", function () {
+    test("Not Logged In - Click to Login", function () {
+        given(loggedIn());
+        given(newView());
+        when(authorizer.onNotLoggedIn.resolve());
+        when(authorizer.onNotAuthorized.resolve());
+        when(theUserClicksOn(".social-summary a"));
+        thenThe(authorizer.login).shouldHaveBeen(calledOnce);
+    });
+
+
+    /*test("Auth User on Second Login Attempt", function () {
         given(loggedIn());
         given(newView());
         when(authorizer.onNotLoggedIn.resolve());
         when(authorizer.onNotLoggedIn.resolve());
         thenThe(authorizer.login).shouldHaveBeen(calledOnce);
     });
-
+*/
     test("Show User Details", function () {
         given(loggedIn());
         given(newView());

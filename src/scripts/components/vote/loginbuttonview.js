@@ -28,9 +28,9 @@
                 voteLabel = this.model.getVotelabel();
 
             if (voteLabel) {
-                txt += ", your vote '" + voteLabel + "' was counted and shared on Facebook";
+                txt += ", your vote '" + voteLabel + "' was counted";
             } else {
-                txt += ", your vote will be counted and shared on Facebook";
+                txt += ", share your opinion with your friends on Facebook";
             }
 
             this.jContainer.find(".message").html(txt);
@@ -43,7 +43,7 @@
 
         } else {
             this.jContainer.find(".message")
-                .html("<a>Your vote will be counted and shared on Facebook</a>")
+                .html("<a>Share your opinion with your friends on Facebook</a>")
         }
     };
 

@@ -412,7 +412,7 @@ if (typeof(console) === 'undefined') {
 
     VoteController.prototype.submitVote = function (choice) {
         this.choice = choice;
-        this.authorizer.login();
+        this.authorizer.login().then(this.submitVoteWhenLoggedIn.bind(this));
     };
 
     VoteController.prototype.handlePostResponse = function (choice, response) {

@@ -109,10 +109,11 @@ def post_to_facebook(article_id, facebook_token, choice):
     form_fields = {
         "method": "post",
         "article": article_id,
+        "prediction": choice,
         "access_token": facebook_token
     }
 
-    url = "https://graph.facebook.com/me/%s:%s" % (app_namespace, choice)
+    url = "https://graph.facebook.com/me/%s:predict" % app_namespace
 
     form_data = urllib.urlencode(form_fields)
     return urlfetch.fetch(url=url, payload=form_data, method=urlfetch.POST)

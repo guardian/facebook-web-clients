@@ -11,7 +11,9 @@
             jQuery.ajax = sinon.stub(jQuery, "ajax");
             jQuery.ajax.returns({
                 then: function (fn) {
-                    fn(json);
+                    fn({
+                        data: json
+                    });
                 }
             });
             window.FB = {

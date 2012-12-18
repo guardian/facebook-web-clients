@@ -96,12 +96,22 @@ def register_vote(articleId, choice):
 def write_response(request, response, content_api_data):
     if request.get("callback"): # JSONP Request
         response.headers['Content-Type'] = 'text/javascript'
-        response.out.write(request.get("callback") + "(")
+        response.out.write(request.get("callback") + "({data:")
         response.out.write(content_api_data)
-        response.out.write(")")
+        response.out.write("})")
     else:
         response.headers['Content-Type'] = 'application/json'
-        response.out.write(content_api_data)
+        response.out.write("{data:%s}" % content_api_data)
+
+def write_error(request, response, message):
+    if request.get("callback"): # JSONP Request
+        response.headers['Content-Type'] = 'text/javascript'
+        response.out.write(request.get("callback") + "({error:{message:\"")
+        response.out.write(message)
+        response.out.write("\"})")
+    else:
+        response.headers['Content-Type'] = 'application/json'
+        response.out.write("{error:{message:\"%s\"}}" % message)
 
 def post_to_facebook(article_id, facebook_token, choice):
     logging.info("Voting for: " + choice)
@@ -150,8 +160,7 @@ class PostVoteHandler(webapp.RequestHandler):
             result = post_to_facebook(article_id, facebook_token, choice)
             write_response(self.request, self.response, result.content)
         else:
-            self.response.write("Already Voted")
-            self.response.set_status(400)
+            write_error(self.request, self.response, "Already voted")
 
 
 app = webapp.WSGIApplication([('/poll', GetVoteHandler), ('/vote', PostVoteHandler), ('/user', UserHandler)], debug=True)

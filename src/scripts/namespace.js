@@ -1,4 +1,5 @@
-ensurePackage("guardian.facebook");
+var guardian = window.guardian || {};
+guardian.facebook = guardian.facebook || {};
 
 // In case we forget to take out console statements. IE becomes very unhappy when we forget. Let's not make IE unhappy
 if (typeof(console) === 'undefined') {

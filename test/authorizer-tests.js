@@ -78,7 +78,13 @@
         whenTheScriptLoads();
 
         thenThe(callback1).shouldHaveBeen(calledOnce);
+        equal(callback1.getCall(0).args[0], window.FB);
+        equal(callback1.getCall(0).args[1], loginResponse.authResponse);
+
         thenThe(callback2).shouldHaveBeen(calledOnce);
+        equal(callback2.getCall(0).args[0], window.FB);
+        equal(callback2.getCall(0).args[1], loginResponse.authResponse);
+
         thenThe(FB.getLoginStatus).shouldHaveBeen(calledOnce);
 
     });

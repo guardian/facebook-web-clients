@@ -27,6 +27,7 @@
 
     /**
      * Promise like object which is resolved when the user is logged in.
+     * When resolved it will pass the FB object as the first argument, and the FB authResponse as the second.
      * @type {Object}
      */
     Authorizer.prototype.onConnected = null;
@@ -155,7 +156,7 @@
                 this.accessToken = response.authResponse.accessToken;
                 this.userId = response.authResponse.userID;
                 this._getUserData();
-                this.onConnected.resolve(FB);
+                this.onConnected.resolve(FB, response.authResponse);
                 break;
             case 'not_authorized':
                 this._getUserData();

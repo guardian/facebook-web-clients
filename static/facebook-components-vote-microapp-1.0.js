@@ -3,6 +3,7 @@
 (function () {
 
     var baseURI = window.baseURI || "http://facebook-web-clients.appspot.com",
+        apiURI = window.baseAPI || "http://gu-facebook-actions.appspot.com/",
         cssFile = baseURI + "/static/facebook-components-vote-1.0.css";
 
     (document.createStyleSheet) ? document.createStyleSheet(cssFile) : jQuery('<link rel="stylesheet" type="text/css" href="' + cssFile + '" />').appendTo('head');
@@ -29,7 +30,7 @@
 
                 controller = new guardian.facebook.VoteController(model, view, authorizer);
 
-            controller.initialise(baseURI);
+            controller.initialise(apiURI);
 
         });
 })();

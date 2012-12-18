@@ -1,6 +1,7 @@
 /* Facebook Web Clients 1.0 */
 
-ensurePackage("guardian.facebook");
+var guardian = window.guardian || {};
+guardian.facebook = guardian.facebook || {};
 
 // In case we forget to take out console statements. IE becomes very unhappy when we forget. Let's not make IE unhappy
 if (typeof(console) === 'undefined') {
@@ -352,10 +353,16 @@ if (typeof(console) === 'undefined') {
             data: {
                 article: this.getArticleId()
             }
-        }).then(this.handleLoadedData.bind(this));
+        }).then(handleResponse(this.handleLoadedData.bind(this)));
+    };
+
+    VoteController.prototype.handleNotAuthorized = function () {
+        console.log("Controller: User is not authorized to use app, but showing buttons");
+        this.model.setAllowedToVote(true);
     };
 
     VoteController.prototype.handleLoadedData = function (json) {
+        console.log(json);
         this.model.setAllData(json.questions[0]);
     };
 
@@ -375,13 +382,8 @@ if (typeof(console) === 'undefined') {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
             }
-        }).then(this.handleUserExistingVote.bind(this));
+        }).then(handleResponse(this.handleUserExistingVote.bind(this)));
 
-    };
-
-    VoteController.prototype.handleNotAuthorized = function () {
-        console.log("Controller: User is not authorized to use app, but showing buttons");
-        this.model.setAllowedToVote(true);
     };
 
     VoteController.prototype.handleUserExistingVote = function (user) {
@@ -392,6 +394,11 @@ if (typeof(console) === 'undefined') {
             console.log("Controller: User has not voted yet");
             this.model.setAllowedToVote(true);
         }
+    };
+
+    VoteController.prototype.submitVote = function (choice) {
+        this.choice = choice;
+        this.authorizer.login().then(this.submitVoteWhenLoggedIn.bind(this));
     };
 
     VoteController.prototype.submitVoteWhenLoggedIn = function () {
@@ -405,27 +412,25 @@ if (typeof(console) === 'undefined') {
                     user: this.authorizer.userId,
                     action: this.choice
                 }
-            }).then(this.handlePostResponse.bind(this, this.choice));
+            }).then(handleResponse(this.handlePostResponse.bind(this, this.choice)));
         }
         this.choice = null;
     };
 
-    VoteController.prototype.submitVote = function (choice) {
-        this.choice = choice;
-        this.authorizer.login().then(this.submitVoteWhenLoggedIn.bind(this));
-    };
-
     VoteController.prototype.handlePostResponse = function (choice, response) {
-        if (response.error) {
-            console.error("Controller: Sorry - could not register your vote: " + response.error.message);
-        } else {
-            console.log("Controller: Posted response to Facebook OK. Voted for " + choice);
-            this.model.registerVote(choice, true);
-        }
+        console.log("Controller: Posted response to Facebook OK. Voted for " + choice);
+        this.model.registerVote(choice, true);
     };
 
-    VoteController.prototype.destroy = function () {
-    };
+    function handleResponse(successFunction) {
+        return (function (response) {
+            if (response.error) {
+                console.error(response.error.message);
+            } else {
+                successFunction(response.data)
+            }
+        });
+    }
 
     VoteController.APP_NAMESPACE = "theguardian-spike";
 

@@ -79,7 +79,7 @@
             dx = (R * 2) * Math.cos(hdr),
             dy = (R * 2) * Math.sin(hdr);
 
-        ctx.clearRect(0, 0, width, height);
+        ctx.clearRect(0, 0, 500, 500);
 
         // draw the disagree arc as a full circle
         this.setStroke(dp == 100 ? CanvasDonut.POSITIVE : CanvasDonut.NEGATIVE);

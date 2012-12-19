@@ -76,7 +76,6 @@
 
 .vote-component .choice.agree .count {
     right: 5px;
-    background: #3A7D00;
 }
 
 .vote-component .btn.selected {
@@ -125,7 +124,6 @@
 
 .vote-component .choice.disagree .count {
     left: 5px;
-    background: #0D3D00;
 }
 
 .vote-component .social-summary {

@@ -71,9 +71,9 @@
         '<div class="message"></div>' +
         '</div>' +
         '<div class="vote-area">' +
-        '<span class="choice agree btn" data-action="agree"><span class="tick">&#10004;</span><span class="label"></span><span class="count"></span></span>' +
+        '<span class="choice agree btn" data-action="agree"><span class="tick">&#10004;</span><span class="label"></span><span class="count zone-primary-background"></span></span>' +
         '<div class="donut-container"></div>' +
-        '<span class="choice disagree btn" data-action="disagree"><span class="count"></span><span class="label"></span><span class="tick">&#10004;</span></span>' +
+        '<span class="choice disagree btn" data-action="disagree"><span class="count zone-secondary-background"></span><span class="label"></span><span class="tick">&#10004;</span></span>' +
         '</div>' +
         '</div>';
 

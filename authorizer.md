@@ -53,7 +53,7 @@ After checking login status, authorizer will fetch basic user data (see below)
 ```
 authorizer.getLoginStatus()
 
-authorizer.onConnected.then(function(FB) {
+authorizer.onConnected.then(function(FB, authResponse) {
     FB.api(...);
 });
 
@@ -99,7 +99,16 @@ authorizer.onUserDataLoaded.then(function(userData) {
 authorizer.onConnected
 ----------------
 
-A promise like object which is resolved once the user is logged in and fully auth'd the Guardian app. It gives you a reference to the FB object.
+A promise like object which is resolved once the user is logged in and fully auth'd the Guardian app.
+
+It passes the callback a reference to the FB object and the FB authResponse JSON.
+
+The FB auth response has the following fields:
+
+* accessToken: '...',
+* expiresIn:'...',
+* signedRequest:'...',
+* userID:'...'
 
 ```
 authorizer.login();

@@ -35,12 +35,22 @@ Here's a test user FB account:
 vkokdic_wongson_1354618831@tfbnw.net
 PW: 123456
 
-Micro App
----------
+Installing as a Micro App
+-------------------------
 
-Slot: above-article-embed
+Section: Football
+Slot: above-standfirst
 
 Name: facebook-agree-disagree-component
+Rule type: Always
+
+
+Section: Comment is free
+Slot: above-standfirst
+
+Name: facebook-agree-disagree-component
+Rule type: Always
+
 
 On App Engine
 -------------

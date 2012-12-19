@@ -29,6 +29,19 @@
     CanvasDonut.prototype.initialise = function () {
         var canvas = this.getCanvas();
         this.ctx = canvas.getContext('2d');
+        this.getCSSColours();
+    };
+
+    CanvasDonut.prototype.getCSSColours = function () {
+        var agreeColour = jQuery(".agree .count").css("background-color"),
+            disagreeColour = jQuery(".disagree .count").css("background-color");
+        if (agreeColour == "rgba(0, 0, 0, 0)") {
+            window.setTimeout(this.getCSSColours.bind(this), 50);
+        } else {
+            CanvasDonut.POSITIVE.stroke = agreeColour;
+            CanvasDonut.NEGATIVE.disagreeColour = disagreeColour;
+            this.render();
+        }
     };
 
     CanvasDonut.prototype.setPercent = function (dp) {

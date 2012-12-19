@@ -625,11 +625,14 @@ if (typeof(console) === 'undefined') {
         jElement.find(".count").html(this.numberFormatter(answer.count));
         jElement.find(".label").html(answer.label);
         if (this.model.choice) {
+            jElement.removeClass("btn");
             if (answer.id == this.model.choice) {
                 jElement.addClass("selected");
             } else {
                 jElement.addClass("disabled");
             }
+        } else {
+            jElement.addClass("btn");
         }
     };
 
@@ -668,9 +671,9 @@ if (typeof(console) === 'undefined') {
         '<div class="message"></div>' +
         '</div>' +
         '<div class="vote-area">' +
-        '<span class="choice agree btn" data-action="agree"><span class="tick">&#10004;</span><span class="label"></span><span class="count zone-primary-background"></span></span>' +
+        '<span class="choice agree btn zone-primary-background" data-action="agree"><span class="tick">&#10004;</span><span class="label"></span><span class="count zone-primary-background"></span></span>' +
         '<div class="donut-container"></div>' +
-        '<span class="choice disagree btn" data-action="disagree"><span class="count zone-secondary-background"></span><span class="label"></span><span class="tick">&#10004;</span></span>' +
+        '<span class="choice disagree btn zone-secondary-background" data-action="disagree"><span class="count zone-secondary-background"></span><span class="label"></span><span class="tick">&#10004;</span></span>' +
         '</div>' +
         '</div>';
 

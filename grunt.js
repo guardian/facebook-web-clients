@@ -11,6 +11,10 @@ module.exports = function (grunt) {
             tasks: ['test']
         },
         concat: {
+            banner: {
+                src: ['<banner:meta.banner>', 'src/scripts/components/banner/*.js'],
+                dest: 'static/facebook-banner-<%= meta.version %>.js'
+            },
             authorizer: {
                 src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/authorizer/*.js'],
                 dest: 'static/facebook-authorizer-<%= meta.version %>.js'
@@ -33,6 +37,10 @@ module.exports = function (grunt) {
             }
         },
         min: {
+            banner: {
+                src: ['<config:concat.banner.dest>'],
+                dest: 'static/facebook-banner-<%= meta.version %>.min.js'
+            },
             authorizer: {
                 src: ['<config:concat.authorizer.dest>'],
                 dest: 'static/facebook-authorizer-<%= meta.version %>.min.js'

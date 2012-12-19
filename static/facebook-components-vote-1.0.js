@@ -350,6 +350,7 @@ if (typeof(console) === 'undefined') {
         jQuery.ajax({
             url: this.baseURI + "/poll",
             dataType: 'jsonp',
+            jsonpCallback: 'votecontroller',
             data: {
                 article: this.getArticleId()
             }
@@ -378,6 +379,7 @@ if (typeof(console) === 'undefined') {
             url: this.baseURI + "/user",
             type: "GET",
             dataType: 'jsonp',
+            jsonpCallback: 'votecontroller',
             data: {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
@@ -406,6 +408,7 @@ if (typeof(console) === 'undefined') {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
                 dataType: 'jsonp',
+                jsonpCallback: 'votecontroller',
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,

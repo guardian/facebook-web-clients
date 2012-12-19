@@ -21,6 +21,7 @@
         jQuery.ajax({
             url: this.baseURI + "/poll",
             dataType: 'jsonp',
+            jsonpCallback: 'votecontroller',
             data: {
                 article: this.getArticleId()
             }
@@ -49,6 +50,7 @@
             url: this.baseURI + "/user",
             type: "GET",
             dataType: 'jsonp',
+            jsonpCallback: 'votecontroller',
             data: {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
@@ -77,6 +79,7 @@
             jQuery.ajax({
                 url: this.baseURI + "/vote",
                 dataType: 'jsonp',
+                jsonpCallback: 'votecontroller',
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,

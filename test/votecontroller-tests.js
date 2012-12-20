@@ -74,10 +74,21 @@
     test("Posts the custom action to facebook", function () {
         when(controller.initialise("/some_url"));
         thenThe(jQuery.ajax).shouldHaveBeen(calledOnce);
-        when(view.trigger("voted", ["Disagree"]));
-        thenThe(authorizer.login).shouldHaveBeen(calledOnce);
-        when(authorizer.onConnected.resolve(window.FB));
-        thenThe(jQuery.ajax).shouldHaveBeen(calledAgain)
+
+    });
+
+    test("Agree with author polls", function () {
+        when(controller.initialise("/some_url", guardian.facebook.VoteController.AGREE_WITH_AUTHOR));
+        thenThe(jQuery.ajax)
+            .shouldHaveBeen(calledOnce)
+            .shouldHaveBeen(calledWith(mapWith("url", "/some_url/poll?type=agree_with_author")));
+    });
+
+    test("Agree with headline polls", function () {
+        when(controller.initialise("/some_url", guardian.facebook.VoteController.AGREE_WITH_HEADLINE));
+        thenThe(jQuery.ajax)
+            .shouldHaveBeen(calledOnce)
+            .shouldHaveBeen(calledWith(mapWith("url", "/some_url/poll?type=agree_with_headline")));
     });
 
     test("Handles already voted", function () {

@@ -17,6 +17,7 @@
 
             var
                 authorizer = guardian.facebook.Authorizer.getInstance(),
+                type = "",
 
                 model = new guardian.facebook.VoteModel(),
 
@@ -30,7 +31,7 @@
 
                 controller = new guardian.facebook.VoteController(model, view, authorizer);
 
-            controller.initialise(apiURI);
+            controller.initialise(apiURI, type);
 
         });
 })();

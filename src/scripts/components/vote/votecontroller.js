@@ -6,11 +6,17 @@
         this.authorizer = authorizer;
     }
 
+    VoteController.prototype.baseURI = null;
     VoteController.prototype.model = null;
     VoteController.prototype.view = null;
     VoteController.prototype.authorizer = null;
 
-    VoteController.prototype.initialise = function (baseURI) {
+    /**
+     * Initialises callbacks and makes a call to get the poll data from the server.
+     * @param {String} baseURI The base URI for this and all subsequent XHR requests
+     * @param {String} type The type of poll to request (agree_with_author or agree_with_headline)
+     */
+    VoteController.prototype.initialise = function (baseURI, type) {
         this.baseURI = baseURI;
 
         this.authorizer.onNotAuthorized.then(this.handleNotAuthorized.bind(this));
@@ -19,7 +25,7 @@
 
         this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
-            url: this.baseURI + "/poll",
+            url: this.baseURI + "/poll?type=" + type,
             dataType: 'jsonp',
             jsonpCallback: 'votecontroller',
             data: {
@@ -29,7 +35,6 @@
     };
 
     VoteController.prototype.handleNotAuthorized = function () {
-        console.log("Controller: User is not authorized to use app, but showing buttons");
         this.model.setAllowedToVote(true);
     };
 
@@ -43,8 +48,6 @@
     };
 
     VoteController.prototype.checkExistingVote = function () {
-
-        console.log("Controller: Checking for existing votes  on user " + this.authorizer.userId);
 
         jQuery.ajax({
             url: this.baseURI + "/user",
@@ -106,7 +109,17 @@
         });
     }
 
-    VoteController.APP_NAMESPACE = "theguardian-spike";
+    /**
+     * Type of vote when the user is asked to agree with the opinion of the author on a topic
+     * @type {string}
+     */
+    VoteController.AGREE_WITH_AUTHOR = "agree_with_author";
+
+    /**
+     * Type of vote when the user is asked to agree with the headline of the article (not the author's opinion on the matter)
+     * @type {string}
+     */
+    VoteController.AGREE_WITH_HEADLINE = "agree_with_headline";
 
     guardian.facebook.VoteController = VoteController;
 

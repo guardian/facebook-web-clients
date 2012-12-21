@@ -44,14 +44,14 @@ Slot: above-standfirst
 Component: facebook-components: Agree / Disagree (with Headline) on Facebook
 Rule type: Has Tag: Rumour Mill (series)
 
-### Commentisfree Section
+### All Other Sections
 
 Add the following tags
 * controversial-headline ("Controversial Headlines")
 * controverail-opinion ("Controversial Opinions")
 
 Go to Tools > Edit Slot Rules
-Section: Commentisfree
+Section: Common
 Slot: above-standfirst
 Component: facebook-components: Agree / Disagree (with Headline) on Facebook
 Rule type: Has Tag: controversial-headline (keyword)

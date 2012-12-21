@@ -24,33 +24,42 @@ Add the following to your /etc/hosts:
 ```
 127.0.0.1 fwc.guardian.co.uk
 ```
-
 Then visit http://fwc.guardian.co.uk:8080/test/demo.html
-
-
-Facebook Users
---------------
-
-Here's a test user FB account:
-vkokdic_wongson_1354618831@tfbnw.net
-PW: 123456
 
 Installing as a Micro App
 -------------------------
 
+### Add the MicroApp
+
+Here is the definition:
+https://raw.github.com/guardian/facebook-web-clients/master/src/scripts/components/vote/microapp/microapp.xml
+
+Name: facebook-components
+
+### Football Section
+
+Go to Tools > Edit Slot Rules
 Section: Football
 Slot: above-standfirst
+Component: facebook-components: Agree / Disagree (with Headline) on Facebook
+Rule type: Has Tag: Rumour Mill (series)
 
-Name: facebook-agree-disagree-component
-Rule type: Always
+### Commentisfree Section
 
+Add the following tags
+* controversial-headline ("Controversial Headlines")
+* controverail-opinion ("Controversial Opinions")
 
-Section: Comment is free
+Go to Tools > Edit Slot Rules
+Section: Comentisfree
 Slot: above-standfirst
+Component: facebook-components: Agree / Disagree (with Headline) on Facebook
+Rule type: Has Tag: controversial-headline (keyword)
 
-Name: facebook-agree-disagree-component
-Rule type: Always
-
+Section: Comentisfree
+Slot: above-standfirst
+Component: facebook-components: Agree / Disagree (with Opinion) on Facebook
+Rule type: Has Tag: controversial-opinion (keyword)
 
 On App Engine
 -------------

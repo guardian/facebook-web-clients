@@ -78,10 +78,10 @@
     });
 
     test("Agree with author polls", function () {
-        when(controller.initialise("/some_url", guardian.facebook.VoteController.AGREE_WITH_AUTHOR));
+        when(controller.initialise("/some_url", guardian.facebook.VoteController.AGREE_WITH_OPINION));
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledOnce)
-            .shouldHaveBeen(calledWith(mapWith("url", "/some_url/poll?type=agree_with_author")));
+            .shouldHaveBeen(calledWith(mapWith("url", "/some_url/poll?type=agree_with_opinion")));
     });
 
     test("Agree with headline polls", function () {

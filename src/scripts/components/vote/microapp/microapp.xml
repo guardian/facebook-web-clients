@@ -3,8 +3,15 @@
     <components>
 
         <component-definition
-                display-name="Agree / Disagree on Facebook"
-                name="facebook-agree-disagree-component"
+                display-name="Agree / Disagree (with Author's Opinion) on Facebook"
+                name="facebook-agree-disagree-with-opinion-component"
+                path="static/facebook-components-vote-microapp-1.0.js"
+                ajax="true"
+                widths="460"/>
+
+        <component-definition
+                display-name="Agree / Disagree (with Headline) on Facebook"
+                name="facebook-agree-disagree-with-headline-component"
                 path="static/facebook-components-vote-microapp-1.0.js"
                 ajax="true"
                 widths="460"/>

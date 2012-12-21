@@ -113,7 +113,7 @@
      * Type of vote when the user is asked to agree with the opinion of the author on a topic
      * @type {string}
      */
-    VoteController.AGREE_WITH_AUTHOR = "agree_with_author";
+    VoteController.AGREE_WITH_OPINION = "agree_with_opinion";
 
     /**
      * Type of vote when the user is asked to agree with the headline of the article (not the author's opinion on the matter)

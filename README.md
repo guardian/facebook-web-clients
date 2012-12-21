@@ -51,15 +51,16 @@ Add the following tags
 * controverail-opinion ("Controversial Opinions")
 
 Go to Tools > Edit Slot Rules
-Section: Comentisfree
+Section: Commentisfree
 Slot: above-standfirst
 Component: facebook-components: Agree / Disagree (with Headline) on Facebook
 Rule type: Has Tag: controversial-headline (keyword)
 
-Section: Comentisfree
-Slot: above-standfirst
+Section: Common
+Slot: below-article-embed
 Component: facebook-components: Agree / Disagree (with Opinion) on Facebook
 Rule type: Has Tag: controversial-opinion (keyword)
+Order: At the top
 
 On App Engine
 -------------

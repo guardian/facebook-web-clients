@@ -16,5 +16,12 @@
                 ajax="true"
                 widths="460"/>
 
+        <component-definition
+                display-name="Think (Headline is ) Likely / Unlikely on Facebook"
+                name="facebook-think-headline-likely-unlikely-component"
+                path="static/facebook-components-vote-microapp-1.0.js"
+                ajax="true"
+                widths="460"/>
+
     </components>
 </microapp>

@@ -22,6 +22,10 @@
             {
                 selector: ".ma-placeholder-facebook-agree-disagree-with-headline-component",
                 type: guardian.facebook.VoteController.AGREE_WITH_HEADLINE
+            },
+            {
+                selector:".facebook-think-headline-likely-unlikely-component",
+                type: guardian.facebook.VoteController.THINK_LIKELY
             }
         ];
 

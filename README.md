@@ -41,14 +41,14 @@ Name: facebook-components
 Go to Tools > Edit Slot Rules
 Section: Football
 Slot: above-standfirst
-Component: facebook-components: Agree / Disagree (with Headline) on Facebook
+Component: facebook-components: Think (Headline is ) Likely / Unlikely on Facebook
 Rule type: Has Tag: Rumour Mill (series)
 
 ### All Other Sections
 
-Add the following tags
+Add the following keyword tags
 * controversial-headline ("Controversial Headlines")
-* controverail-opinion ("Controversial Opinions")
+* controversial-opinion ("Controversial Opinions")
 
 Go to Tools > Edit Slot Rules
 Section: Common

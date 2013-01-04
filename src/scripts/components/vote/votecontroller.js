@@ -39,7 +39,6 @@
     };
 
     VoteController.prototype.handleLoadedData = function (json) {
-        console.log(json);
         this.model.setAllData(json.questions[0]);
     };
 
@@ -120,6 +119,12 @@
      * @type {string}
      */
     VoteController.AGREE_WITH_HEADLINE = "agree_with_headline";
+
+    /**
+     * Type of vote when the user is asked to consider whether the proposal is likely or not
+     * @type {string}
+     */
+    VoteController.THINK_LIKELY = "think_headline_likely";
 
     guardian.facebook.VoteController = VoteController;
 

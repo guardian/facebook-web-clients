@@ -5,21 +5,21 @@
         <component-definition
                 display-name="Agree / Disagree (with Author's Opinion) on Facebook"
                 name="facebook-agree-disagree-with-opinion-component"
-                path="static/facebook-components-vote-microapp-1.0.js"
+                path="static/facebook-components-vote-microapp-1.0.min.js"
                 ajax="true"
                 widths="460"/>
 
         <component-definition
                 display-name="Agree / Disagree (with Headline) on Facebook"
                 name="facebook-agree-disagree-with-headline-component"
-                path="static/facebook-components-vote-microapp-1.0.js"
+                path="static/facebook-components-vote-microapp-1.0.min.js"
                 ajax="true"
                 widths="460"/>
 
         <component-definition
                 display-name="Think (Headline is ) Likely / Unlikely on Facebook"
                 name="facebook-think-headline-likely-unlikely-component"
-                path="static/facebook-components-vote-microapp-1.0.js"
+                path="static/facebook-components-vote-microapp-1.0.min.js"
                 ajax="true"
                 widths="460"/>
 

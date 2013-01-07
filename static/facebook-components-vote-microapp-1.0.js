@@ -24,7 +24,7 @@
                 type: guardian.facebook.VoteController.AGREE_WITH_HEADLINE
             },
             {
-                selector:".facebook-think-headline-likely-unlikely-component",
+                selector:".ma-placeholder-facebook-think-headline-likely-unlikely-component",
                 type: guardian.facebook.VoteController.THINK_LIKELY
             }
         ];

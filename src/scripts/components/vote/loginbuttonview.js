@@ -2,6 +2,11 @@
 
     function LoginButtonView(selector, authorizer, model) {
         this.jContainer = jQuery(selector);
+
+        if (!this.jContainer.length) {
+            throw new Error("Login button view has no element: " + selector);
+        }
+
         this.authorizer = authorizer;
         this.model = model;
 
@@ -36,9 +41,9 @@
             this.jContainer.find(".message").html(txt);
 
             if (userData.username) {
-            this.jContainer.find(".avatar")
-                .removeClass("initially-off")
-                .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
+                this.jContainer.find(".avatar")
+                    .removeClass("initially-off")
+                    .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
             }
 
         } else {

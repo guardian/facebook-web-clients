@@ -22,6 +22,16 @@
 
     var authorizer, view, model;
 
+    test("Error if not found", function () {
+        given(jQuery(".social-summary").remove());
+        throws(
+            function() {
+                when(newView())
+            },
+            "The login button view should throw an error if the container isn't there"
+        )
+    });
+
     test("Logged In", function () {
         given(loggedIn());
         given(newView());

@@ -40,12 +40,12 @@
             authorizer = guardian.facebook.Authorizer.getInstance(),
             microapp = getMicroAppDefinition(),
             model = new guardian.facebook.VoteModel(),
-            loginButtonView = new guardian.facebook.LoginButtonView(".social-summary", authorizer, model),
             view = new guardian.facebook.VoteComponent(
                 microapp.selector,
                 model,
                 guardian.ui.CanvasDonut,
-                guardian.facebook.BigNumberFormatter);
+                guardian.facebook.BigNumberFormatter),
+            loginButtonView = new guardian.facebook.LoginButtonView(".social-summary", authorizer, model);
 
         controller = new guardian.facebook.VoteController(model, view, authorizer);
 

@@ -14,8 +14,18 @@
     TitleView.prototype.model = null;
     TitleView.prototype.jContainer = null;
 
+    TitleView.getAuthors = function () {
+        return jQuery("[rel='author']").html();
+    };
+
     TitleView.prototype.render = function () {
-        this.jContainer.html("");
+        switch (this.model.type) {
+            case guardian.facebook.VoteModel.AGREE_WITH_OPINION:
+                this.jContainer.html("Do you agree with " + TitleView.getAuthors() + "?");
+                break;
+            default:
+                this.jContainer.html("");
+        }
     };
 
     guardian.facebook.TitleView = TitleView;

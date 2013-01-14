@@ -520,7 +520,7 @@ if (typeof(console) === 'undefined') {
 
     TitleView.getAuthors = function () {
         return jQuery("[rel='author']").map(function () {
-            return jQuery(this).html();
+            return jQuery(this).text();
         }).get();
     };
 

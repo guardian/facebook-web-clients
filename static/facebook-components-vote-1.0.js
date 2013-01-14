@@ -343,9 +343,8 @@ if (typeof(console) === 'undefined') {
     /**
      * Initialises callbacks and makes a call to get the poll data from the server.
      * @param {String} baseURI The base URI for this and all subsequent XHR requests
-     * @param {String} type The type of poll to request (agree_with_author or agree_with_headline)
      */
-    VoteController.prototype.initialise = function (baseURI, type) {
+    VoteController.prototype.initialise = function (baseURI) {
         this.baseURI = baseURI;
 
         this.authorizer.onNotAuthorized.then(this.handleNotAuthorized.bind(this));
@@ -354,7 +353,7 @@ if (typeof(console) === 'undefined') {
 
         this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
-            url: this.baseURI + "/poll?type=" + type,
+            url: this.baseURI + "/poll?type=" + this.model.type,
             dataType: 'jsonp',
             jsonpCallback: 'votecontroller',
             data: {
@@ -437,24 +436,6 @@ if (typeof(console) === 'undefined') {
         });
     }
 
-    /**
-     * Type of vote when the user is asked to agree with the opinion of the author on a topic
-     * @type {string}
-     */
-    VoteController.AGREE_WITH_OPINION = "agree_with_opinion";
-
-    /**
-     * Type of vote when the user is asked to agree with the headline of the article (not the author's opinion on the matter)
-     * @type {string}
-     */
-    VoteController.AGREE_WITH_HEADLINE = "agree_with_headline";
-
-    /**
-     * Type of vote when the user is asked to consider whether the proposal is likely or not
-     * @type {string}
-     */
-    VoteController.THINK_LIKELY = "think_headline_likely";
-
     guardian.facebook.VoteController = VoteController;
 
 })();
@@ -462,6 +443,11 @@ if (typeof(console) === 'undefined') {
 
     function LoginButtonView(selector, authorizer, model) {
         this.jContainer = jQuery(selector);
+
+        if (!this.jContainer.length) {
+            throw new Error("Login button view has no element: " + selector);
+        }
+
         this.authorizer = authorizer;
         this.model = model;
 
@@ -496,9 +482,9 @@ if (typeof(console) === 'undefined') {
             this.jContainer.find(".message").html(txt);
 
             if (userData.username) {
-            this.jContainer.find(".avatar")
-                .removeClass("initially-off")
-                .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
+                this.jContainer.find(".avatar")
+                    .removeClass("initially-off")
+                    .attr("src", "http://graph.facebook.com/" + userData.username + "/picture")
             }
 
         } else {
@@ -518,7 +504,35 @@ if (typeof(console) === 'undefined') {
 })();
 (function () {
 
-    function VoteModel() {
+    function TitleView(selector, model) {
+        this.jContainer = jQuery(selector);
+
+        if (!this.jContainer.length) {
+            throw new Error("Title view has no element: " + selector);
+        }
+
+        this.model = model;
+        this.render();
+    }
+
+    TitleView.prototype.model = null;
+    TitleView.prototype.jContainer = null;
+
+    TitleView.prototype.render = function () {
+        this.jContainer.html("");
+    };
+
+    guardian.facebook.TitleView = TitleView;
+
+})();
+(function () {
+
+    /**
+     * @constructor
+     * @param {String} type The type of poll, eg "agree_with_opinion"
+     */
+    function VoteModel(type) {
+        this.type = type;
         this.choice = undefined;
         this.allowedToVote = true;
         this.dataDeferred = jQuery.Deferred();
@@ -526,6 +540,7 @@ if (typeof(console) === 'undefined') {
 
     VoteModel.prototype = Object.create(EventEmitter.prototype);
 
+    VoteModel.prototype.type = null;
     VoteModel.prototype.questionId = null;
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
@@ -609,9 +624,30 @@ if (typeof(console) === 'undefined') {
         this.removeEvent(); // remove all events
     };
 
+    /**
+     * @event
+     */
     VoteModel.DATA_CHANGED = "dataChanged";
 
     VoteModel.EVEN = 50;
+
+    /**
+     * Type of vote when the user is asked to agree with the opinion of the author on a topic
+     * @type {string}
+     */
+    VoteModel.AGREE_WITH_OPINION = "agree_with_opinion";
+
+    /**
+     * Type of vote when the user is asked to agree with the headline of the article (not the author's opinion on the matter)
+     * @type {string}
+     */
+    VoteModel.AGREE_WITH_HEADLINE = "agree_with_headline";
+
+    /**
+     * Type of vote when the user is asked to consider whether the proposal is likely or not
+     * @type {string}
+     */
+    VoteModel.THINK_LIKELY = "think_headline_likely";
 
     guardian.facebook.VoteModel = VoteModel;
 
@@ -686,6 +722,7 @@ if (typeof(console) === 'undefined') {
 
     VoteComponent.HTML = '' +
         '<div class="vote-component">' +
+        '<strong class="vote-title"></strong>' +
         '<div class="social-summary">' +
         '<img class="avatar initially-off" />' +
         '<img class="facebookIcon" src="http://facebook-web-clients.appspot.com/static/facebookIcon_16x16.gif" />' +

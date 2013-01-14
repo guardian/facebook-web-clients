@@ -78,14 +78,16 @@
     });
 
     test("Agree with author polls", function () {
-        when(controller.initialise("/some_url", guardian.facebook.VoteController.AGREE_WITH_OPINION));
+        given(model.type = guardian.facebook.VoteModel.AGREE_WITH_OPINION);
+        when(controller.initialise("/some_url"));
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledOnce)
             .shouldHaveBeen(calledWith(mapWith("url", "/some_url/poll?type=agree_with_opinion")));
     });
 
     test("Agree with headline polls", function () {
-        when(controller.initialise("/some_url", guardian.facebook.VoteController.AGREE_WITH_HEADLINE));
+        given(model.type = guardian.facebook.VoteModel.AGREE_WITH_HEADLINE);
+        when(controller.initialise("/some_url"));
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledOnce)
             .shouldHaveBeen(calledWith(mapWith("url", "/some_url/poll?type=agree_with_headline")));

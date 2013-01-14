@@ -14,9 +14,8 @@
     /**
      * Initialises callbacks and makes a call to get the poll data from the server.
      * @param {String} baseURI The base URI for this and all subsequent XHR requests
-     * @param {String} type The type of poll to request (agree_with_author or agree_with_headline)
      */
-    VoteController.prototype.initialise = function (baseURI, type) {
+    VoteController.prototype.initialise = function (baseURI) {
         this.baseURI = baseURI;
 
         this.authorizer.onNotAuthorized.then(this.handleNotAuthorized.bind(this));
@@ -25,7 +24,7 @@
 
         this.view.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
-            url: this.baseURI + "/poll?type=" + type,
+            url: this.baseURI + "/poll?type=" + this.model.type,
             dataType: 'jsonp',
             jsonpCallback: 'votecontroller',
             data: {
@@ -107,24 +106,6 @@
             }
         });
     }
-
-    /**
-     * Type of vote when the user is asked to agree with the opinion of the author on a topic
-     * @type {string}
-     */
-    VoteController.AGREE_WITH_OPINION = "agree_with_opinion";
-
-    /**
-     * Type of vote when the user is asked to agree with the headline of the article (not the author's opinion on the matter)
-     * @type {string}
-     */
-    VoteController.AGREE_WITH_HEADLINE = "agree_with_headline";
-
-    /**
-     * Type of vote when the user is asked to consider whether the proposal is likely or not
-     * @type {string}
-     */
-    VoteController.THINK_LIKELY = "think_headline_likely";
 
     guardian.facebook.VoteController = VoteController;
 

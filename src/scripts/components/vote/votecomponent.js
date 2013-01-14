@@ -68,6 +68,7 @@
 
     VoteComponent.HTML = '' +
         '<div class="vote-component">' +
+        '<strong class="vote-title"></strong>' +
         '<div class="social-summary">' +
         '<img class="avatar initially-off" />' +
         '<img class="facebookIcon" src="http://facebook-web-clients.appspot.com/static/facebookIcon_16x16.gif" />' +

@@ -1,6 +1,11 @@
 (function () {
 
-    function VoteModel() {
+    /**
+     * @constructor
+     * @param {String} type The type of poll, eg "agree_with_opinion"
+     */
+    function VoteModel(type) {
+        this.type = type;
         this.choice = undefined;
         this.allowedToVote = true;
         this.dataDeferred = jQuery.Deferred();
@@ -8,6 +13,7 @@
 
     VoteModel.prototype = Object.create(EventEmitter.prototype);
 
+    VoteModel.prototype.type = null;
     VoteModel.prototype.questionId = null;
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
@@ -91,9 +97,30 @@
         this.removeEvent(); // remove all events
     };
 
+    /**
+     * @event
+     */
     VoteModel.DATA_CHANGED = "dataChanged";
 
     VoteModel.EVEN = 50;
+
+    /**
+     * Type of vote when the user is asked to agree with the opinion of the author on a topic
+     * @type {string}
+     */
+    VoteModel.AGREE_WITH_OPINION = "agree_with_opinion";
+
+    /**
+     * Type of vote when the user is asked to agree with the headline of the article (not the author's opinion on the matter)
+     * @type {string}
+     */
+    VoteModel.AGREE_WITH_HEADLINE = "agree_with_headline";
+
+    /**
+     * Type of vote when the user is asked to consider whether the proposal is likely or not
+     * @type {string}
+     */
+    VoteModel.THINK_LIKELY = "think_headline_likely";
 
     guardian.facebook.VoteModel = VoteModel;
 

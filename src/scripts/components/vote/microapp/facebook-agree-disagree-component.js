@@ -15,15 +15,15 @@
         var MICROAPPS = [
             {
                 selector: ".ma-placeholder-facebook-agree-disagree-with-opinion-component",
-                type: guardian.facebook.VoteController.AGREE_WITH_OPINION
+                type: guardian.facebook.VoteModel.AGREE_WITH_OPINION
             },
             {
                 selector: ".ma-placeholder-facebook-agree-disagree-with-headline-component",
-                type: guardian.facebook.VoteController.AGREE_WITH_HEADLINE
+                type: guardian.facebook.VoteModel.AGREE_WITH_HEADLINE
             },
             {
-                selector:".ma-placeholder-facebook-think-headline-likely-unlikely-component",
-                type: guardian.facebook.VoteController.THINK_LIKELY
+                selector: ".ma-placeholder-facebook-think-headline-likely-unlikely-component",
+                type: guardian.facebook.VoteModel.THINK_LIKELY
             }
         ];
 
@@ -37,19 +37,21 @@
         }
 
         var
-            authorizer = guardian.facebook.Authorizer.getInstance(),
             microapp = getMicroAppDefinition(),
-            model = new guardian.facebook.VoteModel(),
+            authorizer = guardian.facebook.Authorizer.getInstance(),
+            model = new guardian.facebook.VoteModel(microapp.type),
             view = new guardian.facebook.VoteComponent(
                 microapp.selector,
                 model,
                 guardian.ui.CanvasDonut,
-                guardian.facebook.BigNumberFormatter),
-            loginButtonView = new guardian.facebook.LoginButtonView(".social-summary", authorizer, model);
+                guardian.facebook.BigNumberFormatter);
+
+        new guardian.facebook.LoginButtonView(".vote-component .social-summary", authorizer, model);
+        new guardian.facebook.TitleView(".vote-component .vote-title", model);
 
         controller = new guardian.facebook.VoteController(model, view, authorizer);
 
-        controller.initialise(apiURI, microapp.type);
+        controller.initialise(apiURI);
 
     });
 })();

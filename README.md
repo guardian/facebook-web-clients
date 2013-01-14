@@ -52,7 +52,7 @@ Add the following keyword tags
 
 Go to Tools > Edit Slot Rules
 Section: Common
-Slot: above-standfirst
+Slot: below-article-embed
 Component: facebook-components: Agree / Disagree (with Headline) on Facebook
 Rule type: Has Tag: controversial-headline (keyword)
 

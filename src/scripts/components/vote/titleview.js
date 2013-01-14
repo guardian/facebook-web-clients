@@ -15,19 +15,22 @@
     TitleView.prototype.jContainer = null;
 
     TitleView.getAuthors = function () {
-        return jQuery("[rel='author']").map(function() {
+        return jQuery("[rel='author']").map(function () {
             return jQuery(this).html();
         }).get();
     };
 
     TitleView.prototype.render = function () {
+        var title = "";
         switch (this.model.type) {
             case guardian.facebook.VoteModel.AGREE_WITH_OPINION:
-                this.jContainer.html("Do you agree with " + TitleView.getAuthors().join(" and ") + "?");
+                title = "Do you agree with " + TitleView.getAuthors().join(" and ") + "?";
                 break;
-            default:
-                this.jContainer.html("");
+            case guardian.facebook.VoteModel.AGREE_WITH_HEADLINE:
+                title = "Do you agree?";
+                break;
         }
+        this.jContainer.html(title);
     };
 
     guardian.facebook.TitleView = TitleView;

@@ -44,4 +44,17 @@
 
     });
 
+    test("Agree with headline", function () {
+
+        given(view = new guardian.facebook.TitleView(".vote-title", model));
+        given(model.type = guardian.facebook.VoteModel.AGREE_WITH_HEADLINE);
+
+        when(view.render());
+
+        thenThe(jQuery(".vote-title"))
+            .should(haveText("Do you agree?"));
+
+    });
+
+
 })();

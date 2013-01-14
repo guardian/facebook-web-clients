@@ -16,7 +16,7 @@
                 '</div>' +
                 '<div class="social-summary">' +
                 '<span class="text">Be the first of your friends to share your opinion.</span>' +
-                '<img src="../static/facebookIcon_16x16.gif"/>' +
+                '<img src="../../static/facebookIcon_16x16.gif"/>' +
                 '</div>' +
                 '</div>');
             model = new guardian.facebook.VoteModel();

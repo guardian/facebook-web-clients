@@ -15,7 +15,7 @@
     TitleView.prototype.jContainer = null;
 
     TitleView.getAuthors = function () {
-        return jQuery("[rel='author']").map(function () {
+        return jQuery("a.contributor").map(function () {
             return jQuery(this).text();
         }).get();
     };

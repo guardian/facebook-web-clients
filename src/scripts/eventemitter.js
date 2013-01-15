@@ -3,8 +3,7 @@
  * Oliver Caldwell
  * MIT license
  */
-
-;(function(exports) {
+(function(exports) {
     // JSHint config - http://www.jshint.com/
     /*jshint laxcomma:true*/
     /*global define:true*/

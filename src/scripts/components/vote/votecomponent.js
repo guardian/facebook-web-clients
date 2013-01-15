@@ -56,7 +56,7 @@
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
         if (this.model.canVote()) {
-            jTarget.find(".label").text("Voting...");
+            jTarget.find(".label").text("Sharing...");
             this.trigger("voted", [action]);
         }
     };

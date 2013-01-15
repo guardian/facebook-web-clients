@@ -20,8 +20,12 @@ module.exports = function (grunt) {
                 dest: 'static/facebook-authorizer-<%= meta.version %>.js'
             },
             voteComponentJS: {
-                src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/es5-shim.js', 'src/scripts/eventemitter.js', 'src/scripts/util/bignumberformatter.js', 'src/scripts/components/vote/*.js'],
+                src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/eventemitter.js', 'src/scripts/util/bignumberformatter.js', 'src/scripts/components/vote/*.js'],
                 dest: 'static/facebook-components-vote-<%= meta.version %>.js'
+            },
+            voteComponentJSIE: {
+                src: ['<banner:meta.banner>', 'src/scripts/namespace.js', 'src/scripts/es5-shim.js', 'src/scripts/object.create.js', 'src/scripts/excanvas.js', 'src/scripts/eventemitter.js', 'src/scripts/util/bignumberformatter.js', 'src/scripts/components/vote/*.js'],
+                dest: 'static/facebook-components-vote-ie-<%= meta.version %>.js'
             },
             voteComponentCSS: {
                 src: ['<banner:meta.banner>', 'src/css/components/vote/*.css'],
@@ -48,6 +52,10 @@ module.exports = function (grunt) {
             voteComponentJS: {
                 src: ['<config:concat.voteComponentJS.dest>'],
                 dest: 'static/facebook-components-vote-<%= meta.version %>.min.js'
+            },
+            voteComponentJSIE: {
+                src: ['<config:concat.voteComponentJSIE.dest>'],
+                dest: 'static/facebook-components-vote-ie-<%= meta.version %>.min.js'
             },
             voteComponentMicroApp: {
                 src: ['<config:concat.voteComponentMicroApp.dest>'],

@@ -39,6 +39,7 @@ Installing as a Micro App
 * Owner: Core
 * XML:
   https://raw.github.com/guardian/facebook-web-clients/master/src/scripts/components/vote/microapp/microapp.xml
+* Ignore root cms path, section etc.
 
 You can then add the component to any article page.
 

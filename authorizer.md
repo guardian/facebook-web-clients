@@ -61,6 +61,10 @@ authorizer.onNotLoggedIn.then(function() {
     console.log("Please log in");
 });
 
+authorizer.cancelledLogin.then(function() {
+    console.log("Never mind, please log in when you're ready");
+});
+
 authorizer.onNotAuthorized.then(function() {
     console.log("Please authorize the Guardian!");
 });

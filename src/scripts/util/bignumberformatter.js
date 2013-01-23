@@ -10,8 +10,24 @@
      * @return {String} The formatted value
      */
     function BigNumberFormatter(value) {
+
+        var i, l, multiplier, newValue;
+
+        for (i = 0, l = multipliers.length; i < l; i++) {
+            multiplier = multipliers[i];
+            if (value >= multiplier.n) {
+                newValue = value / multiplier.n;
+                return newValue.toFixed(newValue < 10 ? 1 : 0) + multiplier.abbr;
+            }
+        }
+
         return value;
     }
+
+    var multipliers = [
+        {abbr: 'M', n: 1000000},
+        {abbr: 'K', n: 1000}
+    ];
 
     guardian.facebook.BigNumberFormatter = BigNumberFormatter;
 

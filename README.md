@@ -26,8 +26,8 @@ Add the following to your /etc/hosts:
 ```
 Then visit http://fwc.guardian.co.uk:8080/test/demo.html
 
-Installing as a Micro App
--------------------------
+Installation & Usage Instructions for Editors
+---------------------------------------------
 
 ### Add the MicroApp
 

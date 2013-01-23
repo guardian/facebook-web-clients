@@ -31,15 +31,14 @@ Installing as a Micro App
 
 ### Add the MicroApp
 
-Here is the definition:
-https://raw.github.com/guardian/facebook-web-clients/master/src/scripts/components/vote/microapp/microapp.xml
-
-Name: facebook-components
-Provider: Guardian
-Root URI: http://facebook-web-clients.appspot.com/
-Documentation URI: https://raw.github.com/guardian/facebook-web-clients/master/README.md
-Code Location: https://github.com/guardian/facebook-web-clients
-Owner: Core
+* Name: facebook-components
+* Provider: Guardian
+* Root URI: http://facebook-web-clients.appspot.com/
+* Documentation URI: https://raw.github.com/guardian/facebook-web-clients/master/README.md
+* Code Location: https://github.com/guardian/facebook-web-clients
+* Owner: Core
+* XML:
+  https://raw.github.com/guardian/facebook-web-clients/master/src/scripts/components/vote/microapp/microapp.xml
 
 You can then add the component to any article page.
 

@@ -35,32 +35,13 @@ Here is the definition:
 https://raw.github.com/guardian/facebook-web-clients/master/src/scripts/components/vote/microapp/microapp.xml
 
 Name: facebook-components
+Provider: Guardian
+Root URI: http://facebook-web-clients.appspot.com/
+Documentation URI: https://raw.github.com/guardian/facebook-web-clients/master/README.md
+Code Location: https://github.com/guardian/facebook-web-clients
+Owner: Core
 
-### Football Section
-
-Go to Tools > Edit Slot Rules
-Section: Football
-Slot: above-standfirst
-Component: facebook-components: Think (Headline is ) Likely / Unlikely on Facebook
-Rule type: Has Tag: Rumour Mill (series)
-
-### All Other Sections
-
-Add the following keyword tags
-* controversial-headline ("Controversial Headlines")
-* controversial-opinion ("Controversial Opinions")
-
-Go to Tools > Edit Slot Rules
-Section: Common
-Slot: below-article-embed
-Component: facebook-components: Agree / Disagree (with Headline) on Facebook
-Rule type: Has Tag: controversial-headline (keyword)
-
-Section: Common
-Slot: below-article-embed
-Component: facebook-components: Agree / Disagree (with Opinion) on Facebook
-Rule type: Has Tag: controversial-opinion (keyword)
-Order: At the top
+You can then add the component to any article page.
 
 On App Engine
 -------------

@@ -41,7 +41,19 @@ Installing as a Micro App
   https://raw.github.com/guardian/facebook-web-clients/master/src/scripts/components/vote/microapp/microapp.xml
 * Ignore root cms path, section etc.
 
-You can then add the component to any article page.
+You can then add the component microapp to any article page: these are:
+
+### Agree / Disagree (with Headline) on Facebook
+If there is a controversial headline (which poses a yes / no question). For instance the user
+can agree or disagree with a headline such as "Should there be an EU Referendum?"
+
+### Think (Headline is ) Likely / Unlikely on Facebook
+If the headline is making a prediction that the user can decide is likely or unlikely to happen.
+
+### Agree / Disagree (with Author's Opinion) on Facebook
+If the opinion of the author is controversial (as opposed to the topic). The user can elect to agree or disagree with
+the author's opinion. This should be placed at the bottom of the article so the user can read the full article before
+making up their mind.
 
 URLS
 -------------

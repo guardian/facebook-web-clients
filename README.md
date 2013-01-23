@@ -31,6 +31,8 @@ Installation & Usage Instructions for Editors
 
 ### Installation
 
+#### Create a new Microapp
+
 * Name: facebook-components
 * Provider: Guardian
 * Root URI: http://facebook-web-clients.appspot.com/
@@ -42,6 +44,16 @@ Installation & Usage Instructions for Editors
 * Ignore root cms path, section etc.
 
 You can now add a Facebook vote to any article.
+
+#### Add Slot Rule for Football Rumours
+
+This will add a think likely / unlikely vote to all Football rumours pages.
+
+* Go to Tools > Edit Slot Rules
+* Section: Football
+* Slot: above-standfirst
+* Component: facebook-components: Think (Headline) is Likely / Unlikely on Facebook
+* Rule type: Has Tag: Rumour Mill (series)
 
 ### Usage
 

@@ -22,11 +22,11 @@
         this.authorizer.onConnected.then(this.checkExistingVote.bind(this));
         this.authorizer.onConnected.then(this.submitVoteWhenLoggedIn.bind(this));
 
-        this.view.on("voted", this.submitVote.bind(this));
+        this.model.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
             url: this.baseURI + "/poll?type=" + this.model.type,
             dataType: 'jsonp',
-            jsonpCallback: 'votecontroller',
+            jsonpCallback: 'votecontroller_initialise',
             data: {
                 article: this.getArticleId()
             }
@@ -51,7 +51,7 @@
             url: this.baseURI + "/user",
             type: "GET",
             dataType: 'jsonp',
-            jsonpCallback: 'votecontroller',
+            jsonpCallback: 'votecontroller_existingvotecheck',
             data: {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
@@ -71,25 +71,31 @@
     };
 
     VoteController.prototype.submitVote = function (choice) {
-        this.choice = choice;
+        this.model.submittedChoice = choice;
         this.authorizer.login().then(this.submitVoteWhenLoggedIn.bind(this));
+        this.authorizer.cancelledLogin.then(this.cancelVoteSubmission.bind(this));
+    };
+
+    VoteController.prototype.cancelVoteSubmission = function () {
+        this.model.submittedChoice = null;
+        this.view.render();
     };
 
     VoteController.prototype.submitVoteWhenLoggedIn = function () {
-        if (this.choice) {
+        if (this.model.submittedChoice) {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
                 dataType: 'jsonp',
-                jsonpCallback: 'votecontroller',
+                jsonpCallback: 'votecontroller_submitvote',
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,
                     user: this.authorizer.userId,
-                    action: this.choice
+                    action: this.model.submittedChoice
                 }
-            }).then(handleResponse(this.handlePostResponse.bind(this, this.choice)));
+            }).then(handleResponse(this.handlePostResponse.bind(this, this.model.submittedChoice)));
         }
-        this.choice = null;
+        this.model.submittedChoice = null;
     };
 
     VoteController.prototype.handlePostResponse = function (choice, response) {

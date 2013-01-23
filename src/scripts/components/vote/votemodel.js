@@ -8,6 +8,7 @@
         this.type = type;
         this.choice = undefined;
         this.allowedToVote = true;
+        this.submittedChoice = null;
         this.dataDeferred = jQuery.Deferred();
     }
 
@@ -18,11 +19,19 @@
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
     VoteModel.prototype.allowedToVote = null;
+    VoteModel.prototype.submittedChoice = null;
 
     VoteModel.prototype.setAllData = function (data) {
         this.answers = data.answers;
         this.trigger(VoteModel.DATA_CHANGED);
         this.dataDeferred.resolve();
+    };
+
+    VoteModel.prototype.setSubmittedChoice = function (choice) {
+        if (this.canVote()) {
+            this.submittedChoice = choice;
+            this.trigger("voted", [choice]);
+        }
     };
 
     VoteModel.prototype.whenDataIsSet = function () {

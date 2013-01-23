@@ -29,6 +29,7 @@ if (typeof(console) === 'undefined') {
         this.onUserDataLoaded = new RepeatablePromise();
         this.onNotAuthorized = new RepeatablePromise();
         this.onNotLoggedIn = new RepeatablePromise();
+        this.cancelledLogin = new RepeatablePromise();
     }
 
     /**
@@ -71,6 +72,12 @@ if (typeof(console) === 'undefined') {
     Authorizer.prototype.onNotLoggedIn = null;
 
     /**
+     * Promise like object which is resolved when the user cancels the login dialog
+     * @type {Object}
+     */
+    Authorizer.prototype.cancelledLogin = null;
+
+    /**
      * An access token used to authenticate the user's Facebook session. Note that at present
      * the authenticator does not handle access tokens expiring.
      * @see https://developers.facebook.com/docs/howtos/login/debugging-access-tokens/
@@ -106,9 +113,10 @@ if (typeof(console) === 'undefined') {
      */
     Authorizer.prototype.login = function (permissions) {
         if (!this.accessToken && !this.loginPending) {
+            this.cancelledLogin.reset();
             this.loginPending = true;
             this._loadFacebookAPI().then(function (FB) {
-                FB.login(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
+                FB.login(this._handleGotLoginStatus.bind(this, true), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this))
         }
         return this.onConnected;
@@ -126,7 +134,7 @@ if (typeof(console) === 'undefined') {
         if (!this.loginStatusPending) {
             this.loginStatusPending = true;
             this._loadFacebookAPI().then(function (FB) {
-                FB.getLoginStatus(this._handleGotLoginStatus.bind(this), permissions || Authorizer.DEFAULT_PERMISSIONS);
+                FB.getLoginStatus(this._handleGotLoginStatus.bind(this, false), permissions || Authorizer.DEFAULT_PERMISSIONS);
             }.bind(this));
         }
         return this.onConnected;
@@ -157,10 +165,11 @@ if (typeof(console) === 'undefined') {
 
      * If the user is logged in, the Authorizer will also fetch user data (see _handleGotUserData)
      *
+     * @param wasDirectUserAction Whether the login() call was made directly (as opposed to just checking login status)
      * @param response The response from facebook following a call to getLoginStatus or getLogin.
      * @private
      */
-    Authorizer.prototype._handleGotLoginStatus = function (response) {
+    Authorizer.prototype._handleGotLoginStatus = function (wasDirectUserAction, response) {
         this.loginStatusPending = false;
         this.loginPending = false;
         switch (response.status) {
@@ -175,9 +184,11 @@ if (typeof(console) === 'undefined') {
                 this.onNotAuthorized.resolve(this);
                 break;
             default:
+                if (wasDirectUserAction) {
+                    this.cancelledLogin.resolve();
+                }
                 this.onNotLoggedIn.resolve();
         }
-
     };
 
     /**
@@ -268,6 +279,10 @@ if (typeof(console) === 'undefined') {
         } else {
             this.callbacks.push(fn);
         }
+    };
+
+    RepeatablePromise.prototype.reset = function() {
+        this.args = undefined;
     };
 
     guardian.facebook.Authorizer = {

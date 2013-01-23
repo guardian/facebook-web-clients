@@ -2263,11 +2263,11 @@ if (!document.createElement('canvas').getContext) {
         this.authorizer.onConnected.then(this.checkExistingVote.bind(this));
         this.authorizer.onConnected.then(this.submitVoteWhenLoggedIn.bind(this));
 
-        this.view.on("voted", this.submitVote.bind(this));
+        this.model.on("voted", this.submitVote.bind(this));
         jQuery.ajax({
             url: this.baseURI + "/poll?type=" + this.model.type,
             dataType: 'jsonp',
-            jsonpCallback: 'votecontroller',
+            jsonpCallback: 'votecontroller_initialise',
             data: {
                 article: this.getArticleId()
             }
@@ -2292,7 +2292,7 @@ if (!document.createElement('canvas').getContext) {
             url: this.baseURI + "/user",
             type: "GET",
             dataType: 'jsonp',
-            jsonpCallback: 'votecontroller',
+            jsonpCallback: 'votecontroller_existingvotecheck',
             data: {
                 article: this.getArticleId(),
                 user: this.authorizer.userId
@@ -2312,25 +2312,31 @@ if (!document.createElement('canvas').getContext) {
     };
 
     VoteController.prototype.submitVote = function (choice) {
-        this.choice = choice;
+        this.model.submittedChoice = choice;
         this.authorizer.login().then(this.submitVoteWhenLoggedIn.bind(this));
+        this.authorizer.cancelledLogin.then(this.cancelVoteSubmission.bind(this));
+    };
+
+    VoteController.prototype.cancelVoteSubmission = function () {
+        this.model.submittedChoice = null;
+        this.view.render();
     };
 
     VoteController.prototype.submitVoteWhenLoggedIn = function () {
-        if (this.choice) {
+        if (this.model.submittedChoice) {
             jQuery.ajax({
                 url: this.baseURI + "/vote",
                 dataType: 'jsonp',
-                jsonpCallback: 'votecontroller',
+                jsonpCallback: 'votecontroller_submitvote',
                 data: {
                     article: this.getArticleId(),
                     access_token: this.authorizer.accessToken,
                     user: this.authorizer.userId,
-                    action: this.choice
+                    action: this.model.submittedChoice
                 }
-            }).then(handleResponse(this.handlePostResponse.bind(this, this.choice)));
+            }).then(handleResponse(this.handlePostResponse.bind(this, this.model.submittedChoice)));
         }
-        this.choice = null;
+        this.model.submittedChoice = null;
     };
 
     VoteController.prototype.handlePostResponse = function (choice, response) {
@@ -2462,6 +2468,7 @@ if (!document.createElement('canvas').getContext) {
         this.type = type;
         this.choice = undefined;
         this.allowedToVote = true;
+        this.submittedChoice = null;
         this.dataDeferred = jQuery.Deferred();
     }
 
@@ -2472,11 +2479,19 @@ if (!document.createElement('canvas').getContext) {
     VoteModel.prototype.options = null;
     VoteModel.prototype.choice = null;
     VoteModel.prototype.allowedToVote = null;
+    VoteModel.prototype.submittedChoice = null;
 
     VoteModel.prototype.setAllData = function (data) {
         this.answers = data.answers;
         this.trigger(VoteModel.DATA_CHANGED);
         this.dataDeferred.resolve();
+    };
+
+    VoteModel.prototype.setSubmittedChoice = function (choice) {
+        if (this.canVote()) {
+            this.submittedChoice = choice;
+            this.trigger("voted", [choice]);
+        }
     };
 
     VoteModel.prototype.whenDataIsSet = function () {
@@ -2588,8 +2603,6 @@ if (!document.createElement('canvas').getContext) {
         this.initialise(donutClass);
     }
 
-    VoteComponent.prototype = Object.create(EventEmitter.prototype);
-
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
     VoteComponent.prototype.numberFormatter = null;
@@ -2599,6 +2612,7 @@ if (!document.createElement('canvas').getContext) {
         this.jContainer.html(VoteComponent.HTML);
         this.renderCallback = this.render.bind(this);
         this.model.on("dataChanged", this.renderCallback);
+        this.model.on("voted", this.renderCallback);
         this.donut = new donutClass(this.jContainer.find(".donut-container"));
         this.jContainer.delegate(".btn:not(.disabled)", "click.vote-component", this.handleButtonClick.bind(this));
     };
@@ -2607,7 +2621,7 @@ if (!document.createElement('canvas').getContext) {
         var answer = answers[index], jElement = jQuery(element);
         jElement.attr("data-action", answer.id);
         jElement.find(".count").html(this.numberFormatter(answer.count));
-        jElement.find(".label").html(answer.label);
+        jElement.find(".label").html(answer.id == this.model.submittedChoice ? "Sharing..." : answer.label);
         if (this.model.choice) {
             jElement.removeClass("btn");
             if (answer.id == this.model.choice) {
@@ -2631,15 +2645,13 @@ if (!document.createElement('canvas').getContext) {
             this.animated = true;
             jQuery(".vote-component").animate({"height": "180px"});
         }
+
     };
 
     VoteComponent.prototype.handleButtonClick = function (jEvent) {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
-        if (this.model.canVote()) {
-            jTarget.find(".label").text("Sharing...");
-            this.trigger("voted", [action]);
-        }
+        this.model.setSubmittedChoice(action);
     };
 
     VoteComponent.prototype.destroy = function () {

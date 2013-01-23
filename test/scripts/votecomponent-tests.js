@@ -25,7 +25,7 @@
                 return v
             });
             view = new guardian.facebook.VoteComponent(".vote-component", model, Donut, numberFormatter);
-            view.on("voted", function (vote) {
+            model.on("voted", function (vote) {
                 model.registerVote(vote);
             });
         },
@@ -91,6 +91,22 @@
 
         thenThe(jQuery("[data-action='answer2']"))
             .should(haveClass("disabled"));
+
+    });
+
+    test("Shows sharing if vote in progress", function () {
+
+        givenSomeData();
+
+        given(model.submittedChoice = "answer1");
+
+        when(view.render());
+
+        thenThe(jQuery("[data-action='answer1']"))
+            .should(haveText("Sharing..."), inElement(".label"));
+
+        thenThe(jQuery("[data-action='answer2']"))
+            .should(haveText("Unlikely"), inElement(".label"));
 
     });
 

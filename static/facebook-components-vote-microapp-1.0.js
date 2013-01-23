@@ -10,14 +10,14 @@
 
     var script;
     if (jQuery.browser.msie && jQuery.browser.version < 9) {
-        script = "/static/facebook-components-vote-ie-1.0.min.js";
+        script = "/static/facebook-components-vote-ie-1.0.js";
     } else {
-        script = "/static/facebook-components-vote-1.0.min.js"
+        script = "/static/facebook-components-vote-1.0.js"
     }
 
     require([
-        baseURI + "/static/facebook-authorizer-1.0.min.js",
-        baseURI + "/static/facebook-ui-donut-1.0.min.js",
+        baseURI + "/static/facebook-authorizer-1.0.js",
+        baseURI + "/static/facebook-ui-donut-1.0.js",
         baseURI + script
     ], function () {
 

@@ -7,8 +7,6 @@
         this.initialise(donutClass);
     }
 
-    VoteComponent.prototype = Object.create(EventEmitter.prototype);
-
     VoteComponent.prototype.jContainer = null;
     VoteComponent.prototype.donut = null;
     VoteComponent.prototype.numberFormatter = null;
@@ -18,6 +16,7 @@
         this.jContainer.html(VoteComponent.HTML);
         this.renderCallback = this.render.bind(this);
         this.model.on("dataChanged", this.renderCallback);
+        this.model.on("voted", this.renderCallback);
         this.donut = new donutClass(this.jContainer.find(".donut-container"));
         this.jContainer.delegate(".btn:not(.disabled)", "click.vote-component", this.handleButtonClick.bind(this));
     };
@@ -26,7 +25,7 @@
         var answer = answers[index], jElement = jQuery(element);
         jElement.attr("data-action", answer.id);
         jElement.find(".count").html(this.numberFormatter(answer.count));
-        jElement.find(".label").html(answer.label);
+        jElement.find(".label").html(answer.id == this.model.submittedChoice ? "Sharing..." : answer.label);
         if (this.model.choice) {
             jElement.removeClass("btn");
             if (answer.id == this.model.choice) {
@@ -50,15 +49,13 @@
             this.animated = true;
             jQuery(".vote-component").animate({"height": "180px"});
         }
+
     };
 
     VoteComponent.prototype.handleButtonClick = function (jEvent) {
         var jTarget = jQuery(jEvent.currentTarget),
             action = jTarget.data("action");
-        if (this.model.canVote()) {
-            jTarget.find(".label").text("Sharing...");
-            this.trigger("voted", [action]);
-        }
+        this.model.setSubmittedChoice(action);
     };
 
     VoteComponent.prototype.destroy = function () {

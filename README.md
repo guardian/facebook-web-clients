@@ -42,14 +42,13 @@ Installing as a Micro App
 
 You can then add the component to any article page.
 
-On App Engine
+URLS
 -------------
 
+### Demo Page
 http://facebook-web-clients.appspot.com/test/demo.html
 
-Authorizer API
---------------
-
+### Facebook Authorizer API
 https://github.com/guardian/facebook-web-clients/blob/master/authorizer.md
 
 

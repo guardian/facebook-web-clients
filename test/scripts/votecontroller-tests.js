@@ -1,10 +1,5 @@
 (function () {
 
-    var fakePromise = {
-        then: function (fn) {
-            fn();
-        }
-    };
 
     module("Vote Controller", {
         setup: function () {
@@ -19,23 +14,13 @@
             window.FB = {
                 api: sinon.stub()
             };
-            model = sinon.stub(new guardian.facebook.VoteModel());
-            deferred = jQuery.Deferred();
-            model.whenDataIsSet.returns(deferred.promise());
 
-            authorizer = guardian.facebook.Authorizer.getInstance();
+            model = fakeModel();
+            authorizer = fakeAuthorizer();
+            view = fakeView();
 
-            sinon.stub(authorizer, "_loadFacebookAPI");
-            sinon.stub(authorizer, "getLoginStatus");
-            sinon.stub(authorizer, "login");
-
-            authorizer._loadFacebookAPI.returns(fakePromise);
-            authorizer.getLoginStatus.returns(fakePromise);
-            authorizer.login.returns(fakePromise);
-            authorizer.onNotAuthorized = fakePromise;
-
-            view = new EventEmitter();
-            controller = new guardian.facebook.VoteController(model, view, authorizer)
+            controller = new guardian.facebook.VoteController(model, view, authorizer);
+            sinon.spy(controller, "handleVoteFailed");
         },
         teardown: function () {
             authorizer.destroy();
@@ -44,7 +29,7 @@
         }
     });
 
-    var model, controller, authorizer, deferred, json = {
+    var model, controller, view, authorizer, json = {
         "pollId": "400303938",
         "questions": [
             {
@@ -66,15 +51,18 @@
         ]
     };
 
-    test("Updates the model with JSON", function () {
+    test("Loads the poll upon initialise and passes data to model", function () {
+        given(normalPollResponse());
         when(controller.initialise("/some_url"));
+        thenThe(jQuery.ajax).shouldHaveBeen(calledOnce);
         thenThe(model.setAllData).shouldHaveBeen(calledOnce);
     });
 
-    test("Posts the custom action to facebook", function () {
+    test("Handles error if the server cannot return the poll", function () {
+        given(serverHasError());
         when(controller.initialise("/some_url"));
         thenThe(jQuery.ajax).shouldHaveBeen(calledOnce);
-
+        thenThe(model.setAllData).shouldNotHaveBeen(calledOnce);
     });
 
     test("Agree with author polls", function () {
@@ -88,24 +76,42 @@
     test("Agree with headline polls", function () {
         given(model.type = guardian.facebook.VoteModel.AGREE_WITH_HEADLINE);
         when(controller.initialise("/some_url"));
+
         thenThe(jQuery.ajax)
             .shouldHaveBeen(calledOnce)
             .shouldHaveBeen(calledWith(mapWith("url", "/some_url/poll?type=agree_with_headline")));
+
+        when(model.trigger("voted", ["disagree"]));
+        thenThe(jQuery.ajax)
+            .shouldHaveBeen(calledAgain)
+            .shouldHaveBeen(calledWith(mapWith("url", "/some_url/vote")));
     });
 
     test("Handles already voted", function () {
         when(controller.initialise("/some_url"));
         given(userAlreadyVoted());
-        when(view.trigger("voted", ["Disagree"]));
+        when(model.trigger("voted", ["Disagree"]));
         thenThe(model.registerVote).shouldNotHaveBeen(calledOnce);
     });
 
     test("Handles error", function () {
         when(controller.initialise("/some_url"));
         given(serverHasError());
-        when(view.trigger("voted", ["Disagree"]));
+        when(model.trigger("voted", ["Disagree"]));
         thenThe(model.registerVote).shouldNotHaveBeen(calledOnce);
     });
+
+    test("Handles voting error", function () {
+        given(serverHasError());
+
+        when(controller.initialise("/some_url"));
+        when(model.trigger("voted", ["disagree"]));
+
+        thenThe(jQuery.ajax).shouldHaveBeen(calledWith(mapWith("url", "/some_url/vote")));
+
+        thenThe(controller.handleVoteFailed).shouldHaveBeen(calledOnce);
+    });
+
 
     /* end of tests */
 
@@ -124,10 +130,31 @@
         jQuery.ajax.returns({
             then: function (callback) {
                 callback({
-                    error: {
-                        message: "An unexpected error has occurred. Please retry your request later."
+                    data: {
+                        error: {
+                            message: "An unexpected error has occurred. Please retry your request later."
+                        }
                     }
                 })
+            }
+        });
+    }
+
+    function normalPollResponse() {
+        jQuery.ajax.returns({
+            then: function (callback) {
+                var json = {
+                    "status": "ok",
+                    "data": {"pollId": "http://www.gucode.co.uk/football/2012/nov/28/football-transfer-rumours-redknapp-defoe", "questions": [
+                        {
+                            "questionid": "0",
+                            "answers": [
+                                {"id": "think_likely", "count": 0, "label": "Likely"},
+                                {"id": "think_unlikely", "count": 0, "label": "Unlikely"}
+                            ]
+                        }
+                    ]}};
+                callback(json)
             }
         });
     }

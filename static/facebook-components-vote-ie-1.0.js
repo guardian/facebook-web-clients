@@ -2264,6 +2264,7 @@ if (!document.createElement('canvas').getContext) {
         this.authorizer.onConnected.then(this.submitVoteWhenLoggedIn.bind(this));
 
         this.model.on("voted", this.submitVote.bind(this));
+
         jQuery.ajax({
             url: this.baseURI + "/poll?type=" + this.model.type,
             dataType: 'jsonp',
@@ -2334,7 +2335,10 @@ if (!document.createElement('canvas').getContext) {
                     user: this.authorizer.userId,
                     action: this.model.submittedChoice
                 }
-            }).then(handleResponse(this.handlePostResponse.bind(this, this.model.submittedChoice)));
+            }).then(handleResponse(
+                    this.handlePostResponse.bind(this, this.model.submittedChoice),
+                    this.handleVoteFailed.bind(this)
+                ));
         }
         this.model.submittedChoice = null;
     };
@@ -2344,10 +2348,16 @@ if (!document.createElement('canvas').getContext) {
         this.model.registerVote(choice, true);
     };
 
-    function handleResponse(successFunction) {
+    VoteController.prototype.handleVoteFailed = function () {
+        console.log("Unable to vote. Possibly already voted already or has not given permission to do so.");
+        this.view.render();
+    };
+
+    function handleResponse(successFunction, errorFunction) {
         return (function (response) {
-            if (response.error) {
-                console.error(response.error.message);
+            if (response.data.error) {
+                errorFunction && errorFunction();
+                console.error("Error from server: " + response.data.error.message);
             } else {
                 successFunction(response.data)
             }

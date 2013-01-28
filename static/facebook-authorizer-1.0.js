@@ -109,10 +109,11 @@ if (typeof(console) === 'undefined') {
      *
      * @see https://developers.facebook.com/docs/reference/javascript/FB.login/
      * @param {Object} permissions The permissions to send to the FB.login() call
+     * @param {boolean} force Whether the login box should definitely be shown
      * @return A promise which is resolved once the user has been authenticated and authorized the Guardian app
      */
-    Authorizer.prototype.login = function (permissions) {
-        if (!this.accessToken && !this.loginPending) {
+    Authorizer.prototype.login = function (permissions, force) {
+        if (force || (!this.accessToken && !this.loginPending)) {
             this.cancelledLogin.reset();
             this.loginPending = true;
             this._loadFacebookAPI().then(function (FB) {

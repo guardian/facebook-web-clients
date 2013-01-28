@@ -2348,15 +2348,20 @@ if (!document.createElement('canvas').getContext) {
         this.model.registerVote(choice, true);
     };
 
-    VoteController.prototype.handleVoteFailed = function () {
+    VoteController.prototype.handleVoteFailed = function (error) {
         console.log("Unable to vote. Possibly already voted already or has not given permission to do so.");
         this.view.render();
+        if (error.message.indexOf("#200") > -1) {
+            if (confirm("You need extended permissions in order to publish your vote. Would you like to continue?")) {
+                this.authorizer.login(guardian.facebook.Authorizer.DEFAULT_PERMISSIONS, true);
+            }
+        }
     };
 
     function handleResponse(successFunction, errorFunction) {
         return (function (response) {
             if (response.data.error) {
-                errorFunction && errorFunction();
+                errorFunction && errorFunction(response.data.error);
                 console.error("Error from server: " + response.data.error.message);
             } else {
                 successFunction(response.data)

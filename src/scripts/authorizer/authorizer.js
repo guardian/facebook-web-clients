@@ -103,6 +103,7 @@
     Authorizer.prototype.login = function (permissions, force) {
         if (force || (!this.accessToken && !this.loginPending)) {
             this.cancelledLogin.reset();
+            this.onConnected.reset();
             this.loginPending = true;
             this._loadFacebookAPI().then(function (FB) {
                 FB.login(this._handleGotLoginStatus.bind(this, true), permissions || Authorizer.DEFAULT_PERMISSIONS);

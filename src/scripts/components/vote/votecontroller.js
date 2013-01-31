@@ -73,7 +73,7 @@
 
     VoteController.prototype.submitVote = function (choice) {
         this.model.submittedChoice = choice;
-        this.authorizer.login().then(this.submitVoteWhenLoggedIn.bind(this));
+        this.authorizer.login(guardian.facebook.Authorizer.DEFAULT_PERMISSIONS, true).then(this.submitVoteWhenLoggedIn.bind(this));
         this.authorizer.cancelledLogin.then(this.cancelVoteSubmission.bind(this));
     };
 
@@ -107,14 +107,9 @@
         this.model.registerVote(choice, true);
     };
 
-    VoteController.prototype.handleVoteFailed = function (error) {
+    VoteController.prototype.handleVoteFailed = function () {
         console.log("Unable to vote. Possibly already voted already or has not given permission to do so.");
         this.view.render();
-        if (error.message.indexOf("#200") > -1) {
-            if (confirm("You need extended permissions in order to publish your vote. Would you like to continue?")) {
-                this.authorizer.login(guardian.facebook.Authorizer.DEFAULT_PERMISSIONS, true);
-            }
-        }
     };
 
     function handleResponse(successFunction, errorFunction) {
